@@ -1,12 +1,7 @@
-/**
- * The following styles get applied both on the front of your site
- * and in the editor.
- *
- * Replace them with your own styles or remove the file completely.
- */
-
-.wp-block-amc-hero {
-	background-color: #21759b;
-	color: #fff;
-	padding: 2px;
+.amc-hero {
+	display: grid;
+	background-color: var(--wp--preset--color--primary);
+	img{
+		width: 100%;
+	}
 }
