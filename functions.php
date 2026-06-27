@@ -1,5 +1,12 @@
 <?php
 
+wp_enqueue_style(
+    'my-theme',
+    get_theme_file_uri('/build/style.css'),
+    [],
+    filemtime(get_theme_file_path('/build/style.css'))
+);
+
 // register all amc blocks
 add_action('init', function () {
 
@@ -10,7 +17,7 @@ add_action('init', function () {
         }
     }
 });
-// only allow amc blocks
+// only allow theme blocks
 add_filter('allowed_block_types_all', function ($allowed_blocks, $editor_context) {
 
     $blocks = WP_Block_Type_Registry::get_instance()->get_all_registered();
@@ -18,7 +25,7 @@ add_filter('allowed_block_types_all', function ($allowed_blocks, $editor_context
     $allowed = [];
 
     foreach ($blocks as $block_name => $block) {
-        if (str_starts_with($block_name, 'amc/')) {
+        if (str_starts_with($block_name, 'jm/')) {
             $allowed[] = $block_name;
         }
     }
