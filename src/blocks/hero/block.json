@@ -1,16 +1,14 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "amc/hero",
+  "name": "jm/hero",
   "version": "0.1.0",
   "title": "Hero",
-  "category": "widgets",
-  "icon": "smiley",
-  "description": "Example block scaffolded with Create Block tool.",
+  "category": "jm-blocks",
+  "icon": "layout",
+  "description": "Hero section with heading and image",
   "example": {},
-  "supports": {
-    "align": ["wide", "full"]
-  },
+  "supports": {},
   "textdomain": "hero",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
