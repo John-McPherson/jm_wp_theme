@@ -7,7 +7,7 @@ wp_enqueue_style(
     filemtime(get_theme_file_path('/build/style.css'))
 );
 
-// register all amc blocks
+// register all theme blocks
 add_action('init', function () {
 
     foreach (glob(get_stylesheet_directory() . '/build/blocks/*') as $block_dir) {
@@ -32,3 +32,14 @@ add_filter('allowed_block_types_all', function ($allowed_blocks, $editor_context
 
     return $allowed;
 }, 10, 2);
+
+
+add_filter('block_categories_all', function ($categories) {
+    return array_merge($categories, [
+        [
+            'slug'  => 'jm-blocks',
+            'title' => __('Custom Blocks', 'jm'),
+            'icon'  => 'customizer',
+        ],
+    ]);
+});
