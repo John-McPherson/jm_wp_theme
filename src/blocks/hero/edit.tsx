@@ -1,24 +1,16 @@
-/**
- * Retrieves the translation of text.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/
- */
 import { __ } from "@wordpress/i18n";
 
-/**
- * React hook that is used to mark the block wrapper element.
- * It provides all the necessary props like the class name.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
- */
-import { useBlockProps } from "@wordpress/block-editor";
+import {
+  useBlockProps,
+  RichText,
+  MediaUpload,
+  MediaUploadCheck,
+} from "@wordpress/block-editor";
 
-/**
- * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
- * Those files can contain any CSS code that gets applied to the editor.
- *
- * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
- */
+import { Button } from "@wordpress/components";
+
+import { useSelect } from "@wordpress/data";
+
 import "./editor.scss";
 
 /**
@@ -29,19 +21,52 @@ import "./editor.scss";
  *
  * @return {Element} Element to render.
  */
-export default function Edit() {
+export default function Edit({ attributes, setAttributes }) {
+  const { heading, text, imageId, imageUrl } = attributes;
+  console.log("imageId", imageId);
+
   const banner = (
     <section className="jm-section jm-hero">
       <div className="hero-text">
-        <h1 className="jm-hero__title">{"Site heading to go here2"}</h1>
-        <p className="jm-hero__description">
-          {
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor."
-          }
-        </p>
+        <RichText
+          tagName="h1"
+          allowFormats={[]}
+          value={heading}
+          onChange={(value: string) => setAttributes({ heading: value })}
+          placeholder={__("heading to go here", "jm-theme")}
+        ></RichText>
+        <RichText
+          tagName="p"
+          allowFormats={[]}
+          value={text}
+          onChange={(value: string) => setAttributes({ text: value })}
+          placeholder={__("Enter text here", "jm-theme")}
+        ></RichText>
       </div>
-      <div className="hero-img">
-        <img src="https://placehold.net/800x600.png" alt="Placeholder image" />
+      <div
+        className="hero-img"
+        style={
+          { "--background-image": `url(${imageUrl})` } as React.CSSProperties
+        }
+      >
+        <MediaUploadCheck>
+          <MediaUpload
+            onSelect={(image: { id: number; url: string }) => {
+              console.log("image", image);
+              setAttributes({
+                imageId: image.id,
+                imageUrl: image.url,
+              });
+            }}
+            type="image"
+            allowedTypes={["image"]}
+            render={({ open }) => (
+              <Button variant="primary" onClick={open}>
+                {__("Upload Image", "jm-theme")}
+              </Button>
+            )}
+          />
+        </MediaUploadCheck>
       </div>
     </section>
   );

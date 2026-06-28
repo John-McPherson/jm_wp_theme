@@ -7,6 +7,25 @@
   "category": "jm-blocks",
   "icon": "layout",
   "description": "Hero section with heading and image",
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": ""
+    },
+    "text": {
+      "type": "string",
+      "default": ""
+    },
+
+    "imageId": {
+      "type": "number",
+      "default": 0
+    },
+    "imageUrl": {
+      "type": "string",
+      "default": ""
+    }
+  },
   "example": {},
   "supports": {},
   "textdomain": "hero",

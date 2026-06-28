@@ -2,3 +2,14 @@
  * The following styles get applied inside the editor only.
  *
  */
+
+.jm-hero {
+  .hero-img {
+    button {
+      z-index: 100;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+  }
+}
