@@ -2,9 +2,9 @@
 
 wp_enqueue_style(
     handle: 'jm-theme',
-    src: get_theme_file_uri('/build/style.css'),
+    src: get_theme_file_uri('/build/css/style.css'),
     deps: [],
-    ver: filemtime(get_theme_file_path('/style.css'))
+    ver: filemtime(get_theme_file_path('/build/css/style.css'))
 );
 
 // register all theme blocks

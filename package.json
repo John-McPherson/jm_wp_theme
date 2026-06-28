@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"wp-scripts start\" \"sass --watch src/scss/style.scss:build/style.css\"",
-    "build": "wp-scripts build && sass src/scss/style.scss:build/style.css --no-source-map --style=compressed",
+    "start": "concurrently \"wp-scripts start\" \"sass --watch src/scss/style.scss:build/css/style.css --load-path=src/scss\"",
+    "build": "wp-scripts build && sass src/scss/style.scss:build/css/style.css --load-path=src/scss --no-source-map --style=compressed",
     "package": "rm -rf dist && mkdir -p dist && rsync -av --delete --exclude='src' --exclude='node_modules' --exclude='.git' --exclude='dist' --exclude='tsconfig.json' --exclude='.gitignore' --exclude='package.json' --exclude='package-lock.json' ./ dist/"
   },
   "repository": {
