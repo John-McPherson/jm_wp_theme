@@ -4,7 +4,7 @@ import { __ } from "@wordpress/i18n";
 type TextTag = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "a" | "span";
 
 type TextInputProps = {
-  attribute: string;
+  value: string;
   onChange: (value: string) => void;
   tagName?: TextTag;
   placeholder?: string;
@@ -12,8 +12,7 @@ type TextInputProps = {
 };
 
 const TextInput = ({
-  attribute,
-
+  value,
   onChange,
   tagName = "p",
   placeholder,
@@ -23,7 +22,7 @@ const TextInput = ({
     <RichText
       tagName={tagName}
       allowedFormats={[]}
-      value={attribute}
+      value={value}
       onChange={onChange}
       placeholder={placeholder ?? __("Enter text here", "jm-theme")}
       className={className}
