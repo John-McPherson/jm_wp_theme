@@ -6,14 +6,11 @@
 
   --jm-hero-overlay: linear-gradient(
     var(--jm-hero-gradient-direction),
-    var(--jm-primary-color),
+    var(--jm-background-color),
     transparent 30%
   );
 
   display: grid;
-
-  background-color: var(--jm-primary-color);
-  color: var(--jm-secondary-color);
 
   grid-template-columns: 1fr;
 
@@ -26,7 +23,7 @@
     justify-content: center;
 
     width: 100%;
-    max-width: min(50ch, var(--jm-container-md));
+    max-width: calc(var(--jm-container-lg) * 0.5);
     min-height: 300px;
 
     padding: var(--jm-hero-padding);

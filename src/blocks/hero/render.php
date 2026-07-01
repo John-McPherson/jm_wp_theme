@@ -14,7 +14,7 @@ $background_style = $background_image_url
     : '';
 ?>
 
-<section class="jm-section jm-hero">
+<section class="jm-section jm-hero jm-theme--inverse">
     <div class="jm-hero__text">
         <?php get_template_part(
             slug: 'template-parts/heading',

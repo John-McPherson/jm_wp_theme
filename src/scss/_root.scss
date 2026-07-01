@@ -1,42 +1,145 @@
 :root {
-  /* Container  scale */
-  --jm-container-xs: 30rem; /* 480px → forms, narrow text */
-  --jm-container-sm: 45rem; /* 720px → blog text */
-  --jm-container-md: 60rem; /* 960px → default content */
-  --jm-container-lg: 72rem; /* 1152px → wide content */
-  --jm-container-xl: 84rem; /* 1344px → marketing layouts */
-  --jm-container-2xl: 96rem; /* 1536px → hero / full canvas */
+  /* =========================================================
+     COLORS (WP theme.json → JM tokens)
+  ========================================================= */
 
-  /* Base spacing scale */
+  --jm-color-primary: var(--wp--preset--color--primary, #12355b);
+  --jm-color-secondary: var(--wp--preset--color--secondary, #00a8e8);
+  --jm-color-accent: var(--wp--preset--color--accent, #ffc300);
+
+  --jm-color-background: var(--wp--preset--color--background, #f8fafc);
+  --jm-color-surface: var(--wp--preset--color--surface, #e5e7eb);
+  --jm-color-text: var(--wp--preset--color--text, #1f2937);
+  --jm-color-success: var(--wp--preset--color--success, #16a34a);
+
+  /* Semantic roles */
+  --jm-primary-color: var(--jm-color-primary);
+  --jm-secondary-color: var(--jm-color-secondary);
+
+  --jm-text-color: var(--jm-color-text);
+  --jm-background-color: var(--jm-color-background);
+  --jm-surface-color: var(--jm-color-surface);
+
+  --jm-link-color: var(--jm-color-secondary);
+  --jm-link-hover: var(--jm-color-primary);
+
+  --jm-button-bg: var(--jm-color-accent);
+  --jm-button-text: var(--jm-color-text);
+
+  --jm-border-color: var(--jm-color-surface);
+  --jm-success-color: var(--jm-color-success);
+
+  /* =========================================================
+     SPACING 
+  ========================================================= */
+
   --jm-spacing-0: 0;
-  --jm-spacing-1: 0.25rem; /* 4px */
-  --jm-spacing-2: 0.5rem; /* 8px */
-  --jm-spacing-3: 0.75rem; /* 12px */
-  --jm-spacing-4: 1rem; /* 16px */
-  --jm-spacing-5: 1.5rem; /* 24px */
-  --jm-spacing-6: 2rem; /* 32px */
-  --jm-spacing-7: 2.5rem; /* 40px */
-  --jm-spacing-8: 3rem; /* 48px */
-  --jm-spacing-9: 4rem; /* 64px */
-  --jm-spacing-10: 5rem; /* 80px */
-  --jm-spacing-11: 6rem; /* 96px */
-  --jm-spacing-12: 8rem; /* 128px */
 
-  /* Page structure (fluid) */
+  --jm-spacing-1: var(--wp--preset--spacing--xs, 0.5rem);
+  --jm-spacing-2: var(--wp--preset--spacing--s, 0.75rem);
+  --jm-spacing-3: var(--wp--preset--spacing--m, 1rem);
+  --jm-spacing-4: var(--wp--preset--spacing--l, 1.5rem);
+  --jm-spacing-5: var(--wp--preset--spacing--xl, 2rem);
+  --jm-spacing-6: var(--wp--preset--spacing--2-xl, 2.5rem);
+  --jm-spacing-7: var(--wp--preset--spacing--3-xl, 3rem);
+
+  /* Layout usage  */
   --jm-page-padding: clamp(4rem, 8vw, 8rem);
-
-  /* Sections (fluid) */
   --jm-section-padding: clamp(3rem, 6vw, 6rem);
 
-  /* Blocks (fixed) */
-  --jm-block-padding: var(--jm-spacing-8);
+  --jm-block-padding: var(--jm-spacing-6);
+  --jm-container-padding: var(--jm-spacing-4);
+  --jm-gutter: var(--jm-spacing-4);
 
-  /* Grid integrity (fixed) */
-  --jm-container-padding: var(--jm-spacing-6);
-  --jm-gutter: var(--jm-spacing-6);
+  /* =========================================================
+     RADII
+  ========================================================= */
 
-  /* color variables */
+  --jm-radius-none: var(--wp--preset--radius--none, 0);
+  --jm-radius-xs: var(--wp--preset--radius--xs, 0.125rem);
+  --jm-radius-sm: var(--wp--preset--radius--s, 0.25rem);
+  --jm-radius-md: var(--wp--preset--radius--m, 0.5rem);
+  --jm-radius-lg: var(--wp--preset--radius--l, 0.75rem);
+  --jm-radius-xl: var(--wp--preset--radius--xl, 1rem);
+  --jm-radius-2xl: var(--wp--preset--radius--2-xl, 1.5rem);
+  --jm-radius-full: var(--wp--preset--radius--full, 9999px);
 
-  --jm-primary-color: var(--wp--preset--color--primary);
-  --jm-secondary-color: var(--wp--preset--color--secondary);
+  /* =========================================================
+     CONTAINERS (SCSS-owned layout system)
+  ========================================================= */
+
+  --jm-container-xs: 30rem;
+  --jm-container-sm: 45rem;
+  --jm-container-md: 60rem;
+  --jm-container-lg: 72rem;
+  --jm-container-xl: 84rem;
+  --jm-container-2xl: 96rem;
+
+  /* =========================================================
+     TYPOGRAPHY
+  ========================================================= */
+
+  /* =========================================================
+     DISPLAY (d1–d4)
+  ========================================================= */
+
+  --jm-d1: var(--wp--preset--font-size--d1, 2.75rem);
+  --jm-d2: var(--wp--preset--font-size--d2, 2.5rem);
+  --jm-d3: var(--wp--preset--font-size--d3, 2.25rem);
+  --jm-d4: var(--wp--preset--font-size--d4, 2rem);
+
+  /* =========================================================
+     HEADINGS (h1–h6)
+  ========================================================= */
+
+  --jm-h1: var(--wp--preset--font-size--h1, 2rem);
+  --jm-h2: var(--wp--preset--font-size--h2, 1.75rem);
+  --jm-h3: var(--wp--preset--font-size--h3, 1.5rem);
+  --jm-h4: var(--wp--preset--font-size--h4, 1.25rem);
+  --jm-h5: var(--wp--preset--font-size--h5, 1.125rem);
+  --jm-h6: var(--wp--preset--font-size--h6, 1rem);
+
+  /* =========================================================
+     PARAGRAPHS (p1–p4)
+  ========================================================= */
+
+  --jm-p1: var(--wp--preset--font-size--p1, 1.125rem);
+  --jm-p2: var(--wp--preset--font-size--p2, 1rem);
+  --jm-p3: var(--wp--preset--font-size--p3, 0.875rem);
+  --jm-p4: var(--wp--preset--font-size--p4, 0.75rem);
+}
+
+/* =========================================================
+   THEME VARIANTS 
+========================================================= */
+
+.jm-theme--inverse {
+  --jm-primary-color: var(--wp--preset--color--secondary, #00a8e8);
+  --jm-secondary-color: var(--wp--preset--color--primary, #12355b);
+
+  --jm-background-color: var(--wp--preset--color--primary, #12355b);
+  --jm-surface-color: var(--wp--preset--color--primary, #12355b);
+
+  --jm-text-color: var(--wp--preset--color--background, #f8fafc);
+
+  --jm-link-color: var(--wp--preset--color--accent, #ffc300);
+  --jm-link-hover: var(--wp--preset--color--secondary, #00a8e8);
+
+  --jm-button-bg: var(--wp--preset--color--secondary, #00a8e8);
+  --jm-button-text: var(--wp--preset--color--primary, #12355b);
+}
+
+.jm-theme--secondary {
+  --jm-primary-color: var(--wp--preset--color--primary, #12355b);
+  --jm-secondary-color: var(--wp--preset--color--secondary, #00a8e8);
+
+  --jm-background-color: var(--wp--preset--color--surface, #e5e7eb);
+  --jm-surface-color: var(--wp--preset--color--background, #f8fafc);
+
+  --jm-text-color: var(--wp--preset--color--text, #1f2937);
+
+  --jm-button-bg: var(--wp--preset--color--primary, #12355b);
+  --jm-button-text: var(--wp--preset--color--background, #f8fafc);
+
+  --jm-border-color: var(--wp--preset--color--surface, #e5e7eb);
 }

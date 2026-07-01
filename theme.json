@@ -4,64 +4,66 @@
 
   "settings": {
     "layout": {
-      "wideSize": "1000px",
-      "contentSize": "840px"
+      "contentSize": "768px",
+      "wideSize": "1200px"
     },
 
     "spacing": {
       "units": ["px", "rem", "vw", "%"],
 
       "spacingSizes": [
-        {
-          "name": "XS",
-          "slug": "xs",
-          "size": "var(--jm-spacing-2)"
-        },
-        {
-          "name": "S",
-          "slug": "s",
-          "size": "var(--jm-spacing-3)"
-        },
-        {
-          "name": "M",
-          "slug": "m",
-          "size": "var(--jm-spacing-4)"
-        },
-        {
-          "name": "L",
-          "slug": "l",
-          "size": "var(--jm-spacing-6)"
-        },
-        {
-          "name": "XL",
-          "slug": "xl",
-          "size": "var(--jm-spacing-8)"
-        },
-        {
-          "name": "2XL",
-          "slug": "2-xl",
-          "size": "var(--jm-spacing-10)"
-        },
-        {
-          "name": "3XL",
-          "slug": "3-xl",
-          "size": "var(--jm-spacing-12)"
-        }
+        { "name": "XS", "slug": "xs", "size": "0.5rem" },
+        { "name": "S", "slug": "s", "size": "0.75rem" },
+        { "name": "M", "slug": "m", "size": "1rem" },
+        { "name": "L", "slug": "l", "size": "1.5rem" },
+        { "name": "XL", "slug": "xl", "size": "2rem" },
+        { "name": "2XL", "slug": "2-xl", "size": "2.5rem" },
+        { "name": "3XL", "slug": "3-xl", "size": "3rem" }
       ]
     },
 
+    "border": {
+      "radius": true,
+      "radiusSizes": [
+        { "name": "None", "slug": "none", "size": "0px" },
+        { "name": "XS", "slug": "xs", "size": "0.125rem" },
+        { "name": "S", "slug": "s", "size": "0.25rem" },
+        { "name": "M", "slug": "m", "size": "0.5rem" },
+        { "name": "L", "slug": "l", "size": "0.75rem" },
+        { "name": "XL", "slug": "xl", "size": "1rem" },
+        { "name": "2XL", "slug": "2-xl", "size": "1.5rem" },
+        { "name": "Full", "slug": "full", "size": "9999px" }
+      ]
+    },
+    "typography": {
+      "fontSizes": [
+        { "name": "Display 1", "slug": "d1", "size": "2.75rem" },
+        { "name": "Display 2", "slug": "d2", "size": "2.5rem" },
+        { "name": "Display 3", "slug": "d3", "size": "2.25rem" },
+        { "name": "Display 4", "slug": "d4", "size": "2rem" },
+
+        { "name": "Heading 1", "slug": "h1", "size": "2rem" },
+        { "name": "Heading 2", "slug": "h2", "size": "1.75rem" },
+        { "name": "Heading 3", "slug": "h3", "size": "1.5rem" },
+        { "name": "Heading 4", "slug": "h4", "size": "1.25rem" },
+        { "name": "Heading 5", "slug": "h5", "size": "1.125rem" },
+        { "name": "Heading 6", "slug": "h6", "size": "1rem" },
+
+        { "name": "Paragraph 1", "slug": "p1", "size": "1.125rem" },
+        { "name": "Paragraph 2", "slug": "p2", "size": "1rem" },
+        { "name": "Paragraph 3", "slug": "p3", "size": "0.875rem" },
+        { "name": "Paragraph 4", "slug": "p4", "size": "0.75rem" }
+      ]
+    },
     "color": {
       "palette": [
-        {
-          "slug": "primary",
-          "name": "Primary",
-          "color": "#0073aa"
-        },
-        {
-          "slug": "secondary",
-          "name": "Secondary",
-          "color": "#ffffff"
-        }
+        { "name": "Primary Navy", "slug": "primary", "color": "#12355B" },
+        { "name": "Electric Blue", "slug": "secondary", "color": "#00A8E8" },
+        { "name": "Safety Yellow", "slug": "accent", "color": "#FFC300" },
+        { "name": "Off White", "slug": "background", "color": "#F8FAFC" },
+        { "name": "Surface Gray", "slug": "surface", "color": "#E5E7EB" },
+        { "name": "Charcoal Text", "slug": "text", "color": "#1F2937" },
+        { "name": "Success Green", "slug": "success", "color": "#16A34A" }
       ]
     }
   }

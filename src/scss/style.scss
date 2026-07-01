@@ -7,3 +7,19 @@
 .wp-block-group.is-layout-flow {
   container-type: inline-size;
 }
+
+.jm-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background-color: var(--jm-background-color);
+  color: var(--jm-text-color);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--jm-gutter); //todo set gap to a variable
+  width: 100%;
+}

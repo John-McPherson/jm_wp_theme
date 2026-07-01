@@ -1,27 +1,31 @@
 @use "../../scss/abstracts/index" as *;
 
 .jm-text-with-image {
-  display: grid;
-  background-color: var(--jm-primary-color);
-  color: var(--jm-secondary-color);
-  justify-items: center;
+  @include jm_button();
+  --jm-text-image-padding: var(--jm-spacing-6);
+  --jm-text-image-gap: var(--jm-spacing-6);
+  --jm-text-image-cols: 1;
 
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  padding: 36px; //todo set padding to a variable
-  gap: 36px; //todo set gap to a variable
+  &__container {
+    display: grid;
+    justify-items: center;
+    max-width: var(--jm-container-md);
 
-  > div {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px; //todo set gap to a variable
-    width: 100%;
-    max-width: 480px; //todo set as var
+    grid-template-columns: repeat(var(--jm-text-image-cols), 1fr);
+    padding: var(--jm-text-image-padding);
+    gap: var(--jm-text-image-gap);
   }
 
-  @include jm_button();
+  &__text {
+    display: flex;
+    flex-direction: column;
+  }
 
-  img {
-    border-radius: 8px;
+  &__image {
+    border-radius: var(--jm-radius-md);
+  }
+
+  @include min($mobile) {
+    --jm-text-image-cols: 2;
   }
 }
