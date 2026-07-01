@@ -12,6 +12,10 @@
       "type": "string",
       "default": ""
     },
+    "palette": {
+      "type": "string",
+      "default": "jm-palette--default"
+    },
     "heading": {
       "type": "string",
       "default": ""

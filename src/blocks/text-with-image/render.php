@@ -11,9 +11,11 @@ $args = [
     'image'   => ['image_id' => !empty($attributes['imageId']) ? (int) $attributes['imageId'] : 0, 'classes' => 'jm-text-with-image__image'],
 ];
 
+$palette = $attributes['palette'] ?? 'jm-palette--default';
+
 ?>
 
-<section class="jm-section jm-text-with-image">
+<section class="jm-section jm-text-with-image <?php echo esc_attr($palette); ?>">
     <div class="jm-section__container">
         <div class="jm-section__column">
 

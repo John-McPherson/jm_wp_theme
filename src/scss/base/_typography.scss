@@ -72,7 +72,6 @@
 }
 
 @layer base {
-  body,
   p {
     font-family: var(--jm-font-body);
   }
@@ -87,16 +86,14 @@
   .d2,
   .d3,
   .d4 {
-    font-family: "Work Sans", Arial, sans-serif;
-    font-weight: 700;
+    font-family: var(--jm-font-display);
   }
 
   code,
   pre,
   kbd,
   samp {
-    font-family: "JetBrains Mono", monospace;
-    font-weight: 400;
+    font-family: var(--jm-font-mono);
   }
 
   h1 {

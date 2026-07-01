@@ -16,6 +16,12 @@ const bindFields = (attributes: any, setAttributes: any) => {
         });
       },
     }),
+    select: (key: string) => ({
+      value: attributes[key],
+      set: (value: string) => {
+        setAttributes({ [key]: value });
+      },
+    }),
     link: (key: string) => ({
       value: attributes[key],
       set: (value: { url: string; opensInNewTab: boolean }) => {
