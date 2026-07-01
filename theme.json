@@ -1,16 +1,55 @@
 {
   "$schema": "https://schemas.wp.org/trunk/theme.json",
   "version": 3,
+
   "settings": {
     "layout": {
       "wideSize": "1000px",
       "contentSize": "840px"
     },
-    "custom": {
-      "breakpoints": {
-        "sm": "700px"
-      }
+
+    "spacing": {
+      "units": ["px", "rem", "vw", "%"],
+
+      "spacingSizes": [
+        {
+          "name": "XS",
+          "slug": "xs",
+          "size": "var(--jm-spacing-2)"
+        },
+        {
+          "name": "S",
+          "slug": "s",
+          "size": "var(--jm-spacing-3)"
+        },
+        {
+          "name": "M",
+          "slug": "m",
+          "size": "var(--jm-spacing-4)"
+        },
+        {
+          "name": "L",
+          "slug": "l",
+          "size": "var(--jm-spacing-6)"
+        },
+        {
+          "name": "XL",
+          "slug": "xl",
+          "size": "var(--jm-spacing-8)"
+        },
+        {
+          "name": "2XL",
+          "slug": "2-xl",
+          "size": "var(--jm-spacing-10)"
+        },
+        {
+          "name": "3XL",
+          "slug": "3-xl",
+          "size": "var(--jm-spacing-12)"
+        }
+      ]
     },
+
     "color": {
       "palette": [
         {

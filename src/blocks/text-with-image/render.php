@@ -14,6 +14,7 @@ $args = [
 ?>
 
 <section class="jm-section jm-text-with-image">
+    <!-- <div class="jm-container"> -->
     <div class="column">
 
         <?php get_template_part(slug: 'template-parts/paragraph', name: null, args: $args['label']); ?>
@@ -36,4 +37,5 @@ $args = [
         get_template_part(slug: 'template-parts/image', name: null, args: $args['image']);
         ?>
     </div>
+    <!-- </div> -->
 </section>

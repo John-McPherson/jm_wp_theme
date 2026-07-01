@@ -1,4 +1,42 @@
 :root {
+  /* Container  scale */
+  --jm-container-xs: 30rem; /* 480px → forms, narrow text */
+  --jm-container-sm: 45rem; /* 720px → blog text */
+  --jm-container-md: 60rem; /* 960px → default content */
+  --jm-container-lg: 72rem; /* 1152px → wide content */
+  --jm-container-xl: 84rem; /* 1344px → marketing layouts */
+  --jm-container-2xl: 96rem; /* 1536px → hero / full canvas */
+
+  /* Base spacing scale */
+  --jm-spacing-0: 0;
+  --jm-spacing-1: 0.25rem; /* 4px */
+  --jm-spacing-2: 0.5rem; /* 8px */
+  --jm-spacing-3: 0.75rem; /* 12px */
+  --jm-spacing-4: 1rem; /* 16px */
+  --jm-spacing-5: 1.5rem; /* 24px */
+  --jm-spacing-6: 2rem; /* 32px */
+  --jm-spacing-7: 2.5rem; /* 40px */
+  --jm-spacing-8: 3rem; /* 48px */
+  --jm-spacing-9: 4rem; /* 64px */
+  --jm-spacing-10: 5rem; /* 80px */
+  --jm-spacing-11: 6rem; /* 96px */
+  --jm-spacing-12: 8rem; /* 128px */
+
+  /* Page structure (fluid) */
+  --jm-page-padding: clamp(4rem, 8vw, 8rem);
+
+  /* Sections (fluid) */
+  --jm-section-padding: clamp(3rem, 6vw, 6rem);
+
+  /* Blocks (fixed) */
+  --jm-block-padding: var(--jm-spacing-8);
+
+  /* Grid integrity (fixed) */
+  --jm-container-padding: var(--jm-spacing-6);
+  --jm-gutter: var(--jm-spacing-6);
+
+  /* color variables */
+
   --jm-primary-color: var(--wp--preset--color--primary);
   --jm-secondary-color: var(--wp--preset--color--secondary);
 }

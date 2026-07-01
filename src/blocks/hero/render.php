@@ -15,7 +15,7 @@ $background_style = $background_image_url
 ?>
 
 <section class="jm-section jm-hero">
-    <div class="hero-text">
+    <div class="jm-hero__text">
         <?php get_template_part(
             slug: 'template-parts/heading',
             name: null,
@@ -37,7 +37,7 @@ $background_style = $background_image_url
             ]
         ); ?>
     </div>
-    <div class="hero-img" style="<?php echo esc_attr($background_style); ?>">
+    <div class="jm-hero__img" style="<?php echo esc_attr($background_style); ?>">
 
     </div>
 </section>

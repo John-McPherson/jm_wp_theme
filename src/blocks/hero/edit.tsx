@@ -22,7 +22,7 @@ export default function Edit({ attributes, setAttributes }) {
   const bind = bindFields(attributes, setAttributes);
 
   const imgProps = {
-    className: "hero-img",
+    className: "jm-hero__img",
     style: {
       "--background-image": imageUrl ? `url(${imageUrl})` : "none",
     } as React.CSSProperties,
@@ -31,7 +31,7 @@ export default function Edit({ attributes, setAttributes }) {
   return (
     <div {...blockProps}>
       <section className="jm-section jm-hero">
-        <div className="hero-text">
+        <div className="jm-hero__text">
           <TextInput {...bind.text("heading")} tagName="h1" />
           <TextInput {...bind.text("text")} />
         </div>
