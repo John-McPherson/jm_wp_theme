@@ -33,7 +33,7 @@ $order = $attributes['order'] ?? 'jm-text-with-image--image-left';
 
             </div>
 
-            <?php jm_component(name: 'button', args: $args['button']); ?>
+            <?php jm_component(name: 'button-link', args: $args['button']); ?>
 
         </div>
 

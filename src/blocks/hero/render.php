@@ -31,7 +31,6 @@ $background_style = $background_image_url
         jm_component(
             name: 'paragraph',
             args: [
-
                 'text'    => $text,
                 'classes' => 'text',
             ]

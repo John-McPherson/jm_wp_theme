@@ -1,8 +1,33 @@
 <?php
-$args = $args ?? [];
-$text = $args['text'] ?? '';
-$classes = $args['classes'] ?? '';
 
-if ($text) : ?>
-    <p class="<?php echo esc_attr($classes); ?>"><?php echo esc_html($text); ?></p>
-<?php endif; ?>
+declare(strict_types=1);
+
+/**
+ * @var array{
+ *     text?: string,
+ *     classes?: string|string[]
+ * } $args
+ */
+
+$args ??= [];
+
+$text = jm_args_string(
+    args: $args,
+    key: 'text'
+);
+
+if ($text === '') {
+    return;
+}
+
+$attributes = [
+    'classes' => [
+        'jm-paragraph',
+        $args['classes'] ?? null,
+    ],
+];
+?>
+
+<p<?php jm_the_attributes($attributes); ?>>
+    <?php echo esc_html($text); ?>
+    </p>
