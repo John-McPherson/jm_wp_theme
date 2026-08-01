@@ -16,22 +16,22 @@ $background_style = $background_image_url
 
 <section class="jm-section jm-hero jm-palette--inverse">
     <div class="jm-hero__text">
-        <?php get_template_part(
-            slug: 'template-parts/heading',
-            name: null,
+        <?php
+        jm_component(
+            name: 'heading',
             args: [
                 'text'    => $heading,
-                'classes' => 'heading',
+                'classes' => ['heading'],
                 'level' => '1',
             ]
         );
         ?>
 
         <?php
-        get_template_part(
-            slug: 'template-parts/paragraph',
-            name: null,
+        jm_component(
+            name: 'paragraph',
             args: [
+
                 'text'    => $text,
                 'classes' => 'text',
             ]

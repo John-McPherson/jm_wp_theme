@@ -12,31 +12,34 @@ $args = [
 ];
 
 $palette = $attributes['palette'] ?? 'jm-palette--default';
-
+$order = $attributes['order'] ?? 'jm-text-with-image--image-left';
 ?>
 
-<section class="jm-section jm-text-with-image <?php echo esc_attr($palette); ?>">
+<section class="jm-section jm-text-with-image <?php echo esc_attr("$palette $order");  ?>">
     <div class="jm-section__container">
         <div class="jm-section__column">
 
-            <?php get_template_part(slug: 'template-parts/paragraph', name: null, args: $args['label']); ?>
+            <?php jm_component(name: 'paragraph', args: $args['label']); ?>
 
             <div class="jm-text-with-image__text">
 
                 <?php
-                get_template_part(slug: 'template-parts/heading', name: null, args: $args['heading']);
-                get_template_part(slug: 'template-parts/paragraph', name: null, args: $args['text']);
+
+
+                jm_component(name: 'heading', args: $args['heading']);
+                jm_component(name: 'paragraph', args: $args['text']);
+
                 ?>
 
             </div>
 
-            <?php get_template_part(slug: 'template-parts/button', name: 'link',  args: $args['button']); ?>
+            <?php jm_component(name: 'button', args: $args['button']); ?>
 
         </div>
 
-        <div class="column">
+        <div class="jm-section__column">
             <?php
-            get_template_part(slug: 'template-parts/image', name: null, args: $args['image']);
+            jm_component(name: 'image', args: $args['image']);
             ?>
         </div>
     </div>

@@ -17,7 +17,7 @@
       display: grid;
       max-width: var(--jm-container-md);
       gap: var(--jm-gutter);
-      padding: var(--jm-spacing-xl);
+      padding: var(--jm-container-padding);
     }
 
     &__column {

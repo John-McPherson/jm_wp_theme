@@ -16,6 +16,10 @@
       "type": "string",
       "default": "jm-palette--default"
     },
+    "order": {
+      "type": "string",
+      "default": "jm-text-with-image--image-right"
+    },
     "heading": {
       "type": "string",
       "default": ""

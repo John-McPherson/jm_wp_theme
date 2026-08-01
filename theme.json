@@ -18,7 +18,8 @@
         { "name": "L", "slug": "l", "size": "1.5rem" },
         { "name": "XL", "slug": "xl", "size": "2rem" },
         { "name": "2XL", "slug": "2xl", "size": "2.5rem" },
-        { "name": "3XL", "slug": "3xl", "size": "3rem" }
+        { "name": "3XL", "slug": "3xl", "size": "3rem" },
+        { "name": "4XL", "slug": "4xl", "size": "4rem" }
       ]
     },
 

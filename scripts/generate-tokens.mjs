@@ -14,7 +14,7 @@ if (!fs.existsSync(themePath)) {
 const theme = JSON.parse(fs.readFileSync(themePath, "utf8"));
 
 /* =========================================================
-   SLUG NORMALISER (DOMAIN-AWARE)
+   HELPERS
 ========================================================= */
 
 function mapSlug(slug) {
@@ -24,101 +24,130 @@ function mapSlug(slug) {
     l: "lg",
   };
 
-  return aliases[slug] ?? slug.replace(/-/g, "");
+  return aliases[slug] ?? slug;
+}
+
+/**
+ * Converts theme.json slugs to the format WordPress uses
+ * for preset CSS variables.
+ *
+ * Examples:
+ * h1  -> h-1
+ * d3  -> d-3
+ * p4  -> p-4
+ * 2xl -> 2-xl
+ * 4xl -> 4-xl
+ */
+function wpSlug(slug) {
+  return slug
+    .replace(/([a-zA-Z])(\d)/g, "$1-$2")
+    .replace(/(\d)([a-zA-Z])/g, "$1-$2");
+}
+
+function pxComment(value) {
+  if (typeof value !== "string") return "";
+
+  const rem = value.match(/^(-?\d*\.?\d+)rem$/);
+
+  if (rem) {
+    const px = parseFloat(rem[1]) * 16;
+    return ` /* ${Number.isInteger(px) ? px : px.toFixed(2)}px */`;
+  }
+
+  const px = value.match(/^(-?\d*\.?\d+)px$/);
+
+  if (px) {
+    return ` /* ${px[1]}px */`;
+  }
+
+  return "";
 }
 
 /* =========================================================
-   CONFIG-DRIVEN TOKEN SYSTEM
+   TOKEN CONFIG
 ========================================================= */
 
 const TOKEN_CONFIG = {
   colors: {
-    source: () => theme?.settings?.color?.palette || [],
-    cssVar: ({ slug }) => `--jm-color-${mapSlug(slug)}`,
-    wpVar: ({ slug }) => `var(--wp--preset--color--${slug})`,
+    label: "COLORS",
+    source: () => theme.settings?.color?.palette ?? [],
+    cssVar: (t) => `--jm-color-${mapSlug(t.slug)}`,
+    value: (t) => `var(--wp--preset--color--${wpSlug(t.slug)})`,
   },
 
   spacing: {
-    source: () => theme?.settings?.spacing?.spacingSizes || [],
-    cssVar: ({ slug }) => `--jm-spacing-${mapSlug(slug)}`,
-    wpVar: ({ slug }) => `var(--wp--preset--spacing--${slug})`,
+    label: "SPACING",
+    source: () => theme.settings?.spacing?.spacingSizes ?? [],
+    cssVar: (t) => `--jm-spacing-${mapSlug(t.slug)}`,
+    value: (t) => `var(--wp--preset--spacing--${wpSlug(t.slug)})`,
+    comment: (t) => pxComment(t.size),
   },
 
   radius: {
-    source: () => theme?.settings?.border?.radiusSizes || [],
-    cssVar: ({ slug }) => `--jm-radius-${mapSlug(slug)}`,
-    wpVar: ({ slug }) => `var(--wp--preset--border-radius--${slug})`,
+    label: "RADIUS",
+    source: () => theme.settings?.border?.radiusSizes ?? [],
+    cssVar: (t) => `--jm-radius-${mapSlug(t.slug)}`,
+    value: (t) => `var(--wp--preset--border-radius--${wpSlug(t.slug)})`,
+    comment: (t) => pxComment(t.size),
   },
 
   fontFamilies: {
-    source: () => theme?.settings?.typography?.fontFamilies ?? [],
-
-    cssVar: ({ slug }) => `--jm-font-${slug}`,
-
-    wpVar: ({ slug, fontFamily }) => `"${fontFamily}"`,
+    label: "FONT FAMILIES",
+    source: () => theme.settings?.typography?.fontFamilies ?? [],
+    cssVar: (t) => `--jm-font-${t.slug}`,
+    value: (t) => `"${t.fontFamily}"`,
   },
 
   typography: {
-    source: () => theme?.settings?.typography?.fontSizes || [],
-    cssVar: ({ slug }) => `--jm-${mapSlug(slug)}`,
-    wpVar: ({ slug }) => {
-      return `var(--wp--preset--font-size--${slug.replace(
-        /([a-z]+)(\d+)/i,
-        "$1-$2",
-      )})`;
-    },
+    label: "TYPOGRAPHY",
+    source: () => theme.settings?.typography?.fontSizes ?? [],
+    cssVar: (t) => `--jm-${mapSlug(t.slug)}`,
+    value: (t) => `var(--wp--preset--font-size--${wpSlug(t.slug)})`,
+    comment: (t) => pxComment(t.size),
   },
 };
 
 /* =========================================================
-   SCSS BUILDER
+   BUILD
 ========================================================= */
 
-let scss = `/* AUTO-GENERATED FILE — DO NOT EDIT */\n\n@layer base {\n  :root {\n`;
+let scss = `/* AUTO-GENERATED FILE — DO NOT EDIT */
+
+@layer base {
+  :root {
+`;
 
 function add(line = "") {
-  scss += line + "\n";
+  scss += `${line}\n`;
 }
 
-/* =========================================================
-   GENERIC TOKEN GENERATOR
-========================================================= */
+for (const cfg of Object.values(TOKEN_CONFIG)) {
+  const tokens = cfg.source();
 
-function generate(domain, label) {
-  const cfg = TOKEN_CONFIG[domain];
-  console.log("Generating:", domain, cfg ? "OK" : "MISSING CONFIG");
-  if (!cfg) return;
-  const items = cfg.source();
-  const list = items.length ? items : cfg.fallback || [];
+  if (!tokens.length) continue;
 
-  add(`
-    /* =========================================================
-     ${label.toUpperCase()}
-    ========================================================= */
-  `);
+  add("");
+  add("    /* =========================================================");
+  add(`     ${cfg.label}`);
+  add("    ========================================================= */");
 
-  list.forEach((token) => {
-    add(`    ${cfg.cssVar(token)}: ${cfg.wpVar(token)};`);
-  });
+  for (const token of tokens) {
+    const comment = cfg.comment ? cfg.comment(token) : "";
+
+    add(`    ${cfg.cssVar(token)}: ${cfg.value(token)};${comment}`);
+  }
 }
 
-/* =========================================================
-   RUN TOKEN GENERATION
-========================================================= */
-
-generate("colors", "colors");
-generate("spacing", "spacing");
-generate("radius", "radius");
-generate("fontFamilies", "font families");
-generate("typography", "typography");
-
-scss += `\n  }\n}\n`;
+scss += `
+  }
+}
+`;
 
 /* =========================================================
-   WRITE FILE
+   WRITE
 ========================================================= */
 
 fs.mkdirSync(path.dirname(outPath), { recursive: true });
 fs.writeFileSync(outPath, scss);
 
-console.log("✅ FULL design system generated");
+console.log(`✅ Generated ${outPath}`);

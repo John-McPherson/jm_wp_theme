@@ -10,20 +10,23 @@ import ButtonLink from "../../components/ButtonLink";
 import MediaInput from "../../components/MediaInput";
 import { PanelBody } from "@wordpress/components";
 import Sidebar from "../../components/Sidebar";
-import PaletteSelect from "../../components/PaletteSelect";
+import SelectInput from "../../components/SelectInput";
 
 export default function Edit({ attributes, setAttributes }) {
   const bind = bindFields(attributes, setAttributes);
-  const { imageUrl, palette } = attributes;
+  const { imageUrl, palette, order } = attributes;
   const blockProps = useBlockProps();
 
-  const sectionClassName = ["jm-section", "jm-text-with-image", palette];
+  const sectionClassName = ["jm-section", "jm-text-with-image", palette, order];
 
   return (
     <>
       <Sidebar>
         <Sidebar.Section title={__("Palette Settings", "jm-theme")}>
-          <PaletteSelect {...bind.select("palette")} />
+          <SelectInput {...bind.select("palette")} type="palette" />
+        </Sidebar.Section>
+        <Sidebar.Section title={__("Order Settings", "jm-theme")}>
+          <SelectInput {...bind.select("order")} type="order" />
         </Sidebar.Section>
       </Sidebar>
 
@@ -37,7 +40,7 @@ export default function Edit({ attributes, setAttributes }) {
                 className="label"
               />
 
-              <div className="text-content">
+              <div className="jm-text-with-image__text">
                 <TextInput {...bind.text("heading")} tagName="h2" />
                 <TextInput {...bind.text("text")} />
               </div>
@@ -48,8 +51,8 @@ export default function Edit({ attributes, setAttributes }) {
               />
             </div>
 
-            <div className="column">
-              <div className="jm-image">
+            <div className="jm-section__column">
+              <div className="jm-image jm-text-with-image__image">
                 {imageUrl && <img src={imageUrl} />}
                 <MediaInput {...bind.media("imageId", "imageUrl")} />
               </div>
