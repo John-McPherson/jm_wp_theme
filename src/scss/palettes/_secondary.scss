@@ -1,16 +1,4 @@
 @layer palettes {
   .jm-palette--secondary {
-    --jm-primary-color: var(--wp--preset--color--primary);
-    --jm-secondary-color: var(--wp--preset--color--secondary);
-
-    --jm-background-color: var(--wp--preset--color--surface);
-    --jm-surface-color: var(--wp--preset--color--background);
-
-    --jm-text-color: var(--wp--preset--color--text);
-
-    --jm-button-bg: var(--wp--preset--color--primary);
-    --jm-button-text: var(--wp--preset--color--background);
-
-    --jm-border-color: var(--wp--preset--color--surface);
   }
 }

@@ -78,7 +78,7 @@ const TOKEN_CONFIG = {
   spacing: {
     label: "SPACING",
     source: () => theme.settings?.spacing?.spacingSizes ?? [],
-    cssVar: (t) => `--jm-spacing-${mapSlug(t.slug)}`,
+    cssVar: (t) => `--jm-padding-${mapSlug(t.slug)}`,
     value: (t) => `var(--wp--preset--spacing--${wpSlug(t.slug)})`,
     comment: (t) => pxComment(t.size),
   },

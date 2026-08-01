@@ -4,7 +4,7 @@ import { useBlockProps } from "@wordpress/block-editor";
 
 import "./editor.scss";
 import TextInput from "../../components/TextInput";
-
+import ButtonLink from "../../components/ButtonLink";
 import MediaInput from "../../components/MediaInput";
 import bindFields from "../../utils/bindFields";
 
@@ -30,10 +30,22 @@ export default function Edit({ attributes, setAttributes }) {
   const blockProps = useBlockProps();
   return (
     <div {...blockProps}>
-      <section className="jm-section jm-hero jm-palette--inverse">
+      <section className="jm-section jm-hero">
         <div className="jm-hero__text">
-          <TextInput {...bind.text("heading")} tagName="h1" />
+          <div className="">
+            <TextInput
+              {...bind.text("label")}
+              tagName="h3"
+              className="jm-hero__label"
+            />
+            <TextInput {...bind.text("heading")} tagName="h1" />{" "}
+          </div>
           <TextInput {...bind.text("text")} />
+          <ButtonLink
+            className="jm-button"
+            text={bind.text("linkText")}
+            link={bind.link("link")}
+          />
         </div>
         <div {...imgProps}>
           <MediaInput {...bind.media("imageId", "imageUrl")} />

@@ -2,12 +2,10 @@
  * The following styles get applied inside the editor only.
  *
  */
-.jm-hero {
-  .components-button {
-    z-index: 100;
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    pointer-events: auto;
-  }
+
+p.jm-button {
+  color: revert-layer;
+  font-family: revert-layer;
+  font-size: revert-layer;
+  font-weight: revert-layer;
 }

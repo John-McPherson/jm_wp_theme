@@ -26,6 +26,14 @@ function jm_get_the_attributes(array $attributes): string
                 $value = jm_html_classes($value);
                 break;
 
+            case 'style':
+                if (! is_array($value)) {
+                    continue 2;
+                }
+
+                $value = jm_html_styles($value);
+                break;
+
             case 'href':
                 $value = esc_url((string) $value);
                 break;
@@ -165,4 +173,32 @@ function jm_html_allowed_tokens(
     );
 
     return implode(' ', array_unique($tokens));
+}
+
+
+/**
+ * Build an inline style attribute from CSS custom properties.
+ *
+ * @param array<string, string> $styles
+ */
+function jm_html_styles(array $styles): string
+{
+    $declarations = [];
+
+    foreach ($styles as $property => $value) {
+        if (
+            $value === ''
+            || ! str_starts_with($property, '--')
+        ) {
+            continue;
+        }
+
+        $declarations[] = sprintf(
+            '%s: %s',
+            $property,
+            $value
+        );
+    }
+
+    return implode('; ', $declarations);
 }

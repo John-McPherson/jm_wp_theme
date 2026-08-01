@@ -1,22 +1,46 @@
 <?php
 
-$args = $args ?? [];
+declare(strict_types=1);
 
-$image_id = (int) $args['image_id'] ?? 0;
-$classes = $args['classes'] ?? '';
+/**
+ * @var array{
+ *     image_id?: int|string,
+ *     classes?: string|string[],
+ *     size?: string,
+ *     loading?: string,
+ *     sizes?: string
+ * } $args
+ */
 
-if (!empty($image_id)) {
-    $alt = get_post_meta($image_id, '_wp_attachment_image_alt', true);
+$args ??= [];
 
-    echo wp_get_attachment_image(
-        attachment_id: $image_id,
-        size: 'large',
-        icon: false,
-        attr: [
-            'class'   => trim("jm-image $classes"),
-            'loading' => 'lazy',
-            'alt'     => trim($alt) ?: '',
-            'sizes'   => '(max-width: 768px) 100vw, 50vw',
-        ]
-    );
+$image_id = jm_args_int(
+    args: $args,
+    key: 'image_id',
+    default: 0,
+    min: 1
+);
+
+if ($image_id === 0) {
+    return;
+}
+
+$classes = jm_html_classes([
+    'jm-image',
+    $args['classes'] ?? null,
+]);
+
+$image = wp_get_attachment_image(
+    attachment_id: $image_id,
+    size: 'large',
+    icon: false,
+    attr: [
+        'class'   => $classes,
+        'loading' => 'lazy',
+        'sizes'   => '(max-width: 768px) 100vw, 50vw',
+    ]
+);
+
+if ($image !== '') {
+    echo $image;
 }

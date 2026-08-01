@@ -8,6 +8,10 @@
   "icon": "layout",
   "description": "Hero section with heading and image",
   "attributes": {
+    "label": {
+      "type": "string",
+      "default": ""
+    },
     "heading": {
       "type": "string",
       "default": ""
@@ -16,7 +20,19 @@
       "type": "string",
       "default": ""
     },
-
+    "link": {
+      "type": "object",
+      "default": {
+        "url": "",
+        "label": "",
+        "target": "",
+        "rel": ""
+      }
+    },
+    "linkText": {
+      "type": "string",
+      "default": ""
+    },
     "imageId": {
       "type": "number",
       "default": 0

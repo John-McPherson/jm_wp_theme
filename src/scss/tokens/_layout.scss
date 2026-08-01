@@ -1,0 +1,9 @@
+@layer base {
+  :root {
+    --jm-container-sm: 640px;
+    --jm-container-md: var(--wp--style--global--content-size);
+    --jm-container-lg: 960px;
+    --jm-container-xl: var(--wp--style--global--wide-size);
+    --jm-container-2xl: 1440px;
+  }
+}

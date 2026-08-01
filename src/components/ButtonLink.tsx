@@ -11,13 +11,14 @@ type ButtonProps = {
     set: (value: { url: string; opensInNewTab: boolean }) => void;
     reset: () => void;
   };
+  className?: string;
 };
 
-const ButtonLink = ({ text, link }: ButtonProps) => {
+const ButtonLink = ({ text, link, className }: ButtonProps) => {
   return (
     <>
       <LinkToolBar {...link} />
-      <TextInput {...text} className="jm-button" />
+      <TextInput {...text} className={className || "jm-button"} />
     </>
   );
 };

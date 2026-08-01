@@ -1,17 +1,7 @@
 @layer palettes {
   .jm-palette--inverse {
-    --jm-primary-color: var(--wp--preset--color--secondary);
-    --jm-secondary-color: var(--wp--preset--color--primary);
-
-    --jm-background-color: var(--wp--preset--color--primary);
-    --jm-surface-color: var(--wp--preset--color--primary);
-
-    --jm-text-color: var(--wp--preset--color--background);
-
-    --jm-link-color: var(--wp--preset--color--accent);
-    --jm-link-hover: var(--wp--preset--color--secondary);
-
-    --jm-button-bg: var(--wp--preset--color--secondary);
-    --jm-button-text: var(--wp--preset--color--primary);
+    --jm-background-color: var(--jm-color-brand-900);
+    --jm-heading-color: var(--jm-color-accent-500);
+    --jm-text-color: var(--jm-color-base-100);
   }
 }
