@@ -1,12 +1,12 @@
 @use "../../../scss/abstracts/index" as *;
 @use "../../../scss/base/typography" as *;
+@use "../../../scss/tokens/layout" as *;
 
 @layer blocks {
   .jm-hero {
-    --jm-hero-padding: var(--jm-padding-xl);
     --jm-hero-gradient-direction: 180deg;
     --grid-span: 12;
-
+    padding: 0 0 var(--jm-padding-xl);
     --jm-hero-overlay: linear-gradient(
       var(--jm-hero-gradient-direction),
       var(--jm-background-color),
@@ -18,6 +18,7 @@
     grid-template-columns: repeat(12, minmax(0, 1fr));
 
     &__text {
+      padding: var(--jm-section-padding);
       container-type: inline-size;
       grid-column: span var(--grid-span);
       margin-inline-start: auto;
@@ -30,8 +31,6 @@
 
       width: 100%;
       min-height: 300px;
-
-      padding: var(--jm-hero-padding);
 
       &-heading {
         @include d1;
@@ -79,8 +78,8 @@
       --jm-hero-gradient-direction: 90deg;
       --grid-span: 6;
 
-      --jm-hero-padding: var(--jm-padding-3xl) var(--jm-padding-xl)
-        var(--jm-padding-2xl) var(--jm-padding-xl);
+      --jm-section-padding: var(--jm-padding-3xl) var(--jm-padding-xl)
+        var(--jm-padding-2xl);
 
       &__text {
         max-width: calc((var(--jm-container-xl) * 0.5));

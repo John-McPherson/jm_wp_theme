@@ -18,8 +18,8 @@ const options: Record<string, Option[]> = {
     { label: "Secondary", value: "secondary" },
   ],
   order: [
-    { label: "Image Left", value: "jm-text-with-image--image-left" },
-    { label: "Image Right", value: "jm-text-with-image--image-right" },
+    { label: "Image Left", value: "left" },
+    { label: "Image Right", value: "right" },
   ],
   heading_level: [
     { label: "H1", value: "1" },

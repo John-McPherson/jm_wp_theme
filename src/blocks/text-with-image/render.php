@@ -4,25 +4,44 @@ declare(strict_types=1);
 
 /**
  * @var array{
- *     label?: string,
- *     heading?: string,
- *     text?: string,
- *     linkText?: string,
- *     link?: array{url?: string},
+ *     anchor?: string,
+ *     className?: string,
  *     imageId?: int|string,
- *     palette?: string
+ *     palette?: string,
+ *     order?: string
  * } $attributes
+ * @var string $content
  */
 
 $palette = jm_html_allowed_value(
     value: $attributes['palette'] ?? null,
     allowed: [
-        'jm-palette--default',
-        'jm-palette--inverse',
-        'jm-palette--accent',
+        'default',
+        'secondary',
+        'inverse',
     ],
-    default: 'jm-palette--default'
+    default: 'default'
 );
+
+$order = jm_html_allowed_value(
+    value: $attributes['order'] ?? null,
+    allowed: [
+        'left',
+        'right',
+    ],
+    default: 'right'
+);
+
+$palette_classes = [
+    'default'   => '',
+    'secondary' => 'jm-palette--secondary',
+    'inverse'   => 'jm-palette--inverse',
+];
+
+$order_classes = [
+    'left'  => 'jm-text-with-image--image-left',
+    'right' => 'jm-text-with-image--image-right',
+];
 
 $image_id = jm_args_int(
     args: $attributes,
@@ -31,74 +50,52 @@ $image_id = jm_args_int(
     min: 1
 );
 
-$image_url = $image_id > 0
-    ? wp_get_attachment_image_url($image_id, 'full')
-    : false;
-
-$components = [
-    'label' => [
-        'text'    => $attributes['label'] ?? '',
-        'classes' => 'jm-hero__label',
-    ],
-    'heading' => [
-        'text'    => $attributes['heading'] ?? '',
-        'classes' => 'jm-hero__heading',
-        'level'   => 1,
-    ],
-    'text' => [
-        'text'    => $attributes['text'] ?? '',
-        'classes' => [
-            'jm-hero__text-content',
-            'p2',
-        ],
-    ],
-    'button' => [
-        'text' => $attributes['linkText'] ?? '',
-        'url'  => $attributes['link']['url'] ?? '',
-    ],
-];
+$custom_classes = isset($attributes['className'])
+    ? preg_split('/\s+/', trim($attributes['className']))
+    : [];
 
 $section_attributes = [
-    'classes' => [
+    'classes' => array_filter([
         'jm-section',
-        'jm-hero',
-        $palette,
-    ],
+        'jm-text-with-image',
+        $palette_classes[$palette],
+        $order_classes[$order],
+        ...$custom_classes,
+    ]),
 ];
 
-$image_attributes = [
-    'classes' => [
-        'jm-hero__img',
-    ],
-    'aria-hidden' => 'true',
-];
-
-if (is_string($image_url) && $image_url !== '') {
-    $image_attributes['style'] = [
-        '--background-image' => sprintf(
-            "url('%s')",
-            esc_url($image_url)
-        ),
-    ];
+if (!empty($attributes['anchor'])) {
+    $section_attributes['id'] = sanitize_title(
+        $attributes['anchor']
+    );
 }
+
+$image_html = $image_id > 0
+    ? wp_get_attachment_image(
+        $image_id,
+        'full',
+        false,
+        [
+            'class' => 'jm-text-with-image__media',
+            'loading' => 'lazy',
+        ]
+    )
+    : '';
+
 ?>
 
-<section<?php jm_the_attributes($section_attributes); ?>>
-    <div class="jm-hero__text">
-        <?php jm_component('paragraph', $components['label']); ?>
-
-        <div class="jm-hero__headings">
-            <?php jm_component('heading', $components['heading']); ?>
+<section <?php jm_the_attributes($section_attributes); ?>>
+    <div class="jm-section__container">
+        <div class="jm-section__column">
+            <?php echo $content; ?>
         </div>
 
-        <?php jm_component('paragraph', $components['text']); ?>
-
-        <?php jm_component('button-link', $components['button']); ?>
+        <div class="jm-section__column">
+            <?php if ($image_html !== '') : ?>
+                <div class="jm-image jm-text-with-image__image">
+                    <?php echo $image_html; ?>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
-
-    <?php if (is_string($image_url) && $image_url !== '') : ?>
-        <div<?php jm_the_attributes($image_attributes); ?>>
-            </div>
-        <?php endif; ?>
-
-        </section>
+</section>

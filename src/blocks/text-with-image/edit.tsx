@@ -1,22 +1,57 @@
 import { __ } from "@wordpress/i18n";
 
-import { useBlockProps } from "@wordpress/block-editor";
+import { useBlockProps, useInnerBlocksProps } from "@wordpress/block-editor";
 
 import "./editor.scss";
 
-import TextInput from "../../components/TextInput";
 import bindFields from "../../utils/bindFields";
-import ButtonLink from "../../components/ButtonLink";
+
 import MediaInput from "../../components/MediaInput";
 import Sidebar from "../../components/Sidebar";
 import SelectInput from "../../components/SelectInput";
 
+const TEMPLATE = [
+  ["jm/paragraph", { variant: "label" }],
+  ["jm/heading", { level: "1", lock_level: true }],
+  ["jm/paragraph"],
+  ["jm/button", { buttonType: "secondary" }],
+];
+
+const VARIANT_CLASSES = {
+  default: "",
+  inverse: "jm-palette--inverse",
+  secondary: "jm-palette--secondary",
+  left: "jm-text-with-image--image-left",
+  right: "jm-text-with-image--image-right",
+};
+
+const ALLOWED_BLOCKS = ["jm/heading", "jm/paragraph", "jm/button"];
+
 export default function Edit({ attributes, setAttributes }) {
   const bind = bindFields(attributes, setAttributes);
-  const { imageUrl, palette, order } = attributes;
-  const blockProps = useBlockProps();
 
-  const sectionClassName = ["jm-section", "jm-text-with-image", palette, order];
+  const { imageUrl, palette, order } = attributes;
+  const blockProps = useBlockProps({
+    className: [
+      "jm-section",
+      "jm-text-with-image",
+      VARIANT_CLASSES[palette],
+      VARIANT_CLASSES[order],
+    ]
+      .filter(Boolean)
+      .join(" "),
+  });
+
+  const innerBlocksProps = useInnerBlocksProps(
+    {
+      className: "jm-section__column",
+    },
+    {
+      allowedBlocks: ALLOWED_BLOCKS,
+      template: TEMPLATE,
+      templateLock: false,
+    },
+  );
 
   return (
     <>
@@ -29,36 +64,17 @@ export default function Edit({ attributes, setAttributes }) {
         </Sidebar.Section>
       </Sidebar>
 
-      <div {...blockProps}>
-        <section className={sectionClassName.join(" ")}>
-          <div className="jm-section__container">
-            <div className="jm-section__column">
-              <TextInput
-                {...bind.text("label")}
-                tagName="p"
-                className="label"
-              />
-
-              <div className="jm-text-with-image__text">
-                <TextInput {...bind.text("heading")} tagName="h2" />
-                <TextInput {...bind.text("text")} />
-              </div>
-
-              <ButtonLink
-                text={bind.text("linkText")}
-                link={bind.link("link")}
-              />
-            </div>
-
-            <div className="jm-section__column">
-              <div className="jm-image jm-text-with-image__image">
-                {imageUrl && <img src={imageUrl} />}
-                <MediaInput {...bind.media("imageId", "imageUrl")} />
-              </div>
+      <section {...blockProps}>
+        <div className="jm-section__container">
+          <div {...innerBlocksProps} />
+          <div className="jm-section__column">
+            <div className="jm-image jm-text-with-image__image">
+              {imageUrl && <img src={imageUrl} alt="#" />}
+              <MediaInput {...bind.media("imageId", "imageUrl")} />
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </>
   );
 }

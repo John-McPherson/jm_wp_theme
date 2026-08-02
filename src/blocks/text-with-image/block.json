@@ -14,11 +14,13 @@
     },
     "palette": {
       "type": "string",
-      "default": "jm-palette--default"
+      "enum": ["default", "secondary", "inverse"],
+      "default": "default"
     },
     "order": {
       "type": "string",
-      "default": "jm-text-with-image--image-right"
+      "enum": ["left", "right"],
+      "default": "right"
     },
     "heading": {
       "type": "string",
