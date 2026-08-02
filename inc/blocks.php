@@ -55,7 +55,7 @@ add_filter('allowed_block_types_all', function ($_allowed_blocks, $_editor_conte
 add_filter('block_categories_all', function ($categories): array {
     return $categories[] = [
         [
-            'slug'  => 'jm-s',
+            'slug'  => 'jm-section',
             'title' => __('Sections', 'jm'),
             'icon'  => 'customizer',
         ],

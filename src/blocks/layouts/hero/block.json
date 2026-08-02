@@ -4,7 +4,7 @@
   "name": "jm/hero",
   "version": "0.1.0",
   "title": "Hero",
-  "category": "jm-blocks",
+  "category": "jm-section",
   "icon": "cover-image",
   "description": "A hero section with composable content and a background image.",
   "textdomain": "jm-theme",
@@ -24,7 +24,8 @@
     },
     "palette": {
       "type": "string",
-      "default": "jm-palette--default"
+      "enum": ["default", "secondary", "inverse"],
+      "default": "default"
     }
   },
   "providesContext": {
@@ -32,12 +33,15 @@
   },
 
   "example": {
+    "attributes": {
+      "imageUrl": "https://images.pexels.com/photos/9810766/pexels-photo-9810766.jpeg"
+    },
     "innerBlocks": [
       {
         "name": "jm/paragraph",
         "attributes": {
-          "text": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem distinctio quas beatae nisi numquam consectetur incidunt delectus soluta facere cupiditate magnam laudantium, quasi quo.",
-          "className": "jm-label"
+          "text": "Label",
+          "variant": "label"
         }
       },
       {
@@ -51,6 +55,12 @@
         "name": "jm/paragraph",
         "attributes": {
           "text": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem distinctio quas beatae nisi numquam consectetur incidunt delectus soluta facere cupiditate magnam laudantium, quasi quo."
+        }
+      },
+      {
+        "name": "jm/button",
+        "attributes": {
+          "text": "Lorem ipsum"
         }
       }
     ],
