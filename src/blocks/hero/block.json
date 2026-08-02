@@ -5,34 +5,11 @@
   "version": "0.1.0",
   "title": "Hero",
   "category": "jm-blocks",
-  "icon": "layout",
-  "description": "Hero section with heading and image",
+  "icon": "cover-image",
+  "description": "A hero section with composable content and a background image.",
+  "textdomain": "jm-theme",
+
   "attributes": {
-    "label": {
-      "type": "string",
-      "default": ""
-    },
-    "heading": {
-      "type": "string",
-      "default": ""
-    },
-    "text": {
-      "type": "string",
-      "default": ""
-    },
-    "link": {
-      "type": "object",
-      "default": {
-        "url": "",
-        "label": "",
-        "target": "",
-        "rel": ""
-      }
-    },
-    "linkText": {
-      "type": "string",
-      "default": ""
-    },
     "imageId": {
       "type": "number",
       "default": 0
@@ -40,11 +17,49 @@
     "imageUrl": {
       "type": "string",
       "default": ""
+    },
+    "variant": {
+      "type": "string",
+      "default": "hero"
     }
   },
-  "example": {},
-  "supports": {},
-  "textdomain": "hero",
+  "providesContext": {
+    "jm/variant": "variant"
+  },
+
+  "example": {
+    "innerBlocks": [
+      {
+        "name": "jm/paragraph",
+        "attributes": {
+          "text": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem distinctio quas beatae nisi numquam consectetur incidunt delectus soluta facere cupiditate magnam laudantium, quasi quo.",
+          "className": "jm__label"
+        }
+      },
+      {
+        "name": "jm/heading",
+        "attributes": {
+          "text": "Lorem ipsum dolor",
+          "level": "1"
+        }
+      },
+      {
+        "name": "jm/paragraph",
+        "attributes": {
+          "text": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem distinctio quas beatae nisi numquam consectetur incidunt delectus soluta facere cupiditate magnam laudantium, quasi quo."
+        }
+      }
+    ],
+    "viewportWidth": 1200
+  },
+
+  "supports": {
+    "multiple": false,
+    "html": false,
+    "anchor": true,
+    "className": true
+  },
+
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",

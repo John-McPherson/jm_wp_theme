@@ -9,10 +9,6 @@ $text = jm_args_string(
     key: 'text'
 );
 
-if ($text === '') {
-    return;
-}
-
 $level = jm_args_int(
     args: $args,
     key: 'level',
@@ -20,6 +16,7 @@ $level = jm_args_int(
     min: 1,
     max: 6
 );
+
 
 $tag   = "h{$level}";
 

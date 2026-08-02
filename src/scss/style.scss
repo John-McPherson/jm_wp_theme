@@ -1,8 +1,7 @@
+@use "layers";
 @use "base";
 @use "./tokens/index.scss" as *;
 @use "./palettes/index.scss" as *;
 @use "./layout/index.scss" as *;
 
 @use "./components/index.scss" as *;
-
-@layer reset, base, layout, palettes, components, blocks, utilities;

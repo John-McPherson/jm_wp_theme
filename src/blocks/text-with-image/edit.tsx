@@ -8,7 +8,6 @@ import TextInput from "../../components/TextInput";
 import bindFields from "../../utils/bindFields";
 import ButtonLink from "../../components/ButtonLink";
 import MediaInput from "../../components/MediaInput";
-import { PanelBody } from "@wordpress/components";
 import Sidebar from "../../components/Sidebar";
 import SelectInput from "../../components/SelectInput";
 

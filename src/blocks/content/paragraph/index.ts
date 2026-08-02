@@ -2,10 +2,9 @@ import { registerBlockType } from "@wordpress/blocks";
 import Edit from "./edit";
 import metadata from "./block.json";
 import "./style.scss";
-import Save from "./save";
 
 registerBlockType(metadata.name, {
   ...metadata,
   edit: Edit,
-  save: Save,
+  save: () => null,
 } as any);

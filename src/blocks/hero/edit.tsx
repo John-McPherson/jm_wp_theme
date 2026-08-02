@@ -1,56 +1,51 @@
-import { __ } from "@wordpress/i18n";
-
-import { useBlockProps } from "@wordpress/block-editor";
+import { useBlockProps, useInnerBlocksProps } from "@wordpress/block-editor";
 
 import "./editor.scss";
-import TextInput from "../../components/TextInput";
-import ButtonLink from "../../components/ButtonLink";
+
 import MediaInput from "../../components/MediaInput";
 import bindFields from "../../utils/bindFields";
 
-/**
- * The edit function describes the structure of your block in the context of the
- * editor. This represents what the editor will render when the block is used.
- *
- * @see https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#edit
- *
- * @return {Element} Element to render.
- */
+const TEMPLATE = [
+  ["jm/paragraph", { className: "jm__label" }],
+  ["jm/heading", { level: "1", lock_level: true, className: "jm-hero__para" }],
+  ["jm/paragraph", { className: "jm-hero__heading" }],
+];
+
+const ALLOWED_BLOCKS = ["jm/heading", "jm/paragraph"];
+
 export default function Edit({ attributes, setAttributes }) {
-  const { imageId, imageUrl } = attributes;
+  const { imageUrl } = attributes;
 
   const bind = bindFields(attributes, setAttributes);
 
-  const imgProps = {
+  const blockProps = useBlockProps({
+    className: "jm-section jm-hero",
+  });
+
+  const innerBlocksProps = useInnerBlocksProps(
+    {
+      className: "jm-hero__text",
+    },
+    {
+      allowedBlocks: ALLOWED_BLOCKS,
+      template: TEMPLATE,
+      templateLock: false,
+    },
+  );
+
+  const imageProps = {
     className: "jm-hero__img",
     style: {
-      "--background-image": imageUrl ? `url(${imageUrl})` : "none",
+      "--background-image": imageUrl ? `url("${imageUrl}")` : "none",
     } as React.CSSProperties,
   };
-  const blockProps = useBlockProps();
+
   return (
-    <div {...blockProps}>
-      <section className="jm-section jm-hero">
-        <div className="jm-hero__text">
-          <div className="">
-            <TextInput
-              {...bind.text("label")}
-              tagName="h3"
-              className="jm-hero__label"
-            />
-            <TextInput {...bind.text("heading")} tagName="h1" />{" "}
-          </div>
-          <TextInput {...bind.text("text")} />
-          <ButtonLink
-            className="jm-button"
-            text={bind.text("linkText")}
-            link={bind.link("link")}
-          />
-        </div>
-        <div {...imgProps}>
-          <MediaInput {...bind.media("imageId", "imageUrl")} />
-        </div>
-      </section>
-    </div>
+    <section {...blockProps}>
+      <div {...innerBlocksProps} />
+      <div {...imageProps}>
+        <MediaInput {...bind.media("imageId", "imageUrl")} />
+      </div>
+    </section>
   );
 }

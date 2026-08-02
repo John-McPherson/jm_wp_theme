@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jm/paragraph",
+  "version": "0.1.0",
+  "title": "Paragraph",
+  "category": "jm-blocks",
+  "icon": "layout",
+  "description": "Paragraph content block with paragraph",
+  "attributes": {
+    "text": {
+      "type": "string",
+      "default": ""
+    },
+    "level": {
+      "type": "string",
+      "enum": ["1", "2", "3", "4", "5", "6"],
+      "default": "2"
+    }
+  },
+  "example": {
+    "attributes": {
+      "text": "Example Paragraph",
+      "level": 2
+    }
+  },
+  "usesContext": ["jm/variant"],
+  "supports": {
+    "anchor": true,
+    "className": true,
+    "html": false,
+    "inserter": true
+  },
+  "textdomain": "paragraph",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

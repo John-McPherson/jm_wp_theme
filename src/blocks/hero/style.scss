@@ -1,104 +1,97 @@
 @use "../../scss/abstracts/index" as *;
 @use "../../scss/base/typography" as *;
 
-.jm-hero {
-  --jm-hero-padding: var(--jm-padding-xl);
-  --jm-hero-gradient-direction: 180deg;
-  --grid-span: 12;
+@layer blocks {
+  .jm-hero {
+    --jm-hero-padding: var(--jm-padding-xl);
+    --jm-hero-gradient-direction: 180deg;
+    --grid-span: 12;
 
-  --jm-hero-overlay: linear-gradient(
-    var(--jm-hero-gradient-direction),
-    var(--jm-background-color),
-    transparent 20%
-  );
+    --jm-hero-overlay: linear-gradient(
+      var(--jm-hero-gradient-direction),
+      var(--jm-background-color),
+      transparent 20%
+    );
 
-  display: grid;
+    display: grid;
 
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-
-  &__text {
-    grid-column: span var(--grid-span);
-    margin-inline-start: auto;
-    margin-block: auto;
-
-    display: flex;
-    gap: var(--jm-padding-xl);
-    flex-direction: column;
-    justify-content: center;
-
-    width: 100%;
-    min-height: 300px;
-
-    padding: var(--jm-hero-padding);
-
-    .jm-hero__label {
-      @include h5;
-      color: var(--jm-text-highlight);
-      text-transform: uppercase;
-    }
-
-    h1 {
-      @include d1;
-
-      font-weight: 400;
-      max-width: 12ch;
-      overflow-wrap: break-word;
-      text-wrap: balance;
-    }
-
-    h3 {
-      @include h5;
-      color: var(--jm-text-highlight);
-      padding-bottom: var(--jm-padding-3xs);
-    }
-
-    p {
-      @include p2;
-      max-width: 34ch;
-      text-wrap: pretty;
-    }
-  }
-
-  &__img {
-    grid-column: span var(--grid-span);
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    aspect-ratio: 1 / 1;
-
-    background: var(--background-image) center / cover no-repeat;
-
-    pointer-events: none;
-
-    &::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-
-      background: var(--jm-hero-overlay);
-    }
-  }
-
-  @include min($tablet) {
-    --jm-hero-gradient-direction: 90deg;
-    --grid-span: 6;
-
-    --jm-hero-padding: var(--jm-padding-3xl) var(--jm-padding-xl)
-      var(--jm-padding-2xl) var(--jm-padding-xl);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
 
     &__text {
-      max-width: calc((var(--jm-container-xl) * 0.5));
+      grid-column: span var(--grid-span);
+      margin-inline-start: auto;
+      margin-block: auto;
+
+      display: flex;
+
+      flex-direction: column;
+      justify-content: center;
+
+      width: 100%;
+      min-height: 300px;
+
+      padding: var(--jm-hero-padding);
+
+      &-heading {
+        @include d1;
+
+        font-weight: 400;
+        max-width: 12ch;
+        overflow-wrap: break-word;
+        text-wrap: balance;
+      }
+
+      &-para {
+        @include p2;
+        max-width: 34ch;
+        text-wrap: pretty;
+      }
+
+      :not(:last-child) {
+        padding-bottom: var(--jm-padding-xl);
+      }
     }
 
     &__img {
-      aspect-ratio: auto;
-    }
-  }
+      grid-column: span var(--grid-span);
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      aspect-ratio: 1 / 1;
 
-  @include min($desktop) {
-    --text-grid-span: 6;
-    --image-grid-span: 6;
+      background: var(--background-image) center / cover no-repeat;
+
+      pointer-events: none;
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+
+        background: var(--jm-hero-overlay);
+      }
+    }
+
+    @include min($tablet) {
+      --jm-hero-gradient-direction: 90deg;
+      --grid-span: 6;
+
+      --jm-hero-padding: var(--jm-padding-3xl) var(--jm-padding-xl)
+        var(--jm-padding-2xl) var(--jm-padding-xl);
+
+      &__text {
+        max-width: calc((var(--jm-container-xl) * 0.5));
+      }
+
+      &__img {
+        aspect-ratio: auto;
+      }
+    }
+
+    @include min($desktop) {
+      --grid-span: 6;
+    }
   }
 }

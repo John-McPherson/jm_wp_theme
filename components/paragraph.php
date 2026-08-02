@@ -20,11 +20,13 @@ if ($text === '') {
     return;
 }
 
+
 $attributes = [
     'classes' => [
         'jm-paragraph',
         $args['classes'] ?? null,
     ],
+    'id' => $args['id'] ?? null
 ];
 ?>
 

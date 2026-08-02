@@ -4,11 +4,32 @@ declare(strict_types=1);
 
 // register all theme blocks
 add_action('init', function (): void {
-    foreach (
-        glob(get_theme_file_path('build/js/blocks/*'), GLOB_ONLYDIR) ?: []
-        as $block_dir
-    ) {
-        register_block_type($block_dir);
+    $blocks_path = get_theme_file_path('build/js/blocks');
+
+    if (! is_dir($blocks_path)) {
+        return;
+    }
+
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator(
+            $blocks_path,
+            FilesystemIterator::SKIP_DOTS
+        ),
+        RecursiveIteratorIterator::SELF_FIRST
+    );
+
+    foreach ($iterator as $file) {
+        if (! $file->isDir()) {
+            continue;
+        }
+
+        $block_json = $file->getPathname() . '/block.json';
+
+        if (! file_exists($block_json)) {
+            continue;
+        }
+
+        register_block_type($file->getPathname());
     }
 });
 
@@ -34,7 +55,7 @@ add_filter('allowed_block_types_all', function ($_allowed_blocks, $_editor_conte
 add_filter('block_categories_all', function ($categories): array {
     return $categories[] = [
         [
-            'slug'  => 'jm-sections',
+            'slug'  => 'jm-s',
             'title' => __('Sections', 'jm'),
             'icon'  => 'customizer',
         ],
