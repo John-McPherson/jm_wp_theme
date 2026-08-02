@@ -1,0 +1,55 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jm/cta-banner",
+  "version": "0.1.0",
+  "title": "CTA Banner",
+  "category": "jm-section",
+  "icon": "megaphone",
+  "description": "Promote an important message with a heading, supporting text, and call-to-action button.",
+  "keywords": ["cta", "banner", "call to action"],
+  "attributes": {
+    "palette": {
+      "type": "string",
+      "enum": ["default", "secondary", "inverse"],
+      "default": "inverse"
+    }
+  },
+  "example": {
+    "attributes": {
+      "palette": "inverse"
+    },
+    "innerBlocks": [
+      {
+        "name": "jm/heading",
+        "attributes": {
+          "text": "Have a project in mind?",
+          "level": "2"
+        }
+      },
+      {
+        "name": "jm/paragraph",
+        "attributes": {
+          "text": "Let’s talk about how we can help."
+        }
+      },
+      {
+        "name": "jm/button",
+        "attributes": {
+          "text": "Get in touch"
+        }
+      }
+    ],
+    "viewportWidth": 1200
+  },
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false
+  },
+  "textdomain": "jm",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

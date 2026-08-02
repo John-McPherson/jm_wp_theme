@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jm/column",
+  "version": "0.1.0",
+  "title": "Column",
+  "category": "jm",
+  "icon": "columns",
+  "description": "Organises related content within a section.",
+  "textdomain": "jm-theme",
+  "supports": {
+    "html": false,
+    "inserter": false
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}
