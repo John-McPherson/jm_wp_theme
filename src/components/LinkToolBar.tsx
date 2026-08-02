@@ -15,7 +15,6 @@ type LinkToolBarProps = {
 const LinkToolBar = ({ value, set, reset }: LinkToolBarProps) => {
   const [isLinkOpen, setIsLinkOpen] = useState(false);
 
-  // ✅ Proper DOM ref
   const buttonRef = useRef<HTMLDivElement | null>(null);
 
   return (

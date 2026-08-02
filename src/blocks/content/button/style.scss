@@ -1,4 +1,5 @@
-@use "../../scss/base/typography" as *;
+@use "../../../scss/base/typography" as *;
+@use "../../../scss/abstracts/index" as *;
 
 @layer components {
   .jm-button {
@@ -7,7 +8,7 @@
     --hover-color: var(--jm-button-hover-color);
     --hover-background: var(--jm-button-hover-background);
 
-    &--secondary {
+    &__secondary {
       --color: var(--jm-button-secondary-color);
       --background: var(--jm-button-secondary-background);
       --hover-color: var(--jm-button-secondary-hover-color);
@@ -18,11 +19,11 @@
 
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
 
-    width: fit-content;
+    width: 100%;
 
-    padding: 0.85rem 1.4rem;
+    padding: var(--jm-padding-xs) var(--jm-padding-m);
 
     background: var(--background);
 
@@ -39,5 +40,10 @@
   .jm-button:hover {
     background: var(--hover-background);
     color: var(--hover-color);
+  }
+}
+@include min($mobile) {
+  .jm-button {
+    width: fit-content;
   }
 }

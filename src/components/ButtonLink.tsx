@@ -11,14 +11,16 @@ type ButtonProps = {
     set: (value: { url: string; opensInNewTab: boolean }) => void;
     reset: () => void;
   };
-  className?: string;
+  className: string;
 };
 
 const ButtonLink = ({ text, link, className }: ButtonProps) => {
+  const classes = [className, "jm-button"].filter(Boolean).join(" ");
+  console.log(classes);
   return (
     <>
       <LinkToolBar {...link} />
-      <TextInput {...text} className={className || "jm-button"} />
+      <TextInput {...text} className={classes} />
     </>
   );
 };

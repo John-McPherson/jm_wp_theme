@@ -21,6 +21,10 @@
     "variant": {
       "type": "string",
       "default": "hero"
+    },
+    "palette": {
+      "type": "string",
+      "default": "jm-palette--default"
     }
   },
   "providesContext": {

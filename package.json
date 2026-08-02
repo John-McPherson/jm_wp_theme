@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "generate:tokens": "node scripts/generate-tokens.mjs",
     "build:assets": "rsync -av --delete src/assets/ build/assets/",
     "build:styles": "sass src/scss/style.scss:build/css/style.css src/scss/editor-style.scss:build/css/editor-style.css --load-path=src/scss --no-source-map --style=compressed",
     "build:js": "wp-scripts build --output-path=build/js",
-    "build": "npm run generate:tokens && npm run build:assets && npm run build:styles && npm run build:js",
+    "build": "npm run build:assets && npm run build:styles && npm run build:js",
     "start": "concurrently \"wp-scripts start --output-path=build/js\" \"sass --watch src/scss/style.scss:build/css/style.css src/scss/editor-style.scss:build/css/editor-style.css --load-path=src/scss\"",
     "package": "npm run build && rm -rf dist && mkdir -p dist && rsync -av --delete build/ dist/ && rsync -av theme.json style.css functions.php dist/"
   },

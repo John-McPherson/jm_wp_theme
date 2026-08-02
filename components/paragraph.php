@@ -5,7 +5,8 @@ declare(strict_types=1);
 /**
  * @var array{
  *     text?: string,
- *     classes?: string|string[]
+ *     classes?: string|string[],
+ *     id?: string
  * } $args
  */
 

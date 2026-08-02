@@ -2,7 +2,6 @@
 
 @layer blocks {
   .jm-text-with-image {
-    @include jm_button();
     --jm-text-image-padding: var(--jm-padding-xl);
     --jm-text-image-gap: var(--jm-padding-xl);
     --jm-text-image-cols: 1;

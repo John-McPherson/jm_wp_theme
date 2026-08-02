@@ -1,0 +1,54 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jm/button",
+  "version": "0.1.0",
+  "title": "Button",
+  "category": "jm-blocks",
+  "icon": "button",
+  "description": "A reusable linked button.",
+  "textdomain": "jm-theme",
+
+  "attributes": {
+    "text": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonType": {
+      "type": "string",
+      "default": "primary"
+    },
+    "link": {
+      "type": "object",
+      "default": {
+        "url": "",
+        "opensInNewTab": false,
+        "target": "",
+        "rel": ""
+      }
+    }
+  },
+
+  "example": {
+    "attributes": {
+      "text": "Get a quote",
+      "link": {
+        "url": "#",
+        "target": "",
+        "rel": ""
+      }
+    }
+  },
+
+  "supports": {
+    "anchor": true,
+    "className": true,
+    "html": false,
+    "inserter": true
+  },
+
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

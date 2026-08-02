@@ -1,25 +1,42 @@
+import { __ } from "@wordpress/i18n";
+
 import { useBlockProps, useInnerBlocksProps } from "@wordpress/block-editor";
 
 import "./editor.scss";
 
 import MediaInput from "../../components/MediaInput";
 import bindFields from "../../utils/bindFields";
+import Sidebar from "../../components/Sidebar";
+import SelectInput from "../../components/SelectInput";
 
 const TEMPLATE = [
   ["jm/paragraph", { className: "jm__label" }],
-  ["jm/heading", { level: "1", lock_level: true, className: "jm-hero__para" }],
-  ["jm/paragraph", { className: "jm-hero__heading" }],
+  ["jm/heading", { level: "1", lock_level: true }],
+  ["jm/paragraph"],
+  ["jm/button", { buttonType: "secondary" }],
 ];
 
-const ALLOWED_BLOCKS = ["jm/heading", "jm/paragraph"];
+const VARIANT_CLASSES = {
+  default: "",
+  inverse: "jm-palette--inverse ",
+  secondary: "jm-palette--secondary ",
+};
+
+const ALLOWED_BLOCKS = ["jm/heading", "jm/paragraph", "jm/button"];
 
 export default function Edit({ attributes, setAttributes }) {
-  const { imageUrl } = attributes;
+  const { imageUrl, className, palette } = attributes;
 
   const bind = bindFields(attributes, setAttributes);
 
+  const classes = [className, VARIANT_CLASSES[palette]]
+    .filter(Boolean)
+    .join(" ");
+
   const blockProps = useBlockProps({
-    className: "jm-section jm-hero",
+    className: ["jm-section", "jm-hero", className, VARIANT_CLASSES[palette]]
+      .filter(Boolean)
+      .join(" "),
   });
 
   const innerBlocksProps = useInnerBlocksProps(
@@ -41,11 +58,19 @@ export default function Edit({ attributes, setAttributes }) {
   };
 
   return (
-    <section {...blockProps}>
-      <div {...innerBlocksProps} />
-      <div {...imageProps}>
-        <MediaInput {...bind.media("imageId", "imageUrl")} />
-      </div>
-    </section>
+    <>
+      <Sidebar>
+        <Sidebar.Section title={__("Palette Settings", "jm-theme")}>
+          <SelectInput {...bind.select("palette")} type="palette" />
+        </Sidebar.Section>
+      </Sidebar>
+
+      <section {...blockProps}>
+        <div {...innerBlocksProps} />
+        <div {...imageProps}>
+          <MediaInput {...bind.media("imageId", "imageUrl")} />
+        </div>
+      </section>
+    </>
   );
 }

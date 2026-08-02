@@ -13,9 +13,9 @@ type Props = {
 
 const options: Record<string, Option[]> = {
   palette: [
-    { label: "Default", value: "jm-palette--default" },
-    { label: "Inverse", value: "jm-palette--inverse" },
-    { label: "Secondary", value: "jm-palette--secondary" },
+    { label: "Default", value: "default" },
+    { label: "Inverse", value: "inverse" },
+    { label: "Secondary", value: "secondary" },
   ],
   order: [
     { label: "Image Left", value: "jm-text-with-image--image-left" },
@@ -28,6 +28,10 @@ const options: Record<string, Option[]> = {
     { label: "H4", value: "4" },
     { label: "H5", value: "5" },
     { label: "H6", value: "6" },
+  ],
+  style: [
+    { label: "Primary", value: "primary" },
+    { label: "Secondary", value: "secondary" },
   ],
 } as const;
 

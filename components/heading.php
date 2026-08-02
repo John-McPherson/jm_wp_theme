@@ -2,12 +2,25 @@
 
 declare(strict_types=1);
 
+/**
+ * @var array{
+ *     text?: string,
+ *     level?: int|string,
+ *     classes?: string|string[],
+ *     id?: string
+ * } $args
+ */
+
 $args ??= [];
 
 $text = jm_args_string(
     args: $args,
     key: 'text'
 );
+
+if ($text === '') {
+    return;
+}
 
 $level = jm_args_int(
     args: $args,
@@ -17,14 +30,14 @@ $level = jm_args_int(
     max: 6
 );
 
-
-$tag   = "h{$level}";
+$tag = "h{$level}";
 
 $attributes = [
     'classes' => [
         'jm-heading',
         $args['classes'] ?? null,
-    ]
+    ],
+    'id' => $args['id'] ?? null,
 ];
 
 ?>

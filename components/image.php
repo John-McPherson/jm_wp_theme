@@ -12,7 +12,6 @@ declare(strict_types=1);
  * } $args
  */
 
-$args ??= [];
 
 $image_id = jm_args_int(
     args: $args,

@@ -18,6 +18,7 @@
     grid-template-columns: repeat(12, minmax(0, 1fr));
 
     &__text {
+      container-type: inline-size;
       grid-column: span var(--grid-span);
       margin-inline-start: auto;
       margin-block: auto;
