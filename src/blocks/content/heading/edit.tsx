@@ -24,16 +24,16 @@ const VARIANT_CLASSES = {
 
 export default function Edit({ attributes, setAttributes, context }) {
   const { className } = attributes;
-  const blockProps = useBlockProps();
+  const variant = context["jm/variant"] ?? "default";
+
+  const blockProps = useBlockProps({
+    className: [className, "jm-heading", VARIANT_CLASSES[variant]],
+  });
   const bind = bindFields(attributes, setAttributes);
 
   const { level, lock_level } = attributes;
 
-  const variant = context["jm/variant"] ?? "default";
-
-  const classes = [className, VARIANT_CLASSES[variant]]
-    .filter(Boolean)
-    .join(" ");
+  const classes = [].filter(Boolean).join(" ");
 
   const sideBar = (
     <Sidebar>

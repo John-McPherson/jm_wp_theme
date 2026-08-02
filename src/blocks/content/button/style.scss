@@ -35,6 +35,10 @@
     letter-spacing: 0.02em;
 
     transition: 0.2s ease;
+
+    &:not(:last-child) {
+      margin-bottom: var(--jm-section-padding-sm);
+    }
   }
 
   .jm-button:hover {
@@ -42,7 +46,7 @@
     color: var(--hover-color);
   }
 }
-@include min($mobile) {
+@include min($compact) {
   .jm-button {
     width: fit-content;
   }

@@ -7,9 +7,6 @@
   }
 
   .jm-section {
-    &:first-of-type {
-      padding-top: 0;
-    }
     &:last-of-type {
       padding-bottom: var(--jm-padding-3xl);
     }
@@ -20,16 +17,18 @@
     background-color: var(--jm-background-color);
     color: var(--jm-text-color);
 
-    padding: var(--jm-section-padding);
+    padding: var(--jm-page-margin);
 
     &__container {
       display: grid;
       align-items: center;
+      width: 100%;
       max-width: var(--jm-container-l);
       gap: var(--jm-section-padding);
     }
 
     &__column {
+      container-type: inline-size;
       display: flex;
       flex-direction: column;
       align-items: flex-start;

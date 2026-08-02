@@ -24,18 +24,17 @@ export default function Edit({ attributes, setAttributes, context }) {
 
   const contextVariant = (context["jm/variant"] ?? "default") as ContextVariant;
 
-  const textClasses = [
-    PARAGRAPH_VARIANT_CLASSES[paragraphVariant],
-    CONTEXT_VARIANT_CLASSES[contextVariant],
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  const blockProps = useBlockProps();
+  const blockProps = useBlockProps({
+    className: [
+      "jm-paragraph",
+      PARAGRAPH_VARIANT_CLASSES[paragraphVariant],
+      CONTEXT_VARIANT_CLASSES[contextVariant],
+    ],
+  });
 
   return (
     <div {...blockProps}>
-      <TextInput {...bind.text("text")} tagName="p" className={textClasses} />
+      <TextInput {...bind.text("text")} tagName="p" />
     </div>
   );
 }

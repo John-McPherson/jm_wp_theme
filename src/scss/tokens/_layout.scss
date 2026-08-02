@@ -9,5 +9,7 @@
     --jm-section-padding: var(--jm-padding-xl);
     --jm-section-padding-sm: var(--jm-padding-m);
     --jm-section-spacing: var(--jm-padding-xl);
+
+    --jm-page-margin: clamp(var(--jm-padding-m), 6vw, var(--jm-padding-2xl));
   }
 }

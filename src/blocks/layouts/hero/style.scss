@@ -18,7 +18,7 @@
     grid-template-columns: repeat(12, minmax(0, 1fr));
 
     &__text {
-      padding: var(--jm-section-padding);
+      padding: var(--jm-page-margin);
       container-type: inline-size;
       grid-column: span var(--grid-span);
       margin-inline-start: auto;
@@ -45,10 +45,6 @@
         @include p2;
         max-width: 34ch;
         text-wrap: pretty;
-      }
-
-      :not(:last-child) {
-        padding-bottom: var(--jm-padding-xl);
       }
     }
 

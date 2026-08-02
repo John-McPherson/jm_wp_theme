@@ -71,7 +71,7 @@ if (is_string($image_url) && $image_url !== '') {
 ?>
 
 <section <?php jm_the_attributes($section_attributes); ?>>
-    <div class="jm-hero__text">
+    <div class="jm-hero__text ">
         <?php echo $content ?>
     </div>
 

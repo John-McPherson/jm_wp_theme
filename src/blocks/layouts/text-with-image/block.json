@@ -52,8 +52,47 @@
       "default": ""
     }
   },
-  "example": {},
-  "supports": {},
+  "example": {
+    "attributes": {
+      "palette": "default",
+      "order": "right",
+      "imageUrl": "https://images.pexels.com/photos/8093682/pexels-photo-8093682.jpeg"
+    },
+    "innerBlocks": [
+      {
+        "name": "jm/paragraph",
+        "attributes": {
+          "text": "Label",
+          "variant": "label"
+        }
+      },
+      {
+        "name": "jm/heading",
+        "attributes": {
+          "text": "Lorem ipsum dolor",
+          "level": "1"
+        }
+      },
+      {
+        "name": "jm/paragraph",
+        "attributes": {
+          "text": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem distinctio quas beatae nisi numquam consectetur incidunt delectus soluta facere cupiditate magnam laudantium, quasi quo."
+        }
+      },
+      {
+        "name": "jm/button",
+        "attributes": {
+          "text": "Lorem ipsum"
+        }
+      }
+    ],
+    "viewportWidth": 1200
+  },
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false
+  },
   "textdomain": "text-with-image",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",

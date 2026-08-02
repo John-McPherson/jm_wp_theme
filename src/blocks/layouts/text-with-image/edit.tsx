@@ -4,11 +4,11 @@ import { useBlockProps, useInnerBlocksProps } from "@wordpress/block-editor";
 
 import "./editor.scss";
 
-import bindFields from "../../utils/bindFields";
+import bindFields from "../../../utils/bindFields";
 
-import MediaInput from "../../components/MediaInput";
-import Sidebar from "../../components/Sidebar";
-import SelectInput from "../../components/SelectInput";
+import MediaInput from "../../../components/MediaInput";
+import Sidebar from "../../../components/Sidebar";
+import SelectInput from "../../../components/SelectInput";
 
 const TEMPLATE = [
   ["jm/paragraph", { variant: "label" }],
