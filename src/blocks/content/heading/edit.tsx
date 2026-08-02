@@ -1,8 +1,6 @@
 import { __ } from "@wordpress/i18n";
 import { useBlockProps } from "@wordpress/block-editor";
 
-import "./editor.scss";
-
 import TextInput from "../../../components/TextInput";
 import bindFields from "../../../utils/bindFields";
 import Sidebar from "../../../components/Sidebar";

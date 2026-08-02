@@ -1,8 +1,6 @@
 import { useBlockProps } from "@wordpress/block-editor";
 import { __ } from "@wordpress/i18n";
 
-import "./editor.scss";
-
 import bindFields from "../../../utils/bindFields";
 import ButtonLink from "../../../components/ButtonLink";
 import Sidebar from "../../../components/Sidebar";

@@ -1,32 +1,41 @@
-import { __ } from "@wordpress/i18n";
 import { useBlockProps } from "@wordpress/block-editor";
-
-import "./editor.scss";
 
 import TextInput from "../../../components/TextInput";
 import bindFields from "../../../utils/bindFields";
 
-const VARIANT_CLASSES = {
+const PARAGRAPH_VARIANT_CLASSES = {
+  default: "",
+  label: "jm-label",
+} as const;
+
+const CONTEXT_VARIANT_CLASSES = {
   default: "",
   hero: "jm-hero__text-para",
-};
+} as const;
+
+type ParagraphVariant = keyof typeof PARAGRAPH_VARIANT_CLASSES;
+type ContextVariant = keyof typeof CONTEXT_VARIANT_CLASSES;
 
 export default function Edit({ attributes, setAttributes, context }) {
-  const { className } = attributes;
-  const blockProps = useBlockProps();
   const bind = bindFields(attributes, setAttributes);
 
-  const variant = context["jm/variant"] ?? "default";
+  const paragraphVariant = (attributes.variant ??
+    "default") as ParagraphVariant;
 
-  const classes = [className, VARIANT_CLASSES[variant]]
+  const contextVariant = (context["jm/variant"] ?? "default") as ContextVariant;
+
+  const textClasses = [
+    PARAGRAPH_VARIANT_CLASSES[paragraphVariant],
+    CONTEXT_VARIANT_CLASSES[contextVariant],
+  ]
     .filter(Boolean)
     .join(" ");
 
+  const blockProps = useBlockProps();
+
   return (
-    <>
-      <div {...blockProps}>
-        <TextInput {...bind.text("text")} tagName="p" className={classes} />
-      </div>
-    </>
+    <div {...blockProps}>
+      <TextInput {...bind.text("text")} tagName="p" className={textClasses} />
+    </div>
   );
 }

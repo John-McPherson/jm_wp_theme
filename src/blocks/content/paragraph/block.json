@@ -5,33 +5,51 @@
   "version": "0.1.0",
   "title": "Paragraph",
   "category": "jm-blocks",
-  "icon": "layout",
-  "description": "Paragraph content block with paragraph",
+  "icon": "editor-paragraph",
+  "description": "A reusable paragraph content block.",
+  "textdomain": "jm-theme",
+
   "attributes": {
     "text": {
       "type": "string",
       "default": ""
     },
-    "level": {
+    "variant": {
       "type": "string",
-      "enum": ["1", "2", "3", "4", "5", "6"],
-      "default": "2"
+      "enum": ["default", "label"],
+      "default": "default"
     }
   },
+
+  "variations": [
+    {
+      "name": "label",
+      "title": "Label",
+      "description": "Small supporting label text for headings and sections.",
+      "attributes": {
+        "variant": "label"
+      },
+      "scope": ["inserter", "block", "transform"],
+      "isActive": ["variant"]
+    }
+  ],
+
   "example": {
     "attributes": {
-      "text": "Example Paragraph",
-      "level": 2
+      "text": "Example paragraph",
+      "variant": "default"
     }
   },
+
   "usesContext": ["jm/variant"],
+
   "supports": {
     "anchor": true,
     "className": true,
     "html": false,
-    "inserter": true
+    "inserter": false
   },
-  "textdomain": "paragraph",
+
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",

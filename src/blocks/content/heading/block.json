@@ -33,11 +33,10 @@
     "anchor": true,
     "className": true,
     "html": false,
-    "inserter": true
+    "inserter": false
   },
   "textdomain": "heading",
   "editorScript": "file:./index.js",
-  "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",
   "render": "file:./render.php"
 }

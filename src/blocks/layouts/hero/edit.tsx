@@ -4,13 +4,13 @@ import { useBlockProps, useInnerBlocksProps } from "@wordpress/block-editor";
 
 import "./editor.scss";
 
-import MediaInput from "../../components/MediaInput";
-import bindFields from "../../utils/bindFields";
-import Sidebar from "../../components/Sidebar";
-import SelectInput from "../../components/SelectInput";
+import MediaInput from "../../../components/MediaInput";
+import bindFields from "../../../utils/bindFields";
+import Sidebar from "../../../components/Sidebar";
+import SelectInput from "../../../components/SelectInput";
 
 const TEMPLATE = [
-  ["jm/paragraph", { className: "jm__label" }],
+  ["jm/paragraph", { variant: "label" }],
   ["jm/heading", { level: "1", lock_level: true }],
   ["jm/paragraph"],
   ["jm/button", { buttonType: "secondary" }],
@@ -18,8 +18,8 @@ const TEMPLATE = [
 
 const VARIANT_CLASSES = {
   default: "",
-  inverse: "jm-palette--inverse ",
-  secondary: "jm-palette--secondary ",
+  inverse: "jm-palette--inverse",
+  secondary: "jm-palette--secondary",
 };
 
 const ALLOWED_BLOCKS = ["jm/heading", "jm/paragraph", "jm/button"];
@@ -28,10 +28,6 @@ export default function Edit({ attributes, setAttributes }) {
   const { imageUrl, className, palette } = attributes;
 
   const bind = bindFields(attributes, setAttributes);
-
-  const classes = [className, VARIANT_CLASSES[palette]]
-    .filter(Boolean)
-    .join(" ");
 
   const blockProps = useBlockProps({
     className: ["jm-section", "jm-hero", className, VARIANT_CLASSES[palette]]

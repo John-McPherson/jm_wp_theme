@@ -2,10 +2,11 @@ import { registerBlockType } from "@wordpress/blocks";
 import Edit from "./edit";
 import metadata from "./block.json";
 import "./style.scss";
-import Save from "./save";
+
+import { InnerBlocks } from "@wordpress/block-editor";
 
 registerBlockType(metadata.name, {
   ...metadata,
   edit: Edit,
-  save: Save,
+  save: () => <InnerBlocks.Content />,
 } as any);

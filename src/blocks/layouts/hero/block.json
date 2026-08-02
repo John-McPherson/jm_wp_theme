@@ -37,7 +37,7 @@
         "name": "jm/paragraph",
         "attributes": {
           "text": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem distinctio quas beatae nisi numquam consectetur incidunt delectus soluta facere cupiditate magnam laudantium, quasi quo.",
-          "className": "jm__label"
+          "className": "jm-label"
         }
       },
       {
