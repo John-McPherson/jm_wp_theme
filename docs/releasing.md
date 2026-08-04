@@ -6,18 +6,19 @@ The release pipeline is not yet safe. `npm run package` currently copies `build/
 
 ## Versioning
 
-Use semantic versioning:
+The current development version is `0.1.0`. Use semantic versioning:
 
-- Patch: compatible fixes.
-- Minor: compatible features or blocks.
-- Major: breaking block contracts, migrations, or minimum-platform changes.
+- `0.x.y` minor: a completed pre-release milestone.
+- Patch: a compatible fix to the current milestone.
+- `1.0.0`: the first complete, verified production release with stable content contracts.
+- After `1.0.0`, major: a breaking public contract or minimum-platform change.
 
 Keep the versions in `package.json`, `style.css`, and block metadata aligned where applicable.
 
 ## Branches
 
 - `dev` is the active integration branch.
-- `main` represents reviewed, releasable work.
+- `main` represents versioned, releasable work.
 - Feature branches should target `dev` until the release workflow changes.
 
 ## Required archive contents
@@ -46,9 +47,11 @@ Exclude development-only files such as `node_modules/`, `src/`, `.git/`, local c
 7. Inspect the archive contents.
 8. Install the archive into a clean supported WordPress environment.
 9. Complete the smoke test in [Testing](testing.md).
-10. Obtain review approval and merge the release to `main`.
+10. Open a `dev` to `main` PR and self-review the complete release diff. Human approval is not required for the current solo workflow.
 11. Tag the exact release commit and retain the tested archive.
 12. Deploy using the hosting-specific process and verify production health.
+
+Suggested pre-1.0 milestones are: `0.2.0` core block library, `0.3.0` complete site structure, `0.4.0` content model, `0.5.0` responsive finish, `0.6.0` accessibility verification, `0.7.0` automated assurance, `0.8.0` performance/security, and `0.9.0` release candidate. Merge to `main` at formal version releases, not for every development commit.
 
 ## Rollback
 

@@ -21,11 +21,14 @@ Components should consume semantic roles. A raw value such as `brand-700` descri
 | Content and wide widths | `theme.json` |
 | Semantic palette mappings | `src/scss/palettes/` |
 | Shared SCSS tokens | `src/scss/tokens/` |
+| Token generation | `scripts/generate-tokens.mjs` |
 | Layout rules | `src/scss/layout/` |
 
 ## Colour
 
 The primitive palette contains neutral `base`, blue `brand`, warm `accent`, and status colours. Do not select a primitive solely because it looks right in one component. Add or reuse a semantic role, then validate the foreground/background/state combinations in every supported palette.
+
+Current section palettes are `default`, `secondary`, and `inverse`. Store the unprefixed value in block attributes; rendering code maps it to the relevant `jm-palette--*` class.
 
 Required contrast targets are documented in [Accessibility](accessibility.md).
 

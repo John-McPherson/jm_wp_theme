@@ -2,13 +2,13 @@
 
 Custom Full Site Editing WordPress theme for AMC Electrical, built with PHP, TypeScript, SCSS, Gutenberg blocks, and `theme.json`.
 
-> **Status:** Active development. The `dev` branch is the current source of truth and is not yet release-ready.
+> **Status:** `0.1.0` foundation release in active development. The `dev` branch is the source of truth; `main` is reserved for versioned releases.
 
 ## Requirements
 
-- WordPress 6.5 or later
+- WordPress 7.1 or later (as declared in `style.css`)
 - PHP 8.0 or later
-- Node.js 20 LTS or later (recommended)
+- A current Node.js LTS release (recommended; not yet enforced by `package.json`)
 - npm
 - `rsync` for asset builds and packaging
 
@@ -55,7 +55,9 @@ The current package command omits runtime PHP directories such as `inc/` and `co
 | `inc/` | Theme setup, asset loading, block registration, and helpers |
 | `components/` | Reusable server-rendered PHP components |
 | `src/` | Authoring sources: SCSS, TypeScript, blocks, and static assets |
+| `scripts/` | Development utilities, including design-token generation |
 | `build/` | Generated browser and block assets used by WordPress |
+| `templates/` | FSE templates; currently only the minimal `index.html` fallback |
 | `theme.json` | WordPress design settings and primitive tokens |
 | `docs/` | Architecture and operational documentation |
 
@@ -74,6 +76,10 @@ The current package command omits runtime PHP directories such as `inc/` and `co
 ## Browser support
 
 No formal browser matrix has been approved yet. Until one is defined and tested, target current stable versions of Chrome, Edge, Firefox, and Safari, plus current iOS Safari.
+
+## Current scope
+
+The theme currently provides nine server-rendered blocks: five internal content/composition blocks and four editor-insertable section blocks. Site header, navigation, footer, complete template coverage, CI, automated tests, and a verified release package are future milestones. See [Blocks](docs/blocks.md) for the exact inventory.
 
 ## Licence
 

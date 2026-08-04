@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-- A local WordPress 6.5+ installation
+- A local WordPress version matching the `7.1` minimum currently declared in `style.css`
 - PHP 8.0+
-- Node.js 20 LTS+ and npm
+- A current Node.js LTS release and npm
 - `rsync`
 - A Git working copy of the theme inside `wp-content/themes`
 
@@ -22,6 +22,8 @@ npm start
 ```
 
 The development command watches JavaScript and Sass. Static files under `src/assets/` are copied by `npm run build`; rerun that command when assets change.
+
+There is no `engines` contract in `package.json` yet. Record and enforce the chosen Node/npm versions before the first production release.
 
 ## Working conventions
 
@@ -51,6 +53,8 @@ The development command watches JavaScript and Sass. Static files under `src/ass
 ### Generated files
 
 Edit files under `src/`, not compiled files under `build/`. Always run a production build before review so missing imports and compilation errors are caught.
+
+When `theme.json` tokens change, run the token generator used by the project and review the generated SCSS diff before rebuilding. Generated files should be reproducible from their source.
 
 ## Adding a feature
 

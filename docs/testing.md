@@ -4,6 +4,8 @@
 
 The repository does not yet have a complete automated test suite or CI quality gates. The checks below are the required manual baseline and the target automation plan.
 
+`package.json` currently exposes build, watch, asset, style, JavaScript, and package scripts only. Do not document linting, static analysis, unit tests, browser tests, or accessibility scans as available commands until they are implemented.
+
 ## Before every review
 
 ```bash
@@ -16,6 +18,7 @@ Then verify:
 - No PHP warnings in the affected WordPress flow.
 - No browser console errors.
 - Changed blocks can be inserted, configured, saved, reloaded, and rendered.
+- Each of the nine custom blocks renders correctly in every allowed parent/child composition.
 - Empty, default, populated, and invalid attribute states are safe.
 - Editor and frontend presentation remain aligned.
 - Layout works at narrow mobile, tablet, desktop, and wide desktop widths.
@@ -51,6 +54,8 @@ Automated scans cannot validate reading order, usable focus, meaningful alternat
 ## WordPress compatibility matrix
 
 At minimum, verify the lowest supported WordPress/PHP versions declared in `style.css` and the current supported production versions. Update `Tested up to` only after testing that WordPress release.
+
+The current header declares both `Requires at least` and `Tested up to` as WordPress `7.1`, with PHP `8.0`. Treat those values as release claims that require evidence, not merely desired targets.
 
 ## Release smoke test
 

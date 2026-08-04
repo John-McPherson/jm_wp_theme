@@ -8,8 +8,9 @@ JM Custom Theme is a Full Site Editing theme with a deliberately small WordPress
 
 ```mermaid
 flowchart TD
-    WP["WordPress templates"] --> B["JM blocks"]
-    B --> R["PHP render callbacks"]
+    WP["FSE templates"] --> B["Section blocks"]
+    B --> I["Content blocks"]
+    I --> R["PHP render callbacks"]
     R --> C["PHP components"]
     T["theme.json and SCSS tokens"] --> B
     T --> C
@@ -32,7 +33,9 @@ flowchart TD
 
 ### Blocks
 
-Block metadata and editor code originate in `src/` and are compiled to `build/js/blocks`. WordPress registers each directory containing a `block.json`. Dynamic blocks delegate frontend output to PHP render files and reusable components.
+Block metadata and editor code originate in `src/blocks/content/` and `src/blocks/layouts/`, then compile to `build/js/blocks`. WordPress recursively registers each compiled directory containing a `block.json`. All nine current blocks are dynamic and delegate frontend output to PHP render files and reusable components.
+
+The four layout blocks (`cta-banner`, `hero`, `service-grid`, and `text-with-image`) are editor-insertable sections. The five content blocks are composition primitives; their metadata currently disables direct insertion so layouts control the authoring experience.
 
 Attributes crossing the editor/PHP boundary are untrusted input. Render code must validate allowed values, escape output at the final boundary, and return no markup for genuinely empty states.
 
@@ -44,7 +47,7 @@ Use the typed argument helpers in `inc/helpers/component_args.php` and the escap
 
 ### Styling and design tokens
 
-`theme.json` exposes WordPress-facing primitives such as colour, typography, spacing, radii, and layout widths. SCSS maps those primitives into semantic palettes, layout rules, components, and blocks. Both frontend and editor entry points consume the shared foundations.
+`theme.json` exposes WordPress-facing primitives such as colour, typography, spacing, radii, and layout widths. `scripts/generate-tokens.mjs` supports generated token output. SCSS maps primitives into aliases, semantic roles, palettes, layout rules, components, and blocks. Both frontend and editor entry points consume the shared foundations.
 
 ## Dependency rules
 
@@ -69,5 +72,6 @@ Use the typed argument helpers in `inc/helpers/component_args.php` and the escap
 - The custom block-category filter currently has an invalid return shape and must be corrected.
 - The packaging pipeline does not yet include all runtime dependencies.
 - Templates, navigation, and production deployment architecture are still under development.
+- `templates/index.html` is currently the only FSE template; template parts and patterns have not been introduced.
 
 Major architectural changes should be captured as a short decision record in `docs/adr/` once that directory is introduced.

@@ -18,12 +18,28 @@ Custom blocks use the `jm/` namespace. The current global allowlist exposes only
 
 ## Current blocks
 
+This inventory is pinned to the current `dev` branch. All current blocks are dynamic PHP blocks.
+
 | Block | Purpose | Rendering | Notes |
 |---|---|---|---|
-| `jm/hero` | Page-level introductory section with composable inner content and an optional background image | Dynamic PHP | Provides variant context; palette/default handling must be made consistent before release |
-| Content/layout blocks | Compose reusable page sections and contained content | Dynamic PHP | Active development; treat each `block.json` as its current contract |
+| `jm/button` | Linked call-to-action | Dynamic PHP | Internal composition block; primary button by default; direct inserter disabled |
+| `jm/column` | Groups related inner content within a section | Dynamic PHP | Structural composition block; direct inserter disabled |
+| `jm/heading` | Semantic heading with configurable level | Dynamic PHP | Uses `jm/variant` context; level defaults to `2`; direct inserter disabled |
+| `jm/paragraph` | Paragraph or small label text | Dynamic PHP | `default` and `label` variations; uses `jm/variant`; direct inserter disabled |
+| `jm/service-card` | Linked service summary with a predefined icon | Dynamic PHP | Restricted to `jm/service-grid`; allows Heading and Paragraph children |
+| `jm/cta-banner` | Two-column call-to-action section | Dynamic PHP | Palettes: default, secondary, inverse; left/right order; defaults to inverse/right |
+| `jm/hero` | Page introduction with composable content and optional decorative background image | Dynamic PHP | Single-instance support; provides `jm/variant`; defaults to default palette |
+| `jm/service-grid` | Introductory content beside a responsive service-card grid | Dynamic PHP | Allows Column children; palettes and left/right order; defaults to default/left |
+| `jm/text-with-image` | Composable text content paired with an image | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; contains legacy-looking attributes that need contract review |
 
 This table should be updated whenever a block is added, renamed, deprecated, or removed.
+
+### Composition model
+
+- Section blocks are assigned to `jm-section` and are intended for direct insertion.
+- Content blocks are used inside section templates; their `supports.inserter` value is `false` where explicitly declared.
+- `allowedBlocks`, `ancestor`, and block locking should keep editor composition valid without relying only on author training.
+- Category metadata is currently inconsistent (`jm`, `jm-blocks`, and `jm-section`). Normalise it alongside the `inc/blocks.php` category fix.
 
 ## Adding a block
 
@@ -51,15 +67,21 @@ Background images are decorative: they must not contain information needed to un
 
 ## Deprecation
 
-Before changing saved attributes or names:
+Gutenberg evaluates deprecations for relevant block instances when content is opened in the editor. A successful migration is persisted only when that entity is saved; it does not automatically rewrite every post on the site.
+
+Before changing saved attributes, saved `InnerBlocks` markup, or block names:
 
 1. Determine whether existing post content will still parse and render.
 2. Add a Gutenberg deprecation/migration when saved content requires it.
 3. Keep server-side fallbacks for safely recoverable legacy values.
 4. Document the migration and test existing content before release.
 
+Changes confined to a dynamic block's PHP frontend markup normally do not need a Gutenberg deprecation. Site-wide rewrites require a separate, idempotent bulk migration—preferably a dry-run-capable WP-CLI command that recursively transforms parsed blocks, including posts, synced patterns, templates, and template parts.
+
 ## Current issues to resolve
 
 - Correct the malformed custom-category return value in `inc/blocks.php`.
 - Align Hero palette defaults and allowlists across metadata, editor, PHP, and SCSS.
 - Revisit the `jm/`-only global allowlist before FSE templates require core blocks.
+- Normalise block categories and text domains (`jm-custom-theme` is declared by the theme, while block metadata currently uses several values).
+- Review and remove or formally support the older top-level content attributes still declared by `jm/text-with-image`.
