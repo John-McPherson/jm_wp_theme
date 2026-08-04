@@ -13,33 +13,35 @@ declare(strict_types=1);
  */
 
 
-$image_id = jm_args_int(
-    args: $args,
-    key: 'image_id',
-    default: 0,
-    min: 1
+$image_id = jmcargs_int(
+	args: $args,
+	key: 'image_id',
+	default: 0,
+	min: 1
 );
 
 if ($image_id === 0) {
-    return;
+	return;
 }
 
-$classes = jm_html_classes([
-    'jm-image',
-    $args['classes'] ?? null,
-]);
+$classes = jmchtml_classes(
+	[
+		'jm-image',
+		$args['classes'] ?? null,
+	]
+);
 
 $image = wp_get_attachment_image(
-    attachment_id: $image_id,
-    size: 'large',
-    icon: false,
-    attr: [
-        'class'   => $classes,
-        'loading' => 'lazy',
-        'sizes'   => '(max-width: 768px) 100vw, 50vw',
-    ]
+	attachment_id: $image_id,
+	size: 'large',
+	icon: false,
+	attr: [
+		'class'   => $classes,
+		'loading' => 'lazy',
+		'sizes'   => '(max-width: 768px) 100vw, 50vw',
+	]
 );
 
 if ($image !== '') {
-    echo $image;
+	echo $image;
 }

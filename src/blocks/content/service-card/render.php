@@ -6,5 +6,5 @@ declare(strict_types=1);
 
 ?>
 <div class="jm-section__column">
-    <?php echo $content; ?>
+	<?php echo $content; ?>
 </div>

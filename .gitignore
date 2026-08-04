@@ -1,58 +1,36 @@
-# Wordpress - ignore core, configuration, examples, uploads and logs.
-# https://github.com/github/gitignore/blob/main/WordPress.gitignore
-
-# Core
-#
-# Note: if you want to stage/commit WP core files
-# you can delete this whole section/until Configuration.
-/wp-admin/
-/wp-content/index.php
-/wp-content/languages
-/wp-content/plugins/index.php
-/wp-content/themes/index.php
-/wp-includes/
-/index.php
-/license.txt
-/readme.html
-/wp-*.php
-/xmlrpc.php
-
-# Ignore Mac system files
+# macOS
 .DS_Store
 
-# Configuration
+# WordPress runtime files
 wp-config.php
+.htaccess
+uploads/
 
-# Example themes
-/wp-content/themes/twenty*/
+# Dependencies
+/node_modules/
+/vendor/
 
-# Example plugin
-/wp-content/plugins/hello.php
+# Generated builds
+/build/
+/dist/
 
-# Uploads
-/wp-content/uploads/
+# Environment files
+.env
+.env.*
+!.env.example
 
-# Log files
+# Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# htaccess
-/.htaccess
+# Testing and tooling
+/coverage/
+.phpunit.result.cache
+.phpcs-cache
 
-# All plugins
-#
-# Note: If you wish to whitelist plugins,
-# uncomment the next line
-#/wp-content/plugins
-
-# All themes
-#
-# Note: If you wish to whitelist themes,
-# uncomment the next line
-#/wp-content/themes
-
-# Node modules
-node_modules
-
-# Ignore build and dist directories
-/build
-/dist
+# Temporary files
+*.tmp
+*.swp
+*~

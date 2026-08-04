@@ -16,49 +16,49 @@ declare(strict_types=1);
  */
 
 
-$text = jm_args_string(
-    args: $args,
-    key: 'text'
+$text = jmcargs_string(
+	args: $args,
+	key: 'text'
 );
 
 $link = is_array($args['link'] ?? null)
-    ? $args['link']
-    : [];
+	? $args['link']
+	: [];
 
-$url = jm_args_string(
-    args: $link,
-    key: 'url'
+$url = jmcargs_string(
+	args: $link,
+	key: 'url'
 );
 
-$target = jm_args_string(
-    args: $link,
-    key: 'target'
+$target = jmcargs_string(
+	args: $link,
+	key: 'target'
 );
 
 if ($text === '' || $url === '') {
-    return;
+	return;
 }
 
 $attributes = [
-    'id' => $args['id'] ?? null,
-    'href' => $url,
-    'target' => $target !== '' ? $target : null,
-    'rel' => $target === '_blank'
-        ? ['noopener', 'noreferrer']
-        : null,
-    'classes' => [
-        'jm-button',
-        $args['classes'] ?? null,
-    ],
+	'id'      => $args['id'] ?? null,
+	'href'    => $url,
+	'target'  => $target !== '' ? $target : null,
+	'rel'     => $target === '_blank'
+		? ['noopener', 'noreferrer']
+		: null,
+	'classes' => [
+		'jm-button',
+		$args['classes'] ?? null,
+	],
 ];
 ?>
 
-<a<?php jm_the_attributes($attributes); ?>>
-    <?php echo esc_html($text); ?>
+<a<?php jmcthe_attributes($attributes); ?>>
+	<?php echo esc_html($text); ?>
 
-    <?php if ($target === '_blank') : ?>
-        <span class="screen-reader-text">
-            <?php esc_html_e('(opens in a new tab)', 'jm-theme'); ?>
-        </span>
-    <?php endif; ?>
-    </a>
+	<?php if ($target === '_blank') : ?>
+		<span class="screen-reader-text">
+			<?php esc_html_e('(opens in a new tab)', 'jm-theme'); ?>
+		</span>
+	<?php endif; ?>
+	</a>

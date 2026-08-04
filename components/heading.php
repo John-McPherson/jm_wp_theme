@@ -13,35 +13,35 @@ declare(strict_types=1);
 
 $args ??= [];
 
-$text = jm_args_string(
-    args: $args,
-    key: 'text'
+$text = jmcargs_string(
+	args: $args,
+	key: 'text'
 );
 
 if ($text === '') {
-    return;
+	return;
 }
 
-$level = jm_args_int(
-    args: $args,
-    key: 'level',
-    default: 2,
-    min: 1,
-    max: 6
+$level = jmcargs_int(
+	args: $args,
+	key: 'level',
+	default: 2,
+	min: 1,
+	max: 6
 );
 
 $tag = "h{$level}";
 
 $attributes = [
-    'classes' => [
-        'jm-heading',
-        $args['classes'] ?? null,
-    ],
-    'id' => $args['id'] ?? null,
+	'classes' => [
+		'jm-heading',
+		$args['classes'] ?? null,
+	],
+	'id'      => $args['id'] ?? null,
 ];
 
 ?>
 
-<<?php echo $tag; ?><?php jm_the_attributes($attributes); ?>>
-    <?php echo esc_html($text); ?>
+<<?php echo $tag; ?><?php jmcthe_attributes($attributes); ?>>
+	<?php echo esc_html($text); ?>
 </<?php echo $tag; ?>>
