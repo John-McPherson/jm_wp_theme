@@ -1,15 +1,25 @@
 <?php
+/**
+ * Service grid block render template.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 
 /**
- * @var array{
- *     anchor?: string,
- *     className?: string,
- *     palette?: string,
- * } $attributes
- * @var string $content Rendered inner-block content.
+ * Render the service grid block.
+ *
+ * @var array<string, mixed> $attributes Block attributes.
+ * @var string               $content    Rendered inner-block markup.
  */
+// * @var array{
+// * anchor ?: string,
+// * className ?: string,
+// * palette ?: string,
+// * } $attributes
+// * @var string $content Rendered inner - block content .
+// * /
 
 $palette = jmc_html_allowed_value(
 	value: $attributes['palette'] ?? null,
@@ -64,6 +74,9 @@ if ( ! empty( $attributes['anchor'] ) ) {
 
 <section <?php jmc_the_attributes( $section_attributes ); ?>>
 	<div <?php jmc_the_attributes( $container_attributes ); ?>>
-		<?php echo $content; ?>
+		<?php
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered and filtered inner-block markup supplied by WordPress.
+		echo $content;
+		?>
 	</div>
 </section>

@@ -23,7 +23,7 @@ $palette = jmc_html_allowed_value(
 	default: 'default'
 );
 
-$order = jmc_html_allowed_value(
+$col_order = jmc_html_allowed_value(
 	value: $attributes['order'] ?? null,
 	allowed: [
 		'left',
@@ -60,7 +60,7 @@ $section_attributes = [
 			'jmc-section',
 			'jmc-text-with-image',
 			$palette_classes[ $palette ],
-			$order_classes[ $order ],
+			$order_classes[ $col_order ],
 			...$custom_classes,
 		]
 	),

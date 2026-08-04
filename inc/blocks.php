@@ -47,7 +47,7 @@ add_filter(
 
 		foreach ( $registered_blocks as $block ) {
 
-			if ( str_starts_with( $block->name, 'jm/' ) ) {
+			if ( str_starts_with( $block->name, 'jmc/' ) ) {
 				$allowed[] = $block->name;
 			}
 		}
@@ -66,7 +66,7 @@ add_filter(
 		return $categories[] = [
 			[
 				'slug'  => 'jmc-section',
-				'title' => __( 'Sections', 'jm' ),
+				'title' => __( 'Sections', 'jmc' ),
 				'icon'  => 'customizer',
 			],
 		];
