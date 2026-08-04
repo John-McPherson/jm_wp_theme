@@ -42,5 +42,8 @@ jobs:
       - name: Type-check
         run: npm run typecheck
 
+      - name: Lint PHP syntax
+        run: npm run lint:php
+
       - name: Build theme
         run: npm run build

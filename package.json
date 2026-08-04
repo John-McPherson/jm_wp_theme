@@ -10,7 +10,8 @@
     "build": "npm run build:assets && npm run build:styles && npm run build:js",
     "start": "concurrently \"wp-scripts start --output-path=build/js\" \"sass --watch src/scss/style.scss:build/css/style.css src/scss/editor-style.scss:build/css/editor-style.css --load-path=src/scss\"",
     "package": "npm run build && rm -rf dist && mkdir -p dist && rsync -av --delete build/ dist/ && rsync -av theme.json style.css functions.php dist/",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint:php": "find . -type f -name \"*.php\" -not -path \"./node_modules/*\" -not -path \"./vendor/*\" -not -path \"./build/*\" -not -path \"./dist/*\" -print0 | xargs -0 -n1 php -l"
   },
   "repository": {
     "type": "git",
