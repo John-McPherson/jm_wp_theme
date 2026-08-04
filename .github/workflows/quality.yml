@@ -45,5 +45,8 @@ jobs:
       - name: Lint PHP syntax
         run: npm run lint:php
 
+      - name: Lint JavaScript and TypeScript
+        run: npm run lint:js
+
       - name: Build theme
         run: npm run build

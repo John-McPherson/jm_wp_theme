@@ -11,7 +11,7 @@ import SelectInput from '../../../components/SelectInput';
 
 const TEMPLATE = [
 	[ 'jm/paragraph', { variant: 'label' } ],
-	[ 'jm/heading', { level: '1', lock_level: true } ],
+	[ 'jm/heading', { level: '1', lockLevel: true } ],
 	[ 'jm/paragraph' ],
 	[ 'jm/button', { buttonType: 'secondary' } ],
 ];

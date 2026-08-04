@@ -7,7 +7,7 @@ import Sidebar from '../../../components/Sidebar';
 import SelectInput from '../../../components/SelectInput';
 
 const TEMPLATE = [
-	[ 'jm/heading', { level: '2', lock_level: true } ],
+	[ 'jm/heading', { level: '2', lockLevel: true } ],
 	[ 'jm/paragraph' ],
 ];
 

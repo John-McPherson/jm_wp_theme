@@ -11,7 +11,8 @@
     "start": "concurrently \"wp-scripts start --output-path=build/js\" \"sass --watch src/scss/style.scss:build/css/style.css src/scss/editor-style.scss:build/css/editor-style.css --load-path=src/scss\"",
     "package": "npm run build && rm -rf dist && mkdir -p dist && rsync -av --delete build/ dist/ && rsync -av theme.json style.css functions.php dist/",
     "typecheck": "tsc --noEmit",
-    "lint:php": "find . -type f -name \"*.php\" -not -path \"./node_modules/*\" -not -path \"./vendor/*\" -not -path \"./build/*\" -not -path \"./dist/*\" -print0 | xargs -0 -n1 php -l"
+    "lint:php": "find . -type f -name \"*.php\" -not -path \"./node_modules/*\" -not -path \"./vendor/*\" -not -path \"./build/*\" -not -path \"./dist/*\" -print0 | xargs -0 -n1 php -l",
+    "lint:js": "wp-scripts lint-js"
   },
   "repository": {
     "type": "git",
@@ -25,10 +26,13 @@
   },
   "homepage": "https://github.com/John-McPherson/jm_custom_theme#readme",
   "devDependencies": {
+    "@types/react": "^18.3.31",
     "@wordpress/block-editor": "^15.22.0",
     "@wordpress/blocks": "^15.22.0",
+    "@wordpress/components": "^38.0.0",
     "@wordpress/element": "^8.1.0",
     "@wordpress/i18n": "^6.22.0",
+    "@wordpress/icons": "^15.3.0",
     "@wordpress/scripts": "^32.4.0",
     "concurrently": "^10.0.3",
     "sass": "^1.101.0",

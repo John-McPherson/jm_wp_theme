@@ -31,7 +31,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 	} );
 	const bind = bindFields( attributes, setAttributes );
 
-	const { level, lock_level } = attributes;
+	const { level, lockLevel } = attributes;
 
 	const classes = [].filter( Boolean ).join( ' ' );
 
@@ -52,7 +52,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 
 	return (
 		<>
-			{ lock_level && sideBar }
+			{ lockLevel && sideBar }
 			<div { ...blockProps }>
 				<TextInput
 					{ ...bind.text( 'text' ) }
