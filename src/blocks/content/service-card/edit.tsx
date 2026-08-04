@@ -7,11 +7,11 @@ import Sidebar from '../../../components/Sidebar';
 import SelectInput from '../../../components/SelectInput';
 
 const TEMPLATE = [
-	[ 'jm/heading', { level: '2', lockLevel: true } ],
-	[ 'jm/paragraph' ],
+	[ 'jmc/heading', { level: '2', lockLevel: true } ],
+	[ 'jmc/paragraph' ],
 ];
 
-const ALLOWED_BLOCKS = [ 'jm/heading', 'jm/paragraph' ];
+const ALLOWED_BLOCKS = [ 'jmc/heading', 'jmc/paragraph' ];
 
 export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( { className: 'jmc-service-card' } );

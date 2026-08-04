@@ -24,7 +24,7 @@ const VARIANT_CLASSES = {
 
 export default function Edit( { attributes, setAttributes, context } ) {
 	const { className } = attributes;
-	const variant = context[ 'jm/variant' ] ?? 'default';
+	const variant = context[ 'jmc/variant' ] ?? 'default';
 
 	const blockProps = useBlockProps( {
 		className: [ className, 'jmc-heading', VARIANT_CLASSES[ variant ] ],

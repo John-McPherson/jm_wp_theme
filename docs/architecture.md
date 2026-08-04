@@ -61,14 +61,14 @@ Use the typed argument helpers in `inc/helpers/component_args.php` and the escap
 ## Naming
 
 - PHP functions: `jmc_` prefix and `snake_case`.
-- Blocks: `jm/<name>`.
+- Blocks: `jmc/<name>`.
 - CSS classes: `jmc-` prefix with BEM-style elements where useful.
 - CSS custom properties: semantic names rather than raw colour names at the component boundary.
 - Text domain: use the single theme text domain declared in `style.css`. Existing mixed domains must be normalised before release.
 
 ## Known architectural constraints
 
-- The global block allowlist currently permits only `jm/` blocks. Reassess this before navigation, query, template, and other core FSE blocks are required.
+- The global block allowlist currently permits only `jmc/` blocks. Reassess this before navigation, query, template, and other core FSE blocks are required.
 - The custom block-category filter currently has an invalid return shape and must be corrected.
 - The packaging pipeline does not yet include all runtime dependencies.
 - Templates, navigation, and production deployment architecture are still under development.

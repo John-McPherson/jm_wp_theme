@@ -22,7 +22,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 	const paragraphVariant = ( attributes.variant ??
 		'default' ) as ParagraphVariant;
 
-	const contextVariant = ( context[ 'jm/variant' ] ??
+	const contextVariant = ( context[ 'jmc/variant' ] ??
 		'default' ) as ContextVariant;
 
 	const blockProps = useBlockProps( {

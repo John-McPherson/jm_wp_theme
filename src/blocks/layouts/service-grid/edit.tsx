@@ -9,21 +9,21 @@ import SelectInput from '../../../components/SelectInput';
 
 const TEMPLATE = [
 	[
-		'jm/column',
+		'jmc/column',
 		{},
 		[
-			[ 'jm/paragraph', { variant: 'label' } ],
-			[ 'jm/heading', { level: '2' } ],
+			[ 'jmc/paragraph', { variant: 'label' } ],
+			[ 'jmc/heading', { level: '2' } ],
 		],
 	],
 	[
-		'jm/column',
+		'jmc/column',
 		{},
 		[
-			[ 'jm/service-card' ],
-			[ 'jm/service-card' ],
-			[ 'jm/service-card' ],
-			[ 'jm/service-card' ],
+			[ 'jmc/service-card' ],
+			[ 'jmc/service-card' ],
+			[ 'jmc/service-card' ],
+			[ 'jmc/service-card' ],
 		],
 	],
 ];
@@ -34,7 +34,7 @@ const VARIANT_CLASSES = {
 	secondary: 'jmc-palette--secondary',
 };
 
-const ALLOWED_BLOCKS = [ 'jm/column' ];
+const ALLOWED_BLOCKS = [ 'jmc/column' ];
 
 export default function Edit( { attributes, setAttributes } ) {
 	const bind = bindFields( attributes, setAttributes );

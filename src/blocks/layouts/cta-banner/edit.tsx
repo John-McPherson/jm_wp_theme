@@ -9,11 +9,11 @@ import SelectInput from '../../../components/SelectInput';
 
 const TEMPLATE = [
 	[
-		'jm/column',
+		'jmc/column',
 		{},
 		[
 			[
-				'jm/heading',
+				'jmc/heading',
 				{
 					level: '2',
 				},
@@ -21,11 +21,11 @@ const TEMPLATE = [
 		],
 	],
 	[
-		'jm/column',
+		'jmc/column',
 		{},
 		[
-			[ 'jm/paragraph', {} ],
-			[ 'jm/button', {} ],
+			[ 'jmc/paragraph', {} ],
+			[ 'jmc/button', {} ],
 		],
 	],
 ];
@@ -38,7 +38,7 @@ const VARIANT_CLASSES = {
 	right: 'jmc-column-right',
 };
 
-const ALLOWED_BLOCKS = [ 'jm/column' ];
+const ALLOWED_BLOCKS = [ 'jmc/column' ];
 
 export default function Edit( { attributes, setAttributes } ) {
 	const bind = bindFields( attributes, setAttributes );

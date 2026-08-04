@@ -1,7 +1,7 @@
 {
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
-  "name": "jm/text-with-image",
+  "name": "jmc/text-with-image",
   "version": "0.1.0",
   "title": "Text with Image",
   "category": "jmc-section",
@@ -60,27 +60,27 @@
     },
     "innerBlocks": [
       {
-        "name": "jm/paragraph",
+        "name": "jmc/paragraph",
         "attributes": {
           "text": "Label",
           "variant": "label"
         }
       },
       {
-        "name": "jm/heading",
+        "name": "jmc/heading",
         "attributes": {
           "text": "Lorem ipsum dolor",
           "level": "1"
         }
       },
       {
-        "name": "jm/paragraph",
+        "name": "jmc/paragraph",
         "attributes": {
           "text": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem distinctio quas beatae nisi numquam consectetur incidunt delectus soluta facere cupiditate magnam laudantium, quasi quo."
         }
       },
       {
-        "name": "jm/button",
+        "name": "jmc/button",
         "attributes": {
           "text": "Lorem ipsum"
         }

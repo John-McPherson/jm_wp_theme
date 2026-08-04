@@ -19,7 +19,7 @@ declare(strict_types=1);
 
 
 $variant = jmc_html_allowed_value(
-	value: $block->context['jm/variant'] ?? null,
+	value: $block->context['jmc/variant'] ?? null,
 	allowed: [
 		'default',
 		'hero',

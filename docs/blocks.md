@@ -4,7 +4,7 @@
 
 On `init`, the theme recursively scans `build/js/blocks`. Each directory containing `block.json` is registered with `register_block_type()`. Adding source code without producing compiled metadata will not register a block.
 
-Custom blocks use the `jm/` namespace. The current global allowlist exposes only registered blocks with that prefix.
+Custom blocks use the `jmc/` namespace. The current global allowlist exposes only registered blocks with that prefix.
 
 ## Contract rules
 
@@ -20,17 +20,17 @@ Custom blocks use the `jm/` namespace. The current global allowlist exposes only
 
 This inventory is pinned to the current `dev` branch. All current blocks are dynamic PHP blocks.
 
-| Block                | Purpose                                                                            | Rendering                 | Notes                                                                                                                  |
-| -------------------- | ---------------------------------------------------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `jm/button`          | Linked call-to-action                                                              | Dynamic PHP               | Internal composition block; primary button by default; direct inserter disabled                                        |
-| `jm/column`          | Groups related inner content within a section                                      | Dynamic PHP               | Structural composition block; direct inserter disabled                                                                 |
-| `jm/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jm/variant` context; level defaults to `2`; direct inserter disabled                                             |
-| `jm/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jm/variant`; direct inserter disabled                                          |
-| `jm/service-card`    | Linked service summary with a predefined icon                                      | Dynamic PHP               | Restricted to `jm/service-grid`; allows Heading and Paragraph children                                                 |
-| `jm/cta-banner`      | Two-column call-to-action section                                                  | Dynamic PHP               | Palettes: default, secondary, inverse; left/right order; defaults to inverse/right                                     |
-| `jm/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jm/variant`; defaults to default palette                                            |
-| `jm/service-grid`    | Introductory content beside a responsive service-card grid                         | Dynamic PHP               | Allows Column children; palettes and left/right order; defaults to default/left                                        |
-| `jm/text-with-image` | Composable text content paired with an image                                       | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; contains legacy-looking attributes that need contract review |
+| Block                 | Purpose                                                                            | Rendering                 | Notes                                                                                                                  |
+| --------------------- | ---------------------------------------------------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `jmc/button`          | Linked call-to-action                                                              | Dynamic PHP               | Internal composition block; primary button by default; direct inserter disabled                                        |
+| `jmc/column`          | Groups related inner content within a section                                      | Dynamic PHP               | Structural composition block; direct inserter disabled                                                                 |
+| `jmc/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jmc/variant` context; level defaults to `2`; direct inserter disabled                                            |
+| `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; direct inserter disabled                                         |
+| `jmc/service-card`    | Linked service summary with a predefined icon                                      | Dynamic PHP               | Restricted to `jmc/service-grid`; allows Heading and Paragraph children                                                |
+| `jmc/cta-banner`      | Two-column call-to-action section                                                  | Dynamic PHP               | Palettes: default, secondary, inverse; left/right order; defaults to inverse/right                                     |
+| `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; defaults to default palette                                           |
+| `jmc/service-grid`    | Introductory content beside a responsive service-card grid                         | Dynamic PHP               | Allows Column children; palettes and left/right order; defaults to default/left                                        |
+| `jmc/text-with-image` | Composable text content paired with an image                                       | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; contains legacy-looking attributes that need contract review |
 
 This table should be updated whenever a block is added, renamed, deprecated, or removed.
 
@@ -44,7 +44,7 @@ This table should be updated whenever a block is added, renamed, deprecated, or 
 ## Adding a block
 
 1. Create the source directory and `block.json`.
-2. Use the `jm/<name>` namespace and appropriate `jmc-*` category.
+2. Use the `jmc/<name>` namespace and appropriate `jmc-*` category.
 3. Define attributes with valid defaults and explicit types.
 4. Implement and type the editor component.
 5. Implement server rendering and validate every incoming attribute.
@@ -59,7 +59,7 @@ This table should be updated whenever a block is added, renamed, deprecated, or 
 
 Palettes are semantic presentation contracts, not arbitrary colour choices. A block must expose only palettes it can render accessibly. The default stored in `block.json`, options shown in the editor, PHP allowlist, and SCSS selector must agree exactly.
 
-Variants change structural presentation. If descendants require the value, provide it through block context with a namespaced key such as `jm/variant` rather than copying attributes through unrelated blocks.
+Variants change structural presentation. If descendants require the value, provide it through block context with a namespaced key such as `jmc/variant` rather than copying attributes through unrelated blocks.
 
 ## Images
 
@@ -82,6 +82,6 @@ Changes confined to a dynamic block's PHP frontend markup normally do not need a
 
 - Correct the malformed custom-category return value in `inc/blocks.php`.
 - Align Hero palette defaults and allowlists across metadata, editor, PHP, and SCSS.
-- Revisit the `jm/`-only global allowlist before FSE templates require core blocks.
+- Revisit the `jmc/`-only global allowlist before FSE templates require core blocks.
 - Normalise block categories and text domains (`jmc-custom-theme` is declared by the theme, while block metadata currently uses several values).
-- Review and remove or formally support the older top-level content attributes still declared by `jm/text-with-image`.
+- Review and remove or formally support the older top-level content attributes still declared by `jmc/text-with-image`.

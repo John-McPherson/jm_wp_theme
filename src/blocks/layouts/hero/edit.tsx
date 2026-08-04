@@ -10,10 +10,10 @@ import Sidebar from '../../../components/Sidebar';
 import SelectInput from '../../../components/SelectInput';
 
 const TEMPLATE = [
-	[ 'jm/paragraph', { variant: 'label' } ],
-	[ 'jm/heading', { level: '1', lockLevel: true } ],
-	[ 'jm/paragraph' ],
-	[ 'jm/button', { buttonType: 'secondary' } ],
+	[ 'jmc/paragraph', { variant: 'label' } ],
+	[ 'jmc/heading', { level: '1', lockLevel: true } ],
+	[ 'jmc/paragraph' ],
+	[ 'jmc/button', { buttonType: 'secondary' } ],
 ];
 
 const VARIANT_CLASSES = {
@@ -22,7 +22,7 @@ const VARIANT_CLASSES = {
 	secondary: 'jmc-palette--secondary',
 };
 
-const ALLOWED_BLOCKS = [ 'jm/heading', 'jm/paragraph', 'jm/button' ];
+const ALLOWED_BLOCKS = [ 'jmc/heading', 'jmc/paragraph', 'jmc/button' ];
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { imageUrl, className, palette } = attributes;
