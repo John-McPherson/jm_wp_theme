@@ -2,7 +2,7 @@
 
 ## Status
 
-The release pipeline is not yet safe. `npm run package` currently copies `build/`, `theme.json`, `style.css`, and `functions.php`, but omits PHP runtime dependencies including `inc/` and `components/`. Do not distribute the current `dist/` output.
+The release pipeline is not yet safe. The inclusion list now contains `build/`, `inc/`, `components/`, `templates/`, and root runtime files, but also names `parts/`, `patterns/`, and `languages/`, which do not exist on the current `dev` branch. `rsync` therefore exits non-zero. Remove missing optional paths or create them before distributing `dist/`.
 
 ## Versioning
 
@@ -41,9 +41,9 @@ Exclude development-only files such as `node_modules/`, `src/`, `.git/`, local c
 1. Resolve all documented release blockers.
 2. Update versions and `CHANGELOG.md`.
 3. Install dependencies from the lockfile with `npm ci`.
-4. Run formatting, linting, static analysis, tests, and accessibility checks.
+4. Run type-checking, configured linters, tests, and accessibility checks.
 5. Run the production build.
-6. Build the archive from an explicit inclusion list.
+6. Run `npm run package` and require a zero exit status.
 7. Inspect the archive contents.
 8. Install the archive into a clean supported WordPress environment.
 9. Complete the smoke test in [Testing](testing.md).

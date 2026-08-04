@@ -2,13 +2,16 @@
 
 ## Current state
 
-The repository does not yet have a complete automated test suite or CI quality gates. The checks below are the required manual baseline and the target automation plan.
-
-`package.json` currently exposes build, watch, asset, style, JavaScript, and package scripts only. Do not document linting, static analysis, unit tests, browser tests, or accessibility scans as available commands until they are implemented.
+The repository has CI quality gates but no unit, integration, browser, visual-regression, or automated accessibility test suite. GitHub Actions installs locked Node and Composer dependencies, runs the configured type-check and linters, then builds the theme.
 
 ## Before every review
 
 ```bash
+npm run typecheck
+npm run lint:php
+npm run lint:js
+npm run lint:styles
+npm run lint:phpcs
 npm run build
 ```
 
@@ -24,18 +27,17 @@ Then verify:
 - Layout works at narrow mobile, tablet, desktop, and wide desktop widths.
 - Keyboard focus and reduced-motion behaviour meet the accessibility standard.
 
-## PHP checks to add
+## PHP checks
 
-- Syntax linting for all PHP files.
-- WordPress Coding Standards via PHPCS.
+- Syntax linting for all PHP files is configured.
+- WordPress Coding Standards via PHPCS is configured.
 - PHPStan with WordPress stubs at an agreed level.
 - Unit tests for argument and HTML-attribute helpers.
 - Integration tests for block discovery and dynamic rendering.
 
-## Frontend checks to add
+## Frontend checks
 
-- `wp-scripts lint-js` for TypeScript/JavaScript.
-- Stylelint for SCSS.
+- TypeScript type-checking, `wp-scripts lint-js`, and `wp-scripts lint-style` are configured.
 - Unit tests for attribute transformations and editor controls.
 - Playwright tests for block-editor and frontend smoke flows.
 - axe integration for representative pages and block states.
@@ -68,3 +70,5 @@ The current header declares both `Requires at least` and `Tested up to` as WordP
 7. Check debug logs and the browser console.
 
 A working development checkout is not evidence that the distributable archive works.
+
+CI currently runs `npm run build`, not `npm run package`, so the release-directory failure is not detected automatically. Add package execution and structural assertions before treating CI as a release gate.

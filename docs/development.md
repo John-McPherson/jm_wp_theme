@@ -11,7 +11,8 @@
 ## Initial setup
 
 ```bash
-npm install
+npm ci
+composer install
 npm run build
 ```
 
@@ -54,7 +55,7 @@ There is no `engines` contract in `package.json` yet. Record and enforce the cho
 
 Edit files under `src/`, not compiled files under `build/`. Always run a production build before review so missing imports and compilation errors are caught.
 
-When `theme.json` tokens change, run the token generator used by the project and review the generated SCSS diff before rebuilding. Generated files should be reproducible from their source.
+When `theme.json` tokens change, update the corresponding SCSS token definitions deliberately, review the diff, and rebuild. The repository does not currently provide an automated token generator.
 
 ## Adding a feature
 
@@ -75,6 +76,7 @@ When `theme.json` tokens change, run the token generator used by the project and
 
 ## Definition of done
 
+- Type-checking and all configured linters succeed.
 - Production build succeeds.
 - No PHP warnings or browser console errors occur in the changed flow.
 - Empty, default, invalid, and populated states behave safely.

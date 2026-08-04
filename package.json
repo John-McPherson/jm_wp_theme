@@ -9,7 +9,7 @@
     "build:js": "wp-scripts build --output-path=build/js",
     "build": "npm run build:assets && npm run build:styles && npm run build:js",
     "start": "concurrently \"wp-scripts start --output-path=build/js\" \"sass --watch src/scss/style.scss:build/css/style.css src/scss/editor-style.scss:build/css/editor-style.css --load-path=src/scss\"",
-"package": "npm run build && rm -rf dist && mkdir -p dist && rsync -a build inc components templates parts patterns languages theme.json style.css functions.php screenshot.png README.md dist/",
+    "package": "npm run build && rm -rf dist && mkdir -p dist && rsync -a build inc components templates theme.json style.css functions.php screenshot.png README.md dist/",
     "typecheck": "tsc --noEmit",
     "lint:php": "find . -type f -name \"*.php\" -not -path \"./node_modules/*\" -not -path \"./vendor/*\" -not -path \"./build/*\" -not -path \"./dist/*\" -print0 | xargs -0 -n1 php -l",
     "lint:js": "wp-scripts lint-js",

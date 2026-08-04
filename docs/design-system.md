@@ -21,7 +21,6 @@ Components should consume semantic roles. A raw value such as `brand-700` descri
 | Content and wide widths            | `theme.json`                          |
 | Semantic palette mappings          | `src/scss/palettes/`                  |
 | Shared SCSS tokens                 | `src/scss/tokens/`                    |
-| Token generation                   | `scripts/generate-tokens.mjs`         |
 | Layout rules                       | `src/scss/layout/`                    |
 
 ## Colour
@@ -55,6 +54,8 @@ Add a new spacing token only when an existing token cannot express a repeated de
 5. Test every palette and interactive state in editor and frontend.
 6. Measure contrast where colour is involved.
 7. Document the role here and include migration notes if existing content changes.
+
+There is currently no automated token generator; changes shared between `theme.json` and SCSS must be kept in sync during review.
 
 ## Component states
 

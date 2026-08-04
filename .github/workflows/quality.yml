@@ -66,3 +66,17 @@ jobs:
 
       - name: Build theme
         run: npm run build
+
+      - name: Build release package
+        run: npm run package
+
+      - name: Verify packaged theme
+        run: |
+          test -f dist/functions.php
+          test -f dist/style.css
+          test -f dist/theme.json
+          test -f dist/build/css/style.css
+          test -d dist/build/js
+          test -d dist/inc
+          test -d dist/components
+          test -d dist/templates

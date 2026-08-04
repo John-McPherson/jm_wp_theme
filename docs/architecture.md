@@ -2,7 +2,7 @@
 
 ## Purpose
 
-JM Custom Theme is a Full Site Editing theme with a deliberately small WordPress bootstrap, dynamically rendered custom blocks, reusable PHP view components, and a shared token system for the editor and frontend.
+JMC Custom Theme is a Full Site Editing theme with a deliberately small WordPress bootstrap, dynamically rendered custom blocks, reusable PHP view components, and a shared token system for the editor and frontend.
 
 ## Runtime flow
 
@@ -47,7 +47,7 @@ Use the typed argument helpers in `inc/helpers/component_args.php` and the escap
 
 ### Styling and design tokens
 
-`theme.json` exposes WordPress-facing primitives such as colour, typography, spacing, radii, and layout widths. `scripts/generate-tokens.mjs` supports generated token output. SCSS maps primitives into aliases, semantic roles, palettes, layout rules, components, and blocks. Both frontend and editor entry points consume the shared foundations.
+`theme.json` exposes WordPress-facing primitives such as colour, typography, spacing, radii, and layout widths. SCSS maps primitives into aliases, semantic roles, palettes, layout rules, components, and blocks. Both frontend and editor entry points consume the shared foundations.
 
 ## Dependency rules
 
@@ -64,13 +64,13 @@ Use the typed argument helpers in `inc/helpers/component_args.php` and the escap
 - Blocks: `jmc/<name>`.
 - CSS classes: `jmc-` prefix with BEM-style elements where useful.
 - CSS custom properties: semantic names rather than raw colour names at the component boundary.
-- Text domain: use the single theme text domain declared in `style.css`. Existing mixed domains must be normalised before release.
+- Text domain: `jmc-theme` in PHP, TypeScript, and block metadata. The `style.css` header must be aligned before release.
 
 ## Known architectural constraints
 
 - The global block allowlist currently permits only `jmc/` blocks. Reassess this before navigation, query, template, and other core FSE blocks are required.
-- The custom block-category filter currently has an invalid return shape and must be corrected.
-- The packaging pipeline does not yet include all runtime dependencies.
+- Internal content-block metadata still uses the unregistered legacy categories `jm` and `jmc-blocks`.
+- The packaging inclusion list includes runtime dependencies but also references missing optional directories, causing the command to fail.
 - Templates, navigation, and production deployment architecture are still under development.
 - `templates/index.html` is currently the only FSE template; template parts and patterns have not been introduced.
 

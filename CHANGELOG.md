@@ -11,13 +11,17 @@ All notable changes will be documented here. The project follows semantic versio
 - Four section blocks: CTA Banner, Hero, Service Grid, and Text with Image.
 - Semantic palette, typography, spacing, radius, and layout foundations.
 - Reusable PHP render components and typed component-argument helpers.
-- Reusable React editor controls and design-token generation tooling.
+- Reusable React editor controls and shared design-token foundations.
+- GitHub Actions quality checks for TypeScript, PHP, JavaScript, SCSS, PHPCS, and production builds.
+- Consistent `jmc/` block namespaces and `jmc_` PHP global prefixes.
+- A valid `jmc-section` block category and corrected category-filter shape.
 
 ### Known issues
 
-- The theme packaging command omits required runtime directories.
-- The custom block-category filter returns an invalid structure.
-- The Hero palette contract is inconsistent across layers.
-- Automated testing and CI quality gates are not yet established.
-- Block categories and text domains are inconsistent across current metadata.
+- Packaging references missing optional directories and exits non-zero.
+- CI builds but does not execute or verify the release package.
+- The npm audit excludes all development/build dependencies.
+- `style.css` declares `jmc-custom-theme` while code and block metadata use `jmc-theme`.
+- Internal content-block categories retain legacy `jm` and `jmc-blocks` values.
+- Automated unit, integration, browser, visual, and accessibility tests are not yet established.
 - Only a minimal `templates/index.html` FSE template exists.

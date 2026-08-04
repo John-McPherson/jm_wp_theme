@@ -39,7 +39,7 @@ This table should be updated whenever a block is added, renamed, deprecated, or 
 - Section blocks are assigned to `jmc-section` and are intended for direct insertion.
 - Content blocks are used inside section templates; their `supports.inserter` value is `false` where explicitly declared.
 - `allowedBlocks`, `ancestor`, and block locking should keep editor composition valid without relying only on author training.
-- Category metadata is currently inconsistent (`jm`, `jmc-blocks`, and `jmc-section`). Normalise it alongside the `inc/blocks.php` category fix.
+- Section blocks use the registered `jmc-section` category. Internal content-block metadata still contains legacy `jm` and `jmc-blocks` categories and should be normalised.
 
 ## Adding a block
 
@@ -80,8 +80,8 @@ Changes confined to a dynamic block's PHP frontend markup normally do not need a
 
 ## Current issues to resolve
 
-- Correct the malformed custom-category return value in `inc/blocks.php`.
-- Align Hero palette defaults and allowlists across metadata, editor, PHP, and SCSS.
+- Normalise internal content-block categories to one registered category, or remove category metadata where it has no effect.
+- Re-check Hero palette behaviour across metadata, editor, PHP, and SCSS whenever its contract changes.
 - Revisit the `jmc/`-only global allowlist before FSE templates require core blocks.
-- Normalise block categories and text domains (`jmc-custom-theme` is declared by the theme, while block metadata currently uses several values).
+- Change the `style.css` text-domain header from `jmc-custom-theme` to the canonical `jmc-theme` used by translations and block metadata.
 - Review and remove or formally support the older top-level content attributes still declared by `jmc/text-with-image`.

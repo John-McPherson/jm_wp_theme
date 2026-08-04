@@ -1,4 +1,4 @@
-# JM Custom Theme
+# JMC Custom Theme
 
 Custom Full Site Editing WordPress theme for AMC Electrical, built with PHP, TypeScript, SCSS, Gutenberg blocks, and `theme.json`.
 
@@ -10,6 +10,7 @@ Custom Full Site Editing WordPress theme for AMC Electrical, built with PHP, Typ
 - PHP 8.0 or later
 - A current Node.js LTS release (recommended; not yet enforced by `package.json`)
 - npm
+- Composer 2
 - `rsync` for asset builds and packaging
 
 ## Setup
@@ -17,7 +18,8 @@ Custom Full Site Editing WordPress theme for AMC Electrical, built with PHP, Typ
 Clone the repository into `wp-content/themes`, then install dependencies:
 
 ```bash
-npm install
+npm ci
+composer install
 ```
 
 Build the theme assets:
@@ -26,7 +28,7 @@ Build the theme assets:
 npm run build
 ```
 
-Activate **JM Custom Theme** in WordPress.
+Activate **JMC Custom Theme** in WordPress.
 
 For development with TypeScript and Sass watchers:
 
@@ -36,30 +38,34 @@ npm start
 
 ## Commands
 
-| Command | Purpose |
-|---|---|
-| `npm start` | Watch block JavaScript and Sass sources |
-| `npm run build` | Build assets, compressed CSS, and block JavaScript |
-| `npm run build:assets` | Copy `src/assets` to `build/assets` |
-| `npm run build:styles` | Compile frontend and editor Sass |
-| `npm run build:js` | Build Gutenberg block scripts with `wp-scripts` |
-| `npm run package` | Create `dist/`; currently incomplete and not suitable for release |
+| Command                | Purpose                                             |
+| ---------------------- | --------------------------------------------------- |
+| `npm start`            | Watch block JavaScript and Sass sources             |
+| `npm run build`        | Build assets, compressed CSS, and block JavaScript  |
+| `npm run build:assets` | Copy `src/assets` to `build/assets`                 |
+| `npm run build:styles` | Compile frontend and editor Sass                    |
+| `npm run build:js`     | Build Gutenberg block scripts with `wp-scripts`     |
+| `npm run typecheck`    | Type-check TypeScript without emitting files        |
+| `npm run lint:php`     | Check PHP syntax                                    |
+| `npm run lint:js`      | Lint JavaScript and TypeScript                      |
+| `npm run lint:styles`  | Lint SCSS                                           |
+| `npm run lint:phpcs`   | Run WordPress Coding Standards                      |
+| `npm run package`      | Build and assemble the release directory in `dist/` |
 
-The current package command omits runtime PHP directories such as `inc/` and `components/`. See [Releasing](docs/releasing.md) before distributing the theme.
+The package inclusion list contains the runtime directories, but currently also references `parts/`, `patterns/`, and `languages/`, which do not exist. Packaging fails until those paths are removed or created. See [Releasing](docs/releasing.md).
 
 ## Structure
 
-| Path | Responsibility |
-|---|---|
-| `functions.php` | Theme bootstrap only |
-| `inc/` | Theme setup, asset loading, block registration, and helpers |
-| `components/` | Reusable server-rendered PHP components |
-| `src/` | Authoring sources: SCSS, TypeScript, blocks, and static assets |
-| `scripts/` | Development utilities, including design-token generation |
-| `build/` | Generated browser and block assets used by WordPress |
-| `templates/` | FSE templates; currently only the minimal `index.html` fallback |
-| `theme.json` | WordPress design settings and primitive tokens |
-| `docs/` | Architecture and operational documentation |
+| Path            | Responsibility                                                  |
+| --------------- | --------------------------------------------------------------- |
+| `functions.php` | Theme bootstrap only                                            |
+| `inc/`          | Theme setup, asset loading, block registration, and helpers     |
+| `components/`   | Reusable server-rendered PHP components                         |
+| `src/`          | Authoring sources: SCSS, TypeScript, blocks, and static assets  |
+| `build/`        | Generated browser and block assets used by WordPress            |
+| `templates/`    | FSE templates; currently only the minimal `index.html` fallback |
+| `theme.json`    | WordPress design settings and primitive tokens                  |
+| `docs/`         | Architecture and operational documentation                      |
 
 ## Engineering documentation
 
@@ -79,7 +85,7 @@ No formal browser matrix has been approved yet. Until one is defined and tested,
 
 ## Current scope
 
-The theme currently provides nine server-rendered blocks: five internal content/composition blocks and four editor-insertable section blocks. Site header, navigation, footer, complete template coverage, CI, automated tests, and a verified release package are future milestones. See [Blocks](docs/blocks.md) for the exact inventory.
+The theme currently provides nine server-rendered blocks: five internal content/composition blocks and four editor-insertable section blocks. GitHub Actions runs type-checking, PHP/JS/SCSS linting, PHPCS, and a production build. Site header, navigation, footer, complete template coverage, automated tests, and a verified release package remain future milestones.
 
 ## Licence
 
