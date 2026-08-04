@@ -1,20 +1,21 @@
 @layer base {
-  :root {
-    --jm-background-color: var(--jm-color-base-100);
-    --jm-heading-color: var(--jm-color-brand-900);
-    --jm-text-color: var(--jm-color-base-700);
-    --jm-text-highlight: var(--jm-color-accent-500);
 
-    // Buttons
-    --jm-button-background: var(--jm-color-brand-700);
-    --jm-button-color: var(--jm-color-base-100);
-    --jm-button-hover-background: var(--jm-color-brand-900);
-    --jm-button-hover-color: var(--jm-color-base-100);
+	:root {
+		--jm-background-color: var(--jm-color-base-100);
+		--jm-heading-color: var(--jm-color-brand-900);
+		--jm-text-color: var(--jm-color-base-700);
+		--jm-text-highlight: var(--jm-color-accent-500);
 
-    // Secondary buttons
-    --jm-button-secondary-background: transparent;
-    --jm-button-secondary-color: var(--jm-color-brand-700);
-    --jm-button-secondary-hover-background: var(--jm-color-brand-700);
-    --jm-button-secondary-hover-color: var(--jm-color-base-100);
-  }
+		// Buttons
+		--jm-button-background: var(--jm-color-brand-700);
+		--jm-button-color: var(--jm-color-base-100);
+		--jm-button-hover-background: var(--jm-color-brand-900);
+		--jm-button-hover-color: var(--jm-color-base-100);
+
+		// Secondary buttons
+		--jm-button-secondary-background: transparent;
+		--jm-button-secondary-color: var(--jm-color-brand-700);
+		--jm-button-secondary-hover-background: var(--jm-color-brand-700);
+		--jm-button-secondary-hover-color: var(--jm-color-base-100);
+	}
 }

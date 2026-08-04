@@ -1,40 +1,42 @@
 @layer layout {
-  .site-main,
-  .wp-site-blocks,
-  .wp-block-group.is-layout-constrained,
-  .wp-block-group.is-layout-flow {
-    container-type: inline-size;
-  }
 
-  .jm-section {
-    &:last-of-type {
-      padding-bottom: var(--jm-padding-3xl);
-    }
+	.site-main,
+	.wp-site-blocks,
+	.wp-block-group.is-layout-constrained,
+	.wp-block-group.is-layout-flow {
+		container-type: inline-size;
+	}
 
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    background-color: var(--jm-background-color);
-    color: var(--jm-text-color);
+	.jm-section {
 
-    padding: var(--jm-page-margin);
+		&:last-of-type {
+			padding-bottom: var(--jm-padding-3xl);
+		}
 
-    &__container {
-      display: grid;
-      align-items: center;
-      width: 100%;
-      max-width: var(--jm-container-l);
-      gap: var(--jm-section-padding);
-    }
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		background-color: var(--jm-background-color);
+		color: var(--jm-text-color);
 
-    &__column {
-      container-type: inline-size;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-    }
-  }
+		padding: var(--jm-page-margin);
+
+		&__container {
+			display: grid;
+			align-items: center;
+			width: 100%;
+			max-width: var(--jm-container-l);
+			gap: var(--jm-section-padding);
+		}
+
+		&__column {
+			container-type: inline-size;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: center;
+			width: 100%;
+			height: 100%;
+		}
+	}
 }

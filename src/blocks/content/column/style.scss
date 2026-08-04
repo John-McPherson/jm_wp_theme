@@ -2,52 +2,55 @@
 @use "../../../scss/abstracts/index" as *;
 
 @layer components {
-  .jm-button {
-    --color: var(--jm-button-color);
-    --background: var(--jm-button-background);
-    --hover-color: var(--jm-button-hover-color);
-    --hover-background: var(--jm-button-hover-background);
 
-    &__secondary {
-      --color: var(--jm-button-secondary-color);
-      --background: var(--jm-button-secondary-background);
-      --hover-color: var(--jm-button-secondary-hover-color);
-      --hover-background: var(--jm-button-secondary-hover-background);
-    }
+	.jm-button {
+		--color: var(--jm-button-color);
+		--background: var(--jm-button-background);
+		--hover-color: var(--jm-button-hover-color);
+		--hover-background: var(--jm-button-hover-background);
 
-    @include h5;
+		&__secondary {
+			--color: var(--jm-button-secondary-color);
+			--background: var(--jm-button-secondary-background);
+			--hover-color: var(--jm-button-secondary-hover-color);
+			--hover-background: var(--jm-button-secondary-hover-background);
+		}
 
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+		@include h5;
 
-    width: 100%;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 
-    padding: var(--jm-padding-xs) var(--jm-padding-m);
+		width: 100%;
 
-    background: var(--background);
+		padding: var(--jm-padding-xs) var(--jm-padding-m);
 
-    color: var(--color);
+		background: var(--background);
 
-    border: 1.5px solid currentColor;
+		color: var(--color);
 
-    font-weight: 600;
-    letter-spacing: 0.02em;
+		border: 1.5px solid currentcolor;
 
-    transition: 0.2s ease;
+		font-weight: 600;
+		letter-spacing: 0.02em;
 
-    &:not(:last-child) {
-      margin-bottom: var(--jm-section-padding-sm);
-    }
-  }
+		transition: 0.2s ease;
 
-  .jm-button:hover {
-    background: var(--hover-background);
-    color: var(--hover-color);
-  }
+		&:not(:last-child) {
+			margin-bottom: var(--jm-section-padding-sm);
+		}
+	}
+
+	.jm-button:hover {
+		background: var(--hover-background);
+		color: var(--hover-color);
+	}
 }
+
 @include min($compact) {
-  .jm-button {
-    width: fit-content;
-  }
+
+	.jm-button {
+		width: fit-content;
+	}
 }

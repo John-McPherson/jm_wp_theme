@@ -4,16 +4,19 @@
 //  */
 
 @layer blocks {
-  .jm-section__column {
-    &:last-of-type {
-      position: relative;
-      button {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        z-index: 1000;
-        pointer-events: all;
-      }
-    }
-  }
+
+	.jm-section__column {
+
+		&:last-of-type {
+			position: relative;
+
+			button {
+				position: absolute;
+				bottom: 0;
+				right: 0;
+				z-index: 1000;
+				pointer-events: all;
+			}
+		}
+	}
 }

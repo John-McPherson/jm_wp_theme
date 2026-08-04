@@ -3,32 +3,34 @@
    ========================================================================== */
 
 @layer base {
-  :root {
-    /* Line heights */
-    --jm-line-height-display-tight: 0.98;
-    --jm-line-height-display: 1.05;
-    --jm-line-height-heading-tight: 1.1;
-    --jm-line-height-heading: 1.2;
-    --jm-line-height-heading-loose: 1.3;
-    --jm-line-height-body: 1.6;
-    --jm-line-height-body-compact: 1.5;
 
-    /* Letter spacing */
-    --jm-letter-spacing-d1: -0.04em;
-    --jm-letter-spacing-d2: -0.035em;
-    --jm-letter-spacing-d3: -0.025em;
-    --jm-letter-spacing-d4: -0.015em;
+	:root {
 
-    --jm-letter-spacing-h1: -0.025em;
-    --jm-letter-spacing-h2: -0.02em;
-    --jm-letter-spacing-h3: -0.015em;
-    --jm-letter-spacing-h4: -0.01em;
-    --jm-letter-spacing-h5: -0.005em;
-    --jm-letter-spacing-h6: 0;
+		/* Line heights */
+		--jm-line-height-display-tight: 0.98;
+		--jm-line-height-display: 1.05;
+		--jm-line-height-heading-tight: 1.1;
+		--jm-line-height-heading: 1.2;
+		--jm-line-height-heading-loose: 1.3;
+		--jm-line-height-body: 1.6;
+		--jm-line-height-body-compact: 1.5;
 
-    --jm-letter-spacing-body: 0;
-    --jm-letter-spacing-small: 0.005em;
-  }
+		/* Letter spacing */
+		--jm-letter-spacing-d1: -0.04em;
+		--jm-letter-spacing-d2: -0.035em;
+		--jm-letter-spacing-d3: -0.025em;
+		--jm-letter-spacing-d4: -0.015em;
+
+		--jm-letter-spacing-h1: -0.025em;
+		--jm-letter-spacing-h2: -0.02em;
+		--jm-letter-spacing-h3: -0.015em;
+		--jm-letter-spacing-h4: -0.01em;
+		--jm-letter-spacing-h5: -0.005em;
+		--jm-letter-spacing-h6: 0;
+
+		--jm-letter-spacing-body: 0;
+		--jm-letter-spacing-small: 0.005em;
+	}
 }
 
 /* ==========================================================================
@@ -36,23 +38,23 @@
    ========================================================================== */
 
 @mixin display-base {
-  font-family: var(--jm-font-display);
-  font-weight: var(--jm-font-weight-bold, 700);
-  color: var(--jm-heading-color);
-  text-wrap: balance;
+	font-family: var(--jm-font-display);
+	font-weight: var(--jm-font-weight-bold, 700);
+	color: var(--jm-heading-color);
+	text-wrap: balance;
 }
 
 @mixin heading-base {
-  font-family: var(--jm-font-display);
-  font-weight: var(--jm-font-weight-semibold, 600);
-  color: var(--jm-heading-color);
-  text-wrap: balance;
+	font-family: var(--jm-font-display);
+	font-weight: var(--jm-font-weight-semibold, 600);
+	color: var(--jm-heading-color);
+	text-wrap: balance;
 }
 
 @mixin paragraph-base {
-  font-family: var(--jm-font-body);
-  font-weight: var(--jm-font-weight-regular, 400);
-  color: var(--jm-text-color);
+	font-family: var(--jm-font-body);
+	font-weight: var(--jm-font-weight-regular, 400);
+	color: var(--jm-text-color);
 }
 
 /* ==========================================================================
@@ -60,35 +62,39 @@
    ========================================================================== */
 
 @mixin d1 {
-  @include display-base;
 
-  font-size: var(--jm-d1);
-  line-height: var(--jm-line-height-display-tight);
-  letter-spacing: var(--jm-letter-spacing-d1);
+	@include display-base;
+
+	font-size: var(--jm-d1);
+	line-height: var(--jm-line-height-display-tight);
+	letter-spacing: var(--jm-letter-spacing-d1);
 }
 
 @mixin d2 {
-  @include display-base;
 
-  font-size: var(--jm-d2);
-  line-height: var(--jm-line-height-display-tight);
-  letter-spacing: var(--jm-letter-spacing-d2);
+	@include display-base;
+
+	font-size: var(--jm-d2);
+	line-height: var(--jm-line-height-display-tight);
+	letter-spacing: var(--jm-letter-spacing-d2);
 }
 
 @mixin d3 {
-  @include display-base;
 
-  font-size: var(--jm-d3);
-  line-height: var(--jm-line-height-display);
-  letter-spacing: var(--jm-letter-spacing-d3);
+	@include display-base;
+
+	font-size: var(--jm-d3);
+	line-height: var(--jm-line-height-display);
+	letter-spacing: var(--jm-letter-spacing-d3);
 }
 
 @mixin d4 {
-  @include display-base;
 
-  font-size: var(--jm-d4);
-  line-height: var(--jm-line-height-display);
-  letter-spacing: var(--jm-letter-spacing-d4);
+	@include display-base;
+
+	font-size: var(--jm-d4);
+	line-height: var(--jm-line-height-display);
+	letter-spacing: var(--jm-letter-spacing-d4);
 }
 
 /* ==========================================================================
@@ -96,51 +102,57 @@
    ========================================================================== */
 
 @mixin h1 {
-  @include heading-base;
 
-  font-size: var(--jm-h1);
-  line-height: var(--jm-line-height-heading-tight);
-  letter-spacing: var(--jm-letter-spacing-h1);
+	@include heading-base;
+
+	font-size: var(--jm-h1);
+	line-height: var(--jm-line-height-heading-tight);
+	letter-spacing: var(--jm-letter-spacing-h1);
 }
 
 @mixin h2 {
-  @include heading-base;
 
-  font-size: var(--jm-h2);
-  line-height: 1.15;
-  letter-spacing: var(--jm-letter-spacing-h2);
+	@include heading-base;
+
+	font-size: var(--jm-h2);
+	line-height: 1.15;
+	letter-spacing: var(--jm-letter-spacing-h2);
 }
 
 @mixin h3 {
-  @include heading-base;
 
-  font-size: var(--jm-h3);
-  line-height: var(--jm-line-height-heading);
-  letter-spacing: var(--jm-letter-spacing-h3);
+	@include heading-base;
+
+	font-size: var(--jm-h3);
+	line-height: var(--jm-line-height-heading);
+	letter-spacing: var(--jm-letter-spacing-h3);
 }
 
 @mixin h4 {
-  @include heading-base;
 
-  font-size: var(--jm-h4);
-  line-height: 1.25;
-  letter-spacing: var(--jm-letter-spacing-h4);
+	@include heading-base;
+
+	font-size: var(--jm-h4);
+	line-height: 1.25;
+	letter-spacing: var(--jm-letter-spacing-h4);
 }
 
 @mixin h5 {
-  @include heading-base;
 
-  font-size: var(--jm-h5);
-  line-height: var(--jm-line-height-heading-loose);
-  letter-spacing: var(--jm-letter-spacing-h5);
+	@include heading-base;
+
+	font-size: var(--jm-h5);
+	line-height: var(--jm-line-height-heading-loose);
+	letter-spacing: var(--jm-letter-spacing-h5);
 }
 
 @mixin h6 {
-  @include heading-base;
 
-  font-size: var(--jm-h6);
-  line-height: 1.35;
-  letter-spacing: var(--jm-letter-spacing-h6);
+	@include heading-base;
+
+	font-size: var(--jm-h6);
+	line-height: 1.35;
+	letter-spacing: var(--jm-letter-spacing-h6);
 }
 
 /* ==========================================================================
@@ -148,35 +160,39 @@
    ========================================================================== */
 
 @mixin p1 {
-  @include paragraph-base;
 
-  font-size: var(--jm-p1);
-  line-height: var(--jm-line-height-body);
-  letter-spacing: var(--jm-letter-spacing-body);
+	@include paragraph-base;
+
+	font-size: var(--jm-p1);
+	line-height: var(--jm-line-height-body);
+	letter-spacing: var(--jm-letter-spacing-body);
 }
 
 @mixin p2 {
-  @include paragraph-base;
 
-  font-size: var(--jm-p2);
-  line-height: var(--jm-line-height-body);
-  letter-spacing: var(--jm-letter-spacing-body);
+	@include paragraph-base;
+
+	font-size: var(--jm-p2);
+	line-height: var(--jm-line-height-body);
+	letter-spacing: var(--jm-letter-spacing-body);
 }
 
 @mixin p3 {
-  @include paragraph-base;
 
-  font-size: var(--jm-p3);
-  line-height: var(--jm-line-height-body);
-  letter-spacing: var(--jm-letter-spacing-body);
+	@include paragraph-base;
+
+	font-size: var(--jm-p3);
+	line-height: var(--jm-line-height-body);
+	letter-spacing: var(--jm-letter-spacing-body);
 }
 
 @mixin p4 {
-  @include paragraph-base;
 
-  font-size: var(--jm-p4);
-  line-height: var(--jm-line-height-body-compact);
-  letter-spacing: var(--jm-letter-spacing-small);
+	@include paragraph-base;
+
+	font-size: var(--jm-p4);
+	line-height: var(--jm-line-height-body-compact);
+	letter-spacing: var(--jm-letter-spacing-small);
 }
 
 /* ==========================================================================
@@ -184,46 +200,55 @@
    ========================================================================== */
 
 @layer base {
-  body {
-    @include p3;
 
-    background: var(--jm-background-color);
-  }
+	body {
 
-  h1 {
-    @include h1;
-  }
+		@include p3;
 
-  h2 {
-    @include h2;
-  }
+		background: var(--jm-background-color);
+	}
 
-  h3 {
-    @include h3;
-  }
+	h1 {
 
-  h4 {
-    @include h4;
-  }
+		@include h1;
+	}
 
-  h5 {
-    @include h5;
-  }
+	h2 {
 
-  h6 {
-    @include h6;
-  }
+		@include h2;
+	}
 
-  p {
-    @include p3;
-  }
+	h3 {
 
-  code,
-  pre,
-  kbd,
-  samp {
-    font-family: var(--jm-font-mono);
-  }
+		@include h3;
+	}
+
+	h4 {
+
+		@include h4;
+	}
+
+	h5 {
+
+		@include h5;
+	}
+
+	h6 {
+
+		@include h6;
+	}
+
+	p {
+
+		@include p3;
+	}
+
+	code,
+	pre,
+	kbd,
+	samp {
+		font-family: var(--jm-font-mono);
+	}
 }
 
 /* ==========================================================================
@@ -231,59 +256,74 @@
    ========================================================================== */
 
 @layer utilities {
-  .d1 {
-    @include d1;
-  }
 
-  .d2 {
-    @include d2;
-  }
+	.d1 {
 
-  .d3 {
-    @include d3;
-  }
+		@include d1;
+	}
 
-  .d4 {
-    @include d4;
-  }
+	.d2 {
 
-  .h1 {
-    @include h1;
-  }
+		@include d2;
+	}
 
-  .h2 {
-    @include h2;
-  }
+	.d3 {
 
-  .h3 {
-    @include h3;
-  }
+		@include d3;
+	}
 
-  .h4 {
-    @include h4;
-  }
+	.d4 {
 
-  .h5 {
-    @include h5;
-  }
+		@include d4;
+	}
 
-  .h6 {
-    @include h6;
-  }
+	.h1 {
 
-  .p1 {
-    @include p1;
-  }
+		@include h1;
+	}
 
-  .p2 {
-    @include p2;
-  }
+	.h2 {
 
-  .p3 {
-    @include p3;
-  }
+		@include h2;
+	}
 
-  .p4 {
-    @include p4;
-  }
+	.h3 {
+
+		@include h3;
+	}
+
+	.h4 {
+
+		@include h4;
+	}
+
+	.h5 {
+
+		@include h5;
+	}
+
+	.h6 {
+
+		@include h6;
+	}
+
+	.p1 {
+
+		@include p1;
+	}
+
+	.p2 {
+
+		@include p2;
+	}
+
+	.p3 {
+
+		@include p3;
+	}
+
+	.p4 {
+
+		@include p4;
+	}
 }

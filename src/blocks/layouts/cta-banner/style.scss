@@ -1,30 +1,32 @@
 @use "../../../scss/abstracts/index" as *;
 
 @layer blocks {
-  .jm-cta {
-    --jm-cols: 1;
-    --grid-template-areas: "a" "b";
-    .jm-section__column {
-      grid-area: a;
-      justify-content: flex-start;
 
-      &:nth-of-type(2) {
-        grid-area: b;
-      }
-    }
+	.jm-cta {
+		--jm-cols: 1;
+		--grid-template-areas: "a" "b";
 
-    .jm-section__container {
-      grid-template-columns: repeat(var(--jm-cols), 1fr);
-      grid-template-areas: var(--grid-template-areas);
-    }
+		.jm-section__column {
+			grid-area: a;
+			justify-content: flex-start;
 
-    @include min($tablet) {
-      --jm-cols: 2;
-      --grid-template-areas: "a b";
+			&:nth-of-type(2) {
+				grid-area: b;
+			}
+		}
 
-      .jm-column-left {
-        --grid-template-areas: "b a";
-      }
-    }
-  }
+		.jm-section__container {
+			grid-template-columns: repeat(var(--jm-cols), 1fr);
+			grid-template-areas: var(--grid-template-areas);
+		}
+
+		@include min($tablet) {
+			--jm-cols: 2;
+			--grid-template-areas: "a b";
+
+			.jm-column-left {
+				--grid-template-areas: "b a";
+			}
+		}
+	}
 }

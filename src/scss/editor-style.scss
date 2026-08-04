@@ -3,14 +3,14 @@
 @use "./palettes/index.scss" as *;
 @use "./layout/index.scss" as *;
 @use "./layout/index.scss" as *;
-
 @layer reset, base, layout, components, blocks, utilities;
 
 @layer base {
-  .editor-styles-wrapper,
-  .editor-styles-wrapper .wp-site-blocks,
-  .editor-styles-wrapper .wp-block-group.is-layout-constrained,
-  .editor-styles-wrapper .wp-block-group.is-layout-flow {
-    container-type: inline-size;
-  }
+
+	.editor-styles-wrapper,
+	.editor-styles-wrapper .wp-site-blocks,
+	.editor-styles-wrapper .wp-block-group.is-layout-constrained,
+	.editor-styles-wrapper .wp-block-group.is-layout-flow {
+		container-type: inline-size;
+	}
 }

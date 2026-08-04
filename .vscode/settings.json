@@ -5,9 +5,12 @@
     "typescript",
     "typescriptreact"
   ],
+  "stylelint.validate": ["css", "scss"],
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit"
   },
+
   "[javascript]": {
     "editor.formatOnSave": false
   },
@@ -18,6 +21,12 @@
     "editor.formatOnSave": false
   },
   "[typescriptreact]": {
+    "editor.formatOnSave": false
+  },
+  "[scss]": {
+    "editor.formatOnSave": false
+  },
+  "[css]": {
     "editor.formatOnSave": false
   }
 }

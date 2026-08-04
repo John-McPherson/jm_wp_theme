@@ -2,7 +2,8 @@
 @use "../../../scss/layers/index.scss" as *;
 
 .jm-heading {
-  &:not(:last-child) {
-    padding-bottom: var(--jm-section-spacing);
-  }
+
+	&:not(:last-child) {
+		padding-bottom: var(--jm-section-spacing);
+	}
 }

@@ -1,15 +1,16 @@
 @layer base {
-  :root {
-    --jm-container-sm: 640px;
-    --jm-container-md: var(--wp--style--global--content-size);
-    --jm-container-l: 960px;
-    --jm-container-xl: var(--wp--style--global--wide-size);
-    --jm-container-2xl: 1440px;
 
-    --jm-section-padding: var(--jm-padding-xl);
-    --jm-section-padding-sm: var(--jm-padding-m);
-    --jm-section-spacing: var(--jm-padding-xl);
+	:root {
+		--jm-container-sm: 640px;
+		--jm-container-md: var(--wp--style--global--content-size);
+		--jm-container-l: 960px;
+		--jm-container-xl: var(--wp--style--global--wide-size);
+		--jm-container-2xl: 1440px;
 
-    --jm-page-margin: clamp(var(--jm-padding-m), 6vw, var(--jm-padding-2xl));
-  }
+		--jm-section-padding: var(--jm-padding-xl);
+		--jm-section-padding-sm: var(--jm-padding-m);
+		--jm-section-spacing: var(--jm-padding-xl);
+
+		--jm-page-margin: clamp(var(--jm-padding-m), 6vw, var(--jm-padding-2xl));
+	}
 }
