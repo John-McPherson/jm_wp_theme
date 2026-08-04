@@ -48,5 +48,8 @@ jobs:
       - name: Lint JavaScript and TypeScript
         run: npm run lint:js
 
+      - name: Lint styles
+        run: npm run lint:styles
+
       - name: Build theme
         run: npm run build
