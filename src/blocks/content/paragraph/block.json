@@ -4,7 +4,7 @@
   "name": "jm/paragraph",
   "version": "0.1.0",
   "title": "Paragraph",
-  "category": "jm-blocks",
+  "category": "jmc-blocks",
   "icon": "editor-paragraph",
   "description": "A reusable paragraph content block.",
   "textdomain": "jm-theme",

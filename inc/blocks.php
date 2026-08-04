@@ -65,7 +65,7 @@ add_filter(
 	function ( $categories ): array {
 		return $categories[] = [
 			[
-				'slug'  => 'jm-section',
+				'slug'  => 'jmc-section',
 				'title' => __( 'Sections', 'jm' ),
 				'icon'  => 'customizer',
 			],

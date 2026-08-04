@@ -8,7 +8,7 @@ import SelectInput from '../../../components/SelectInput';
 
 const VARIANT_CLASSES = {
 	primary: '',
-	secondary: 'jm-button__secondary',
+	secondary: 'jmc-button__secondary',
 };
 
 export default function Edit( { attributes, setAttributes } ) {

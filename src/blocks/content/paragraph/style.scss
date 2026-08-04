@@ -3,23 +3,23 @@
 
 @layer blocks {
 
-	.jm-paragraph {
+	.jmc-paragraph {
 
 		&:not(:last-child) {
-			padding-bottom: var(--jm-section-padding-sm);
+			padding-bottom: var(--jmc-section-padding-sm);
 		}
 		max-width: 50ch;
 	}
 
-	.jm-label,
-	.jm-label > p {
+	.jmc-label,
+	.jmc-label > p {
 
 		@include h5;
-		color: var(--jm-text-highlight);
+		color: var(--jmc-text-highlight);
 		text-transform: uppercase;
 
 		&:not(:last-of-type) {
-			padding-bottom: var(--jm-padding-2xs);
+			padding-bottom: var(--jmc-padding-2xs);
 		}
 	}
 }

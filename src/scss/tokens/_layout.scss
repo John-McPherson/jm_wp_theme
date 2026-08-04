@@ -1,16 +1,16 @@
 @layer base {
 
 	:root {
-		--jm-container-sm: 640px;
-		--jm-container-md: var(--wp--style--global--content-size);
-		--jm-container-l: 960px;
-		--jm-container-xl: var(--wp--style--global--wide-size);
-		--jm-container-2xl: 1440px;
+		--jmc-container-sm: 640px;
+		--jmc-container-md: var(--wp--style--global--content-size);
+		--jmc-container-l: 960px;
+		--jmc-container-xl: var(--wp--style--global--wide-size);
+		--jmc-container-2xl: 1440px;
 
-		--jm-section-padding: var(--jm-padding-xl);
-		--jm-section-padding-sm: var(--jm-padding-m);
-		--jm-section-spacing: var(--jm-padding-xl);
+		--jmc-section-padding: var(--jmc-padding-xl);
+		--jmc-section-padding-sm: var(--jmc-padding-m);
+		--jmc-section-spacing: var(--jmc-padding-xl);
 
-		--jm-page-margin: clamp(var(--jm-padding-m), 6vw, var(--jm-padding-2xl));
+		--jmc-page-margin: clamp(var(--jmc-padding-m), 6vw, var(--jmc-padding-2xl));
 	}
 }

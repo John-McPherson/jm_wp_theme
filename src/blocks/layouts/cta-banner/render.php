@@ -12,7 +12,7 @@ declare(strict_types=1);
  * @var string $content Rendered inner-block content.
  */
 
-$palette = jmchtml_allowed_value(
+$palette = jmc_html_allowed_value(
 	value: $attributes['palette'] ?? null,
 	allowed: [
 		'default',
@@ -22,7 +22,7 @@ $palette = jmchtml_allowed_value(
 	default: 'inverse'
 );
 
-$order = jmchtml_allowed_value(
+$order = jmc_html_allowed_value(
 	value: $attributes['order'] ?? null,
 	allowed: [
 		'left',
@@ -33,26 +33,26 @@ $order = jmchtml_allowed_value(
 
 $palette_classes = [
 	'default'   => '',
-	'secondary' => 'jm-palette--secondary',
-	'inverse'   => 'jm-palette--inverse',
+	'secondary' => 'jmc-palette--secondary',
+	'inverse'   => 'jmc-palette--inverse',
 ];
 
 $order_classes = [
-	'left'  => 'jm-column-left',
-	'right' => 'jm-column-right',
+	'left'  => 'jmc-column-left',
+	'right' => 'jmc-column-right',
 ];
 
 
-$custom_classes = isset($attributes['className'])
-	? preg_split('/\s+/', trim($attributes['className']))
+$custom_classes = isset( $attributes['className'] )
+	? preg_split( '/\s+/', trim( $attributes['className'] ) )
 	: [];
 
 $section_attributes = [
 	'classes' => array_filter(
 		[
-			'jm-section',
-			'jm-cta',
-			$palette_classes[$palette],
+			'jmc-section',
+			'jmc-cta',
+			$palette_classes[ $palette ],
 			...$custom_classes,
 		]
 	),
@@ -61,16 +61,16 @@ $section_attributes = [
 $container_attributes = [
 	'classes' => array_filter(
 		[
-			'jm-section__container',
+			'jmc-section__container',
 
-			$order_classes[$order],
+			$order_classes[ $order ],
 
 		]
 	),
 
 ];
 
-if (! empty($attributes['anchor'])) {
+if ( ! empty( $attributes['anchor'] ) ) {
 	$section_attributes['id'] = sanitize_title(
 		$attributes['anchor']
 	);
@@ -79,8 +79,8 @@ if (! empty($attributes['anchor'])) {
 
 ?>
 
-<section <?php jmcthe_attributes($section_attributes); ?>>
-	<div <?php jmcthe_attributes($container_attributes); ?>>
+<section <?php jmc_the_attributes( $section_attributes ); ?>>
+	<div <?php jmc_the_attributes( $container_attributes ); ?>>
 		<?php echo $content; ?>
 
 	</div>

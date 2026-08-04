@@ -4,7 +4,7 @@
   "name": "jm/hero",
   "version": "0.1.0",
   "title": "Hero",
-  "category": "jm-section",
+  "category": "jmc-section",
   "icon": "cover-image",
   "description": "A hero section with composable content and a background image.",
   "textdomain": "jm-theme",

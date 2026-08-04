@@ -19,7 +19,7 @@ type HeadingLevel = keyof typeof HEADING_TAGS;
 
 const VARIANT_CLASSES = {
 	default: '',
-	hero: 'jm-hero__text-heading',
+	hero: 'jmc-hero__text-heading',
 };
 
 export default function Edit( { attributes, setAttributes, context } ) {
@@ -27,7 +27,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 	const variant = context[ 'jm/variant' ] ?? 'default';
 
 	const blockProps = useBlockProps( {
-		className: [ className, 'jm-heading', VARIANT_CLASSES[ variant ] ],
+		className: [ className, 'jmc-heading', VARIANT_CLASSES[ variant ] ],
 	} );
 	const bind = bindFields( attributes, setAttributes );
 

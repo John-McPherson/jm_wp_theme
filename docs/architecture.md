@@ -41,7 +41,7 @@ Attributes crossing the editor/PHP boundary are untrusted input. Render code mus
 
 ### Components
 
-`jmccomponent()` resolves a component name beneath `components/` and passes arguments through WordPress template-part loading. Components own reusable markup; blocks own Gutenberg-specific attributes, context, and composition.
+`jmc_component()` resolves a component name beneath `components/` and passes arguments through WordPress template-part loading. Components own reusable markup; blocks own Gutenberg-specific attributes, context, and composition.
 
 Use the typed argument helpers in `inc/helpers/component_args.php` and the escaped attribute helpers in `inc/helpers/html/attributes.php`. Do not concatenate raw attributes into HTML.
 
@@ -60,9 +60,9 @@ Use the typed argument helpers in `inc/helpers/component_args.php` and the escap
 
 ## Naming
 
-- PHP functions: `jmc` prefix and `snake_case`.
+- PHP functions: `jmc_` prefix and `snake_case`.
 - Blocks: `jm/<name>`.
-- CSS classes: `jm-` prefix with BEM-style elements where useful.
+- CSS classes: `jmc-` prefix with BEM-style elements where useful.
 - CSS custom properties: semantic names rather than raw colour names at the component boundary.
 - Text domain: use the single theme text domain declared in `style.css`. Existing mixed domains must be normalised before release.
 

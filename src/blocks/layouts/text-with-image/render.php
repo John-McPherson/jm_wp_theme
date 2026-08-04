@@ -13,7 +13,7 @@ declare(strict_types=1);
  * @var string $content
  */
 
-$palette = jmchtml_allowed_value(
+$palette = jmc_html_allowed_value(
 	value: $attributes['palette'] ?? null,
 	allowed: [
 		'default',
@@ -23,7 +23,7 @@ $palette = jmchtml_allowed_value(
 	default: 'default'
 );
 
-$order = jmchtml_allowed_value(
+$order = jmc_html_allowed_value(
 	value: $attributes['order'] ?? null,
 	allowed: [
 		'left',
@@ -34,39 +34,39 @@ $order = jmchtml_allowed_value(
 
 $palette_classes = [
 	'default'   => '',
-	'secondary' => 'jm-palette--secondary',
-	'inverse'   => 'jm-palette--inverse',
+	'secondary' => 'jmc-palette--secondary',
+	'inverse'   => 'jmc-palette--inverse',
 ];
 
 $order_classes = [
-	'left'  => 'jm-text-with-image--image-left',
-	'right' => 'jm-text-with-image--image-right',
+	'left'  => 'jmc-text-with-image--image-left',
+	'right' => 'jmc-text-with-image--image-right',
 ];
 
-$image_id = jmcargs_int(
+$image_id = jmc_args_int(
 	args: $attributes,
 	key: 'imageId',
 	default: 0,
 	min: 1
 );
 
-$custom_classes = isset($attributes['className'])
-	? preg_split('/\s+/', trim($attributes['className']))
+$custom_classes = isset( $attributes['className'] )
+	? preg_split( '/\s+/', trim( $attributes['className'] ) )
 	: [];
 
 $section_attributes = [
 	'classes' => array_filter(
 		[
-			'jm-section',
-			'jm-text-with-image',
-			$palette_classes[$palette],
-			$order_classes[$order],
+			'jmc-section',
+			'jmc-text-with-image',
+			$palette_classes[ $palette ],
+			$order_classes[ $order ],
 			...$custom_classes,
 		]
 	),
 ];
 
-if (! empty($attributes['anchor'])) {
+if ( ! empty( $attributes['anchor'] ) ) {
 	$section_attributes['id'] = sanitize_title(
 		$attributes['anchor']
 	);
@@ -78,7 +78,7 @@ $image_html = $image_id > 0
 		'full',
 		false,
 		[
-			'class'   => 'jm-text-with-image__media',
+			'class'   => 'jmc-text-with-image__media',
 			'loading' => 'lazy',
 		]
 	)
@@ -86,15 +86,15 @@ $image_html = $image_id > 0
 
 ?>
 
-<section <?php jmcthe_attributes($section_attributes); ?>>
-	<div class="jm-section__container">
-		<div class="jm-section__column">
+<section <?php jmc_the_attributes( $section_attributes ); ?>>
+	<div class="jmc-section__container">
+		<div class="jmc-section__column">
 			<?php echo $content; ?>
 		</div>
 
-		<div class="jm-section__column">
-			<?php if ($image_html !== '') : ?>
-				<div class="jm-image jm-text-with-image__image">
+		<div class="jmc-section__column">
+			<?php if ( $image_html !== '' ) : ?>
+				<div class="jmc-image jmc-text-with-image__image">
 					<?php echo $image_html; ?>
 				</div>
 			<?php endif; ?>

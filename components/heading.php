@@ -13,16 +13,16 @@ declare(strict_types=1);
 
 $args ??= [];
 
-$text = jmcargs_string(
+$text = jmc_args_string(
 	args: $args,
 	key: 'text'
 );
 
-if ($text === '') {
+if ( $text === '' ) {
 	return;
 }
 
-$level = jmcargs_int(
+$level = jmc_args_int(
 	args: $args,
 	key: 'level',
 	default: 2,
@@ -34,7 +34,7 @@ $tag = "h{$level}";
 
 $attributes = [
 	'classes' => [
-		'jm-heading',
+		'jmc-heading',
 		$args['classes'] ?? null,
 	],
 	'id'      => $args['id'] ?? null,
@@ -42,6 +42,6 @@ $attributes = [
 
 ?>
 
-<<?php echo $tag; ?><?php jmcthe_attributes($attributes); ?>>
-	<?php echo esc_html($text); ?>
+<<?php echo $tag; ?><?php jmc_the_attributes( $attributes ); ?>>
+	<?php echo esc_html( $text ); ?>
 </<?php echo $tag; ?>>

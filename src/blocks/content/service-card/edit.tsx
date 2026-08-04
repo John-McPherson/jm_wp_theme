@@ -14,7 +14,7 @@ const TEMPLATE = [
 const ALLOWED_BLOCKS = [ 'jm/heading', 'jm/paragraph' ];
 
 export default function Edit( { attributes, setAttributes } ) {
-	const blockProps = useBlockProps( { className: 'jm-service-card' } );
+	const blockProps = useBlockProps( { className: 'jmc-service-card' } );
 
 	const bind = bindFields( attributes, setAttributes );
 

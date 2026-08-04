@@ -20,10 +20,10 @@
 	<arg value="ps"/>
 	<arg name="parallel" value="8"/>
 
-	<rule ref="WordPress">
-		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
-		<exclude name="WordPress.NamingConventions.PrefixAllGlobals.ShortPrefixPassed"/>
-	</rule>
+<rule ref="WordPress">
+	<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+	<exclude name="WordPress.NamingConventions.PrefixAllGlobals.ShortPrefixPassed"/>
+</rule>
 
 	<!-- Require the theme's registered text domain. -->
 	<rule ref="WordPress.WP.I18n">

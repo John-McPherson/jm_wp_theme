@@ -3,17 +3,17 @@
 
 @layer components {
 
-	.jm-button {
-		--color: var(--jm-button-color);
-		--background: var(--jm-button-background);
-		--hover-color: var(--jm-button-hover-color);
-		--hover-background: var(--jm-button-hover-background);
+	.jmc-button {
+		--color: var(--jmc-button-color);
+		--background: var(--jmc-button-background);
+		--hover-color: var(--jmc-button-hover-color);
+		--hover-background: var(--jmc-button-hover-background);
 
 		&__secondary {
-			--color: var(--jm-button-secondary-color);
-			--background: var(--jm-button-secondary-background);
-			--hover-color: var(--jm-button-secondary-hover-color);
-			--hover-background: var(--jm-button-secondary-hover-background);
+			--color: var(--jmc-button-secondary-color);
+			--background: var(--jmc-button-secondary-background);
+			--hover-color: var(--jmc-button-secondary-hover-color);
+			--hover-background: var(--jmc-button-secondary-hover-background);
 		}
 
 		@include h5;
@@ -24,7 +24,7 @@
 
 		width: 100%;
 
-		padding: var(--jm-padding-xs) var(--jm-padding-m);
+		padding: var(--jmc-padding-xs) var(--jmc-padding-m);
 
 		background: var(--background);
 
@@ -38,11 +38,11 @@
 		transition: 0.2s ease;
 
 		&:not(:last-child) {
-			margin-bottom: var(--jm-section-padding-sm);
+			margin-bottom: var(--jmc-section-padding-sm);
 		}
 	}
 
-	.jm-button:hover {
+	.jmc-button:hover {
 		background: var(--hover-background);
 		color: var(--hover-color);
 	}
@@ -50,7 +50,7 @@
 
 @include min($compact) {
 
-	.jm-button {
+	.jmc-button {
 		width: fit-content;
 	}
 }

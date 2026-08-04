@@ -11,7 +11,7 @@ declare(strict_types=1);
  */
 
 
-$variant = jmchtml_allowed_value(
+$variant = jmc_html_allowed_value(
 	value: $block->context['jm/variant'] ?? null,
 	allowed: [
 		'default',
@@ -22,17 +22,17 @@ $variant = jmchtml_allowed_value(
 
 $variants = [
 	'default' => null,
-	'hero'    => 'jm-hero__text-heading',
+	'hero'    => 'jmc-hero__text-heading',
 ];
 
-jmccomponent(
+jmc_component(
 	name: 'heading',
 	args: [
 		'text'    => $attributes['text'] ?? '',
 		'level'   => $attributes['level'] ?? 2,
 		'classes' => [
 			$attributes['className'] ?? null,
-			$variants[$variant] ?? null,
+			$variants[ $variant ] ?? null,
 
 		],
 		'id'      => $attributes['anchor'] ?? '',

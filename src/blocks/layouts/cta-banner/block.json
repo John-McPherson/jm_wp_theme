@@ -4,7 +4,7 @@
   "name": "jm/cta-banner",
   "version": "0.1.0",
   "title": "CTA Banner",
-  "category": "jm-section",
+  "category": "jmc-section",
   "icon": "megaphone",
   "description": "Promote an important message with a heading, supporting text, and call-to-action button.",
   "keywords": ["cta", "banner", "call to action"],

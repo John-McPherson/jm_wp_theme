@@ -12,25 +12,25 @@ declare(strict_types=1);
 
 $args ??= [];
 
-$text = jmcargs_string(
+$text = jmc_args_string(
 	args: $args,
 	key: 'text'
 );
 
-if ($text === '') {
+if ( $text === '' ) {
 	return;
 }
 
 
 $attributes = [
 	'classes' => [
-		'jm-paragraph',
+		'jmc-paragraph',
 		$args['classes'] ?? null,
 	],
 	'id'      => $args['id'] ?? null,
 ];
 ?>
 
-<p<?php jmcthe_attributes($attributes); ?>>
-	<?php echo esc_html($text); ?>
+<p<?php jmc_the_attributes( $attributes ); ?>>
+	<?php echo esc_html( $text ); ?>
 	</p>

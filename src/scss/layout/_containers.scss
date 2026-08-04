@@ -7,26 +7,26 @@
 		container-type: inline-size;
 	}
 
-	.jm-section {
+	.jmc-section {
 
 		&:last-of-type {
-			padding-bottom: var(--jm-padding-3xl);
+			padding-bottom: var(--jmc-padding-3xl);
 		}
 
 		width: 100%;
 		display: flex;
 		justify-content: center;
-		background-color: var(--jm-background-color);
-		color: var(--jm-text-color);
+		background-color: var(--jmc-background-color);
+		color: var(--jmc-text-color);
 
-		padding: var(--jm-page-margin);
+		padding: var(--jmc-page-margin);
 
 		&__container {
 			display: grid;
 			align-items: center;
 			width: 100%;
-			max-width: var(--jm-container-l);
-			gap: var(--jm-section-padding);
+			max-width: var(--jmc-container-l);
+			gap: var(--jmc-section-padding);
 		}
 
 		&__column {

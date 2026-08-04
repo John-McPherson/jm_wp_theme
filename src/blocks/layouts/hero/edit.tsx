@@ -18,8 +18,8 @@ const TEMPLATE = [
 
 const VARIANT_CLASSES = {
 	default: '',
-	inverse: 'jm-palette--inverse',
-	secondary: 'jm-palette--secondary',
+	inverse: 'jmc-palette--inverse',
+	secondary: 'jmc-palette--secondary',
 };
 
 const ALLOWED_BLOCKS = [ 'jm/heading', 'jm/paragraph', 'jm/button' ];
@@ -31,8 +31,8 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const blockProps = useBlockProps( {
 		className: [
-			'jm-section',
-			'jm-hero',
+			'jmc-section',
+			'jmc-hero',
 			className,
 			VARIANT_CLASSES[ palette ],
 		]
@@ -42,7 +42,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{
-			className: 'jm-hero__text',
+			className: 'jmc-hero__text',
 		},
 		{
 			allowedBlocks: ALLOWED_BLOCKS,
@@ -52,7 +52,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	);
 
 	const imageProps = {
-		className: 'jm-hero__img',
+		className: 'jmc-hero__img',
 		style: {
 			'--background-image': imageUrl ? `url("${ imageUrl }")` : 'none',
 		} as React.CSSProperties,

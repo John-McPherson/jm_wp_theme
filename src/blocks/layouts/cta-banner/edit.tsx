@@ -32,10 +32,10 @@ const TEMPLATE = [
 
 const VARIANT_CLASSES = {
 	default: '',
-	inverse: 'jm-palette--inverse',
-	secondary: 'jm-palette--secondary',
-	left: 'jm-column-left',
-	right: 'jm-column-right',
+	inverse: 'jmc-palette--inverse',
+	secondary: 'jmc-palette--secondary',
+	left: 'jmc-column-left',
+	right: 'jmc-column-right',
 };
 
 const ALLOWED_BLOCKS = [ 'jm/column' ];
@@ -45,14 +45,14 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const { palette, order } = attributes;
 	const blockProps = useBlockProps( {
-		className: [ 'jm-section', 'jm-cta', VARIANT_CLASSES[ palette ] ]
+		className: [ 'jmc-section', 'jmc-cta', VARIANT_CLASSES[ palette ] ]
 			.filter( Boolean )
 			.join( ' ' ),
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{
-			className: [ 'jm-section__container', VARIANT_CLASSES[ order ] ],
+			className: [ 'jmc-section__container', VARIANT_CLASSES[ order ] ],
 		},
 		{
 			allowedBlocks: ALLOWED_BLOCKS,

@@ -1,9 +1,9 @@
 @use "../../../scss/base/typography" as *;
 @use "../../../scss/layers/index.scss" as *;
 
-.jm-heading {
+.jmc-heading {
 
 	&:not(:last-child) {
-		padding-bottom: var(--jm-section-spacing);
+		padding-bottom: var(--jmc-section-spacing);
 	}
 }

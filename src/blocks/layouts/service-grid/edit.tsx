@@ -30,8 +30,8 @@ const TEMPLATE = [
 
 const VARIANT_CLASSES = {
 	default: '',
-	inverse: 'jm-palette--inverse',
-	secondary: 'jm-palette--secondary',
+	inverse: 'jmc-palette--inverse',
+	secondary: 'jmc-palette--secondary',
 };
 
 const ALLOWED_BLOCKS = [ 'jm/column' ];
@@ -42,8 +42,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	const { palette, order } = attributes;
 	const blockProps = useBlockProps( {
 		className: [
-			'jm-section',
-			'jm-service-grid',
+			'jmc-section',
+			'jmc-service-grid',
 			VARIANT_CLASSES[ palette ],
 		]
 			.filter( Boolean )
@@ -52,7 +52,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{
-			className: [ 'jm-section__container', VARIANT_CLASSES[ order ] ],
+			className: [ 'jmc-section__container', VARIANT_CLASSES[ order ] ],
 		},
 		{
 			allowedBlocks: ALLOWED_BLOCKS,

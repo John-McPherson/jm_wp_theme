@@ -13,20 +13,20 @@ declare(strict_types=1);
  */
 
 
-$image_id = jmcargs_int(
+$image_id = jmc_args_int(
 	args: $args,
 	key: 'image_id',
 	default: 0,
 	min: 1
 );
 
-if ($image_id === 0) {
+if ( $image_id === 0 ) {
 	return;
 }
 
-$classes = jmchtml_classes(
+$classes = jmc_html_classes(
 	[
-		'jm-image',
+		'jmc-image',
 		$args['classes'] ?? null,
 	]
 );
@@ -42,6 +42,6 @@ $image = wp_get_attachment_image(
 	]
 );
 
-if ($image !== '') {
+if ( $image !== '' ) {
 	echo $image;
 }

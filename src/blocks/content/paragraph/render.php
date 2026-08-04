@@ -12,7 +12,7 @@ declare(strict_types=1);
  * @var WP_Block $block
  */
 
-$context_variant = jmchtml_allowed_value(
+$context_variant = jmc_html_allowed_value(
 	value: $block->context['jm/variant'] ?? null,
 	allowed: [
 		'default',
@@ -21,7 +21,7 @@ $context_variant = jmchtml_allowed_value(
 	default: 'default'
 );
 
-$paragraph_variant = jmchtml_allowed_value(
+$paragraph_variant = jmc_html_allowed_value(
 	value: $attributes['variant'] ?? null,
 	allowed: [
 		'default',
@@ -32,25 +32,25 @@ $paragraph_variant = jmchtml_allowed_value(
 
 $context_classes = [
 	'default' => null,
-	'hero'    => 'jm-hero__text-para',
+	'hero'    => 'jmc-hero__text-para',
 ];
 
 $paragraph_classes = [
 	'default' => null,
-	'label'   => 'jm-label',
+	'label'   => 'jmc-label',
 ];
 
 $context_class = $paragraph_variant === 'label'
 	? null
-	: $context_classes[$context_variant];
+	: $context_classes[ $context_variant ];
 
-jmccomponent(
+jmc_component(
 	name: 'paragraph',
 	args: [
 		'text'    => $attributes['text'] ?? '',
 		'classes' => [
 			$attributes['className'] ?? null,
-			$paragraph_classes[$paragraph_variant],
+			$paragraph_classes[ $paragraph_variant ],
 			$context_class,
 		],
 		'id'      => $attributes['anchor'] ?? '',

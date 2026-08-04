@@ -3,17 +3,17 @@
 
 @layer components {
 
-	.jm-section__column:has(.jm-service-card) {
+	.jmc-section__column:has(.jmc-service-card) {
 		--cols: 4;
 		display: grid;
-		gap: var(--jm-section-padding);
+		gap: var(--jmc-section-padding);
 		grid-template-columns: repeat(var(--cols), 1fr);
 	}
 
-	.jm-service-card {
-		color: var(--jm-text-highlight);
+	.jmc-service-card {
+		color: var(--jmc-text-highlight);
 
-		.jm-icon-wrapper {
+		.jmc-icon-wrapper {
 			width: 3rem;
 			height: 3rem;
 			display: flex;
@@ -21,7 +21,7 @@
 			align-items: center;
 		}
 
-		.jm-icon {
+		.jmc-icon {
 			display: block;
 			width: 100%;
 			max-height: 100%;

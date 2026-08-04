@@ -15,7 +15,7 @@ type ButtonProps = {
 };
 
 const ButtonLink = ( { text, link, className }: ButtonProps ) => {
-	const classes = [ className, 'jm-button' ].filter( Boolean ).join( ' ' );
+	const classes = [ className, 'jmc-button' ].filter( Boolean ).join( ' ' );
 	return (
 		<>
 			<LinkToolBar { ...link } />

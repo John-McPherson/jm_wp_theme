@@ -16,7 +16,7 @@ declare(strict_types=1);
  * @var WP_Block $block
  */
 
-$variant = jmchtml_allowed_value(
+$variant = jmc_html_allowed_value(
 	value: $attributes['buttonType'] ?? null,
 	allowed: [
 		'primary',
@@ -27,17 +27,17 @@ $variant = jmchtml_allowed_value(
 
 $variant_classes = [
 	'primary'   => null,
-	'secondary' => 'jm-button__secondary',
+	'secondary' => 'jmc-button__secondary',
 ];
 
-jmccomponent(
+jmc_component(
 	name: 'button-link',
 	args: [
 		'text'    => $attributes['text'] ?? '',
 		'link'    => $attributes['link'] ?? [],
 		'classes' => [
 			$attributes['className'] ?? null,
-			$variant_classes[$variant],
+			$variant_classes[ $variant ],
 		],
 		'id'      => $attributes['anchor'] ?? '',
 	]

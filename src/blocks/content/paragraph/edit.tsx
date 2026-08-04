@@ -5,12 +5,12 @@ import bindFields from '../../../utils/bindFields';
 
 const PARAGRAPH_VARIANT_CLASSES = {
 	default: '',
-	label: 'jm-label',
+	label: 'jmc-label',
 } as const;
 
 const CONTEXT_VARIANT_CLASSES = {
 	default: '',
-	hero: 'jm-hero__text-para',
+	hero: 'jmc-hero__text-para',
 } as const;
 
 type ParagraphVariant = keyof typeof PARAGRAPH_VARIANT_CLASSES;
@@ -27,7 +27,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 
 	const blockProps = useBlockProps( {
 		className: [
-			'jm-paragraph',
+			'jmc-paragraph',
 			PARAGRAPH_VARIANT_CLASSES[ paragraphVariant ],
 			CONTEXT_VARIANT_CLASSES[ contextVariant ],
 		],

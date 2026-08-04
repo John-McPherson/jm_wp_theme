@@ -4,18 +4,18 @@
 
 @layer blocks {
 
-	.jm-hero {
-		--jm-hero-gradient-direction: 180deg;
+	.jmc-hero {
+		--jmc-hero-gradient-direction: 180deg;
 		--grid-span: 12;
-		padding: 0 0 var(--jm-padding-xl);
-		--jm-hero-overlay: linear-gradient(var(--jm-hero-gradient-direction), var(--jm-background-color), transparent 20%);
+		padding: 0 0 var(--jmc-padding-xl);
+		--jmc-hero-overlay: linear-gradient(var(--jmc-hero-gradient-direction), var(--jmc-background-color), transparent 20%);
 
 		display: grid;
 
 		grid-template-columns: repeat(12, minmax(0, 1fr));
 
 		&__text {
-			padding: var(--jm-page-margin);
+			padding: var(--jmc-page-margin);
 			container-type: inline-size;
 			grid-column: span var(--grid-span);
 			margin-inline-start: auto;
@@ -65,20 +65,20 @@
 				inset: 0;
 				pointer-events: none;
 
-				background: var(--jm-hero-overlay);
+				background: var(--jmc-hero-overlay);
 			}
 		}
 
 		@include min($tablet) {
-			--jm-hero-gradient-direction: 90deg;
+			--jmc-hero-gradient-direction: 90deg;
 			--grid-span: 6;
 
-			--jm-section-padding:
-				var(--jm-padding-3xl) var(--jm-padding-xl)
-				var(--jm-padding-2xl);
+			--jmc-section-padding:
+				var(--jmc-padding-3xl) var(--jmc-padding-xl)
+				var(--jmc-padding-2xl);
 
 			&__text {
-				max-width: calc((var(--jm-container-xl) * 0.5));
+				max-width: calc((var(--jmc-container-xl) * 0.5));
 			}
 
 			&__img {

@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-function jmccomponent(string $name, array $args = []): void
-{
+function jmc_component( string $name, array $args = [] ): void {
 	$slug = "components/{$name}";
-	$path = locate_template("{$slug}.php", false, false);
+	$path = locate_template( "{$slug}.php", false, false );
 
-	if ($path === '') {
+	if ( $path === '' ) {
 		trigger_error(
 			sprintf(
 				'Component "%s" could not be found at "%s.php".',
@@ -20,5 +19,5 @@ function jmccomponent(string $name, array $args = []): void
 		return;
 	}
 
-	get_template_part($slug, null, $args);
+	get_template_part( $slug, null, $args );
 }

@@ -19,10 +19,10 @@ const TEMPLATE = [
 
 const VARIANT_CLASSES = {
 	default: '',
-	inverse: 'jm-palette--inverse',
-	secondary: 'jm-palette--secondary',
-	left: 'jm-text-with-image--image-left',
-	right: 'jm-text-with-image--image-right',
+	inverse: 'jmc-palette--inverse',
+	secondary: 'jmc-palette--secondary',
+	left: 'jmc-text-with-image--image-left',
+	right: 'jmc-text-with-image--image-right',
 };
 
 const ALLOWED_BLOCKS = [ 'jm/heading', 'jm/paragraph', 'jm/button' ];
@@ -33,8 +33,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	const { imageUrl, palette, order } = attributes;
 	const blockProps = useBlockProps( {
 		className: [
-			'jm-section',
-			'jm-text-with-image',
+			'jmc-section',
+			'jmc-text-with-image',
 			VARIANT_CLASSES[ palette ],
 			VARIANT_CLASSES[ order ],
 		]
@@ -44,7 +44,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{
-			className: 'jm-section__column',
+			className: 'jmc-section__column',
 		},
 		{
 			allowedBlocks: ALLOWED_BLOCKS,
@@ -68,10 +68,10 @@ export default function Edit( { attributes, setAttributes } ) {
 			</Sidebar>
 
 			<section { ...blockProps }>
-				<div className="jm-section__container">
+				<div className="jmc-section__container">
 					<div { ...innerBlocksProps } />
-					<div className="jm-section__column">
-						<div className="jm-image jm-text-with-image__image">
+					<div className="jmc-section__column">
+						<div className="jmc-image jmc-text-with-image__image">
 							{ imageUrl && <img src={ imageUrl } alt="#" /> }
 							<MediaInput
 								{ ...bind.media( 'imageId', 'imageUrl' ) }
