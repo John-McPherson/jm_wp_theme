@@ -27,7 +27,7 @@ $palette = jmc_html_allowed_value(
 		'secondary',
 		'inverse',
 	],
-	default: 'default'
+	fallback_value: 'default'
 );
 
 $col_order = jmc_html_allowed_value(
@@ -36,11 +36,11 @@ $col_order = jmc_html_allowed_value(
 		'left',
 		'right',
 	],
-	default: 'right'
+	fallback_value: 'right'
 );
 
 $palette_classes = [
-	'default'   => '',
+	'default'   => null,
 	'secondary' => 'jmc-palette--secondary',
 	'inverse'   => 'jmc-palette--inverse',
 ];
@@ -53,7 +53,7 @@ $order_classes = [
 $image_id = jmc_args_int(
 	args: $attributes,
 	key: 'imageId',
-	default: 0,
+	fallback_value: 0,
 	min: 1
 );
 

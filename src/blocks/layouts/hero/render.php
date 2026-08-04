@@ -23,15 +23,15 @@ declare(strict_types=1);
 $palette = jmc_html_allowed_value(
 	value: $attributes['palette'] ?? null,
 	allowed: [
-		'primary',
+		'default',
 		'secondary',
 		'inverse',
 	],
-	default: 'primary'
+	fallback_value: 'default'
 );
 
 $palette_classes = [
-	'primary'   => 'jmc-palette--default',
+	'primary'   => null,
 	'secondary' => 'jmc-palette--secondary',
 	'inverse'   => 'jmc-palette--inverse',
 ];
@@ -40,7 +40,7 @@ $palette_classes = [
 $image_id = jmc_args_int(
 	args: $attributes,
 	key: 'imageId',
-	default: 0,
+	fallback_value: 0,
 	min: 1
 );
 

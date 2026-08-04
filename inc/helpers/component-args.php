@@ -15,7 +15,7 @@ declare(strict_types=1);
  *
  * @param array<string,mixed> $args    Input arguments.
  * @param string              $key     Argument key to read.
- * @param int                 $default Default fallback value.
+ * @param int                 $fallback_value Fallback value.
  * @param int|null            $min     Optional minimum bound.
  * @param int|null            $max     Optional maximum bound.
  *
@@ -24,20 +24,20 @@ declare(strict_types=1);
 function jmc_args_int(
 	array $args,
 	string $key,
-	int $default = 0,
+	int $fallback_value = 0,
 	?int $min = null,
 	?int $max = null
 ): int {
 	$value = is_numeric( $args[ $key ] ?? null )
 		? (int) $args[ $key ]
-		: $default;
+		: $fallback_value;
 
 	if ( null !== $min && $value < $min ) {
-		return $default;
+		return $fallback_value;
 	}
 
 	if ( null !== $max && $value > $max ) {
-		return $default;
+		return $fallback_value;
 	}
 
 	return $value;
@@ -50,12 +50,12 @@ function jmc_args_int(
  *
  * @param array<string,mixed> $args    Input arguments.
  * @param string              $key     Argument key to read.
- * @param string              $default Default fallback value.
+ * @param string              $fallback_value Default fallback value.
  *
  * @return string
  */
-function jmc_args_string( array $args, string $key, string $default = '' ): string {
+function jmc_args_string( array $args, string $key, string $fallback_value = '' ): string {
 	return is_string( $args[ $key ] ?? null )
 		? trim( $args[ $key ] )
-		: $default;
+		: $fallback_value;
 }

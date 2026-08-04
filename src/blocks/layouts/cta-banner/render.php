@@ -26,7 +26,7 @@ $palette = jmc_html_allowed_value(
 		'secondary',
 		'inverse',
 	],
-	default: 'inverse'
+	fallback_value: 'inverse'
 );
 
 $col_order = jmc_html_allowed_value(
@@ -35,7 +35,7 @@ $col_order = jmc_html_allowed_value(
 		'left',
 		'right',
 	],
-	default: 'right'
+	fallback_value: 'right'
 );
 
 $palette_classes = [

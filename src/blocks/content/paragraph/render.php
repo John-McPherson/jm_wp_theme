@@ -1,8 +1,15 @@
 <?php
+/**
+ * Render the paragraph block with optional variant and anchor settings.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 
 /**
+ * Block attributes for the paragraph block.
+ *
  * @var array{
  *     text?: string,
  *     variant?: string,
@@ -18,7 +25,7 @@ $context_variant = jmc_html_allowed_value(
 		'default',
 		'hero',
 	],
-	default: 'default'
+	fallback_value: 'default'
 );
 
 $paragraph_variant = jmc_html_allowed_value(
@@ -27,7 +34,7 @@ $paragraph_variant = jmc_html_allowed_value(
 		'default',
 		'label',
 	],
-	default: 'default'
+	fallback_value: 'default'
 );
 
 $context_classes = [
@@ -40,7 +47,7 @@ $paragraph_classes = [
 	'label'   => 'jmc-label',
 ];
 
-$context_class = $paragraph_variant === 'label'
+$context_class = 'label' === $paragraph_variant
 	? null
 	: $context_classes[ $context_variant ];
 

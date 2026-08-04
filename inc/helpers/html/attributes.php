@@ -145,22 +145,22 @@ function jmc_html_classes( mixed $value ): string {
  *
  * @param mixed    $value   Value to validate.
  * @param string[] $allowed Allowed values.
- * @param string   $default Fallback value.
+ * @param string   $fallback_value Fallback value.
  *
  * @return string
  */
 function jmc_html_allowed_value(
 	mixed $value,
 	array $allowed,
-	string $default = ''
+	string $fallback_value = ''
 ): string {
 	if ( ! is_string( $value ) ) {
-		return $default;
+		return $fallback_value;
 	}
 
 	return in_array( $value, $allowed, true )
 		? $value
-		: $default;
+		: $fallback_value;
 }
 
 /**

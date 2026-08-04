@@ -32,7 +32,7 @@ if ( '' === $text ) {
 $level = jmc_args_int(
 	args: $args,
 	key: 'level',
-	default: 2,
+	fallback_value: 2,
 	min: 1,
 	max: 6
 );

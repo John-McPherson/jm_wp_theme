@@ -1,8 +1,15 @@
 <?php
+/**
+ * Render the button content block.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 
 /**
+ * Block attributes for the button block.
+ *
  * @var array{
  *     text?: string,
  *     link?: array{
@@ -22,7 +29,7 @@ $variant = jmc_html_allowed_value(
 		'primary',
 		'secondary',
 	],
-	default: 'primary'
+	fallback_value: 'primary'
 );
 
 $variant_classes = [

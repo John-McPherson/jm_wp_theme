@@ -59,6 +59,7 @@ add_filter(
 	 *
 	 * @return array<string> Updated allowed blocks.
 	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Parameters are required by the WordPress filter callback signature.
 	function ( $_allowed_blocks, $_editor_context ): array {
 
 		$registered_blocks = WP_Block_Type_Registry::get_instance()->get_all_registered();

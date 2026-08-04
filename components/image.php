@@ -23,7 +23,7 @@ declare(strict_types=1);
 $image_id = jmc_args_int(
 	args: $args,
 	key: 'image_id',
-	default: 0,
+	fallback_value: 0,
 	min: 1
 );
 

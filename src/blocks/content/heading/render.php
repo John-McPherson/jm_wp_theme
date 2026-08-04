@@ -1,8 +1,15 @@
 <?php
+/**
+ * Render the heading block with optional hero variant styling.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 
 /**
+ * Block attributes for the heading block.
+ *
  * @var array{
  *     text?: string,
  *     level?: int,
@@ -17,7 +24,7 @@ $variant = jmc_html_allowed_value(
 		'default',
 		'hero',
 	],
-	default: 'default'
+	fallback_value: 'default'
 );
 
 $variants = [

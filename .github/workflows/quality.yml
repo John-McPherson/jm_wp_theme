@@ -51,5 +51,8 @@ jobs:
       - name: Lint styles
         run: npm run lint:styles
 
+      - name: Check PHP coding standards
+        run: npm run lint:phpcs
+
       - name: Build theme
         run: npm run build
