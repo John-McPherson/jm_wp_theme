@@ -1,8 +1,17 @@
 <?php
+/**
+ * Render the service card content block wrapper.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 
-/** @var string $content Rendered inner-block content. */
+/**
+ * Rendered inner-block content for the service card component.
+ *
+ * @var string $content
+ */
 
 ?>
 <div class="jmc-section__column">

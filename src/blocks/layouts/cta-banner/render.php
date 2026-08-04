@@ -1,8 +1,15 @@
 <?php
+/**
+ * Render the CTA banner block markup.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 
 /**
+ * Block attributes for the CTA banner layout.
+ *
  * @var array{
  *     anchor?: string,
  *     className?: string,
@@ -22,7 +29,7 @@ $palette = jmc_html_allowed_value(
 	default: 'inverse'
 );
 
-$order = jmc_html_allowed_value(
+$col_order = jmc_html_allowed_value(
 	value: $attributes['order'] ?? null,
 	allowed: [
 		'left',
@@ -63,7 +70,7 @@ $container_attributes = [
 		[
 			'jmc-section__container',
 
-			$order_classes[ $order ],
+			$order_classes[ $col_order ],
 
 		]
 	),

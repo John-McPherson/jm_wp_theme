@@ -1,4 +1,9 @@
 <?php
+/**
+ * Helper functions for rendering and sanitizing HTML attributes.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 
@@ -10,12 +15,16 @@ declare(strict_types=1);
  * - href
  * - target
  * - rel
+ *
+ * @param array<string,mixed> $attributes Attribute values to render.
+ *
+ * @return string Escaped HTML-safe attribute string.
  */
 function jmc_get_the_attributes( array $attributes ): string {
 	$html = [];
 
 	foreach ( $attributes as $name => $value ) {
-		if ( $value === null || $value === '' || $value === false ) {
+		if ( null === $value || '' === $value || false === $value ) {
 			continue;
 		}
 
@@ -70,7 +79,7 @@ function jmc_get_the_attributes( array $attributes ): string {
 				break;
 		}
 
-		if ( $value === '' ) {
+		if ( '' === $value ) {
 			continue;
 		}
 
@@ -86,17 +95,26 @@ function jmc_get_the_attributes( array $attributes ): string {
 
 /**
  * Output escaped HTML attributes.
+ *
+ * @param array<string,mixed> $attributes Attribute values to render.
+ *
+ * @return void
  */
 function jmc_the_attributes( array $attributes ): void {
 	$html = jmc_get_the_attributes( $attributes );
 
-	if ( $html !== '' ) {
+	if ( '' !== $html ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- validated in get_the_attributes.
 		echo ' ' . $html;
 	}
 }
 
 /**
  * Normalise and sanitise one or more CSS class names.
+ *
+ * @param mixed $value CSS class string or array of class values.
+ *
+ * @return string Sanitized class list.
  */
 function jmc_html_classes( mixed $value ): string {
 	if ( is_array( $value ) ) {
@@ -109,7 +127,7 @@ function jmc_html_classes( mixed $value ): string {
 
 	$classes = preg_split( '/\s+/', trim( (string) $value ) );
 
-	if ( $classes === false ) {
+	if ( false === $classes ) {
 		return '';
 	}
 
@@ -127,6 +145,9 @@ function jmc_html_classes( mixed $value ): string {
  *
  * @param mixed    $value   Value to validate.
  * @param string[] $allowed Allowed values.
+ * @param string   $default Fallback value.
+ *
+ * @return string
  */
 function jmc_html_allowed_value(
 	mixed $value,
@@ -149,6 +170,8 @@ function jmc_html_allowed_value(
  *
  * @param mixed    $value   Value to validate.
  * @param string[] $allowed Allowed tokens.
+ *
+ * @return string Sanitized list of allowed tokens.
  */
 function jmc_html_allowed_tokens(
 	mixed $value,
@@ -158,7 +181,7 @@ function jmc_html_allowed_tokens(
 		? $value
 		: preg_split( '/\s+/', trim( (string) $value ) );
 
-	if ( $tokens === false ) {
+	if ( false === $tokens ) {
 		return '';
 	}
 
@@ -176,14 +199,16 @@ function jmc_html_allowed_tokens(
 /**
  * Build an inline style attribute from CSS custom properties.
  *
- * @param array<string, string> $styles
+ * @param array<string, string> $styles CSS custom properties as key/value pairs.
+ *
+ * @return string Inline style declaration.
  */
 function jmc_html_styles( array $styles ): string {
 	$declarations = [];
 
 	foreach ( $styles as $property => $value ) {
 		if (
-			$value === ''
+			'' === $value
 			|| ! str_starts_with( $property, '--' )
 		) {
 			continue;

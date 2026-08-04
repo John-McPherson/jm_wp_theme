@@ -1,13 +1,20 @@
 <?php
 /**
- * Register theme blocks and filter block availability.
+ * Register theme blocks and configure available editor blocks.
+ *
+ * Loads theme block registrations from build artifacts, restricts available
+ * block choices to theme-owned blocks, and registers a custom block category.
  *
  * @package JMC_Theme
  */
 
 declare(strict_types=1);
 
-// register all theme blocks
+/**
+ * Register theme block types from the build directory.
+ *
+ * @return void
+ */
 add_action(
 	'init',
 	function (): void {
@@ -41,9 +48,17 @@ add_action(
 	}
 );
 
-// only allow theme blocks
+// only allow theme blocks.
 add_filter(
 	'allowed_block_types_all',
+	/**
+	 * Filter block types to only include theme-owned blocks.
+	 *
+	 * @param array<string> $allowed_blocks   Currently allowed blocks.
+	 * @param array<string, mixed> $_editor_context Editor context data.
+	 *
+	 * @return array<string> Updated allowed blocks.
+	 */
 	function ( $_allowed_blocks, $_editor_context ): array {
 
 		$registered_blocks = WP_Block_Type_Registry::get_instance()->get_all_registered();
@@ -64,16 +79,24 @@ add_filter(
 );
 
 
-// register custom block categories
+// register custom block categories.
 add_filter(
 	'block_categories_all',
+	/**
+	 * Register a custom block category for the theme.
+	 *
+	 * @param array<int, array<string,mixed>> $categories Existing block categories.
+	 *
+	 * @return array<int, array<string,mixed>> Updated block categories.
+	 */
 	function ( $categories ): array {
-		return $categories[] = [
+		$categories[] = [
 			[
 				'slug'  => 'jmc-section',
-				'title' => __( 'Sections', 'jmc' ),
+				'title' => __( 'Sections', 'jm-theme' ),
 				'icon'  => 'customizer',
 			],
 		];
+		return $categories;
 	}
 );

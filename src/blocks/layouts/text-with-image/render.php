@@ -1,8 +1,15 @@
 <?php
+/**
+ * Render the text with image block layout.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 
 /**
+ * Block attributes for the text-with-image layout.
+ *
  * @var array{
  *     anchor?: string,
  *     className?: string,
@@ -10,7 +17,7 @@ declare(strict_types=1);
  *     palette?: string,
  *     order?: string
  * } $attributes
- * @var string $content
+ * @var string $content Rendered inner-block content.
  */
 
 $palette = jmc_html_allowed_value(
@@ -98,7 +105,11 @@ $image_html = $image_id > 0
 		<div class="jmc-section__column">
 			<?php if ( '' !== $image_html ) : ?>
 				<div class="jmc-image jmc-text-with-image__image">
-					<?php echo $image_html; ?>
+				
+					<?php
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered and filtered image markup supplied by WordPress.
+					echo $image_html;
+					?>
 				</div>
 			<?php endif; ?>
 		</div>

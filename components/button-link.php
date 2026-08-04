@@ -1,8 +1,15 @@
 <?php
+/**
+ * Render a button-style link component.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 
 /**
+ * Component arguments for the button link template.
+ *
  * @var array{
  *     text?: string,
  *     link?: array{

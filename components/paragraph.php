@@ -1,8 +1,15 @@
 <?php
+/**
+ * Render a paragraph component with optional classes and ID.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 
 /**
+ * Component arguments for the paragraph template.
+ *
  * @var array{
  *     text?: string,
  *     classes?: string|string[],
@@ -17,7 +24,7 @@ $text = jmc_args_string(
 	key: 'text'
 );
 
-if ( $text === '' ) {
+if ( '' === $text ) {
 	return;
 }
 
@@ -33,4 +40,4 @@ $attributes = [
 
 <p<?php jmc_the_attributes( $attributes ); ?>>
 	<?php echo esc_html( $text ); ?>
-	</p>
+</p>

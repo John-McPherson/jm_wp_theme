@@ -1,8 +1,17 @@
 <?php
+/**
+ * Render the column block wrapper with its inner content.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 
-/** @var string $content Rendered inner-block content. */
+/**
+ * Rendered inner-block content for the column.
+ *
+ * @var string $content
+ */
 
 ?>
 <div class="jmc-section__column">

@@ -1,15 +1,22 @@
 <?php
+/**
+ * Render the hero block layout with optional background image and palette.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 
 /**
+ * Block attributes for the hero layout.
+ *
  * @var array{
  *     anchor?: string,
  *     className?: string,
  *     imageId?: int|string,
- *     palette : string,
+ *     palette: string,
  * } $attributes
- * @var string $content
+ * @var string $content Rendered inner-block content.
  */
 
 
@@ -38,7 +45,7 @@ $image_id = jmc_args_int(
 );
 
 
-$image_url = $image_id > 0
+$image_url = 0 < $image_id
 	? wp_get_attachment_image_url( $image_id, 'full' )
 	: false;
 
@@ -59,7 +66,7 @@ $image_attributes = [
 	'aria-hidden' => 'true',
 ];
 
-if ( is_string( $image_url ) && $image_url !== '' ) {
+if ( is_string( $image_url ) && '' !== $image_url ) {
 	$image_attributes['style'] = [
 		'--background-image' => sprintf(
 			"url('%s')",
@@ -78,7 +85,7 @@ if ( is_string( $image_url ) && $image_url !== '' ) {
 		?>
 	</div>
 
-	<?php if ( is_string( $image_url ) && $image_url !== '' ) : ?>
+	<?php if ( is_string( $image_url ) && '' !== $image_url ) : ?>
 		<div <?php jmc_the_attributes( $image_attributes ); ?>></div>
 	<?php endif; ?>
 </section>
