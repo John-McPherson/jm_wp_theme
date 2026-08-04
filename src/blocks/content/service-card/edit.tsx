@@ -29,7 +29,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<Sidebar>
-				<Sidebar.Section title={ __( 'Select Icon', 'jm-theme' ) }>
+				<Sidebar.Section title={ __( 'Select Icon', 'jmc-theme' ) }>
 					<SelectInput { ...bind.select( 'icon' ) } type="icons" />
 				</Sidebar.Section>
 			</Sidebar>

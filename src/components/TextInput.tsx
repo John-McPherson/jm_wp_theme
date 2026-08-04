@@ -24,7 +24,7 @@ const TextInput = ( {
 			allowedFormats={ [] }
 			value={ value }
 			onChange={ set }
-			placeholder={ placeholder ?? __( 'Enter text here', 'jm-theme' ) }
+			placeholder={ placeholder ?? __( 'Enter text here', 'jmc-theme' ) }
 			className={ className }
 		/>
 	);

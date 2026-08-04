@@ -41,7 +41,7 @@ const LinkToolBar = ( { value, set, reset }: LinkToolBarProps ) => {
 				<div ref={ buttonRef }>
 					<ToolbarButton
 						icon={ linkIcon }
-						label={ __( 'Edit link', 'jm-theme' ) }
+						label={ __( 'Edit link', 'jmc-theme' ) }
 						isPressed={ isLinkOpen }
 						onClick={ () => setIsLinkOpen( ( open ) => ! open ) }
 					/>

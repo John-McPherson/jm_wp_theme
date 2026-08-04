@@ -37,7 +37,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 
 	const sideBar = (
 		<Sidebar>
-			<Sidebar.Section title={ __( 'Heading level', 'jm-theme' ) }>
+			<Sidebar.Section title={ __( 'Heading level', 'jmc-theme' ) }>
 				<SelectInput
 					{ ...( {
 						value: String( level ),

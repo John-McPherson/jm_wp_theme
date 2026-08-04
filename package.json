@@ -1,5 +1,5 @@
 {
-  "name": "jm_custom_theme",
+  "name": "jmc_custom_theme",
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
@@ -18,15 +18,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/John-McPherson/amc_electrical.git"
+    "url": "git+https://github.com/John-McPherson/jm_wp_theme.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/John-McPherson/amc_electrical/issues"
+    "url": "https://github.com/John-McPherson/jm_wp_theme/issues"
   },
-  "homepage": "https://github.com/John-McPherson/jm_custom_theme#readme",
+  "homepage": "https://github.com/John-McPherson/jm_wp_theme#readme",
   "devDependencies": {
     "@types/react": "^18.3.31",
     "@wordpress/block-editor": "^15.22.0",

@@ -7,7 +7,7 @@
   "category": "jmc-section",
   "icon": "cover-image",
   "description": "A hero section with composable content and a background image.",
-  "textdomain": "jm-theme",
+  "textdomain": "jmc-theme",
 
   "attributes": {
     "imageId": {

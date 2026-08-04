@@ -18,7 +18,7 @@ add_action(
 		}
 
 		wp_enqueue_style(
-			'jm-theme',
+			'jmc-theme',
 			get_theme_file_uri( $relative_path ),
 			[],
 			(string) filemtime( $absolute_path )

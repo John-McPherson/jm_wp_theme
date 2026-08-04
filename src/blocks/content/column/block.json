@@ -7,7 +7,7 @@
   "category": "jm",
   "icon": "columns",
   "description": "Organises related content within a section.",
-  "textdomain": "jm-theme",
+  "textdomain": "jmc-theme",
   "supports": {
     "html": false,
     "inserter": false

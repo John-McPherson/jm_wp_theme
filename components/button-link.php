@@ -68,7 +68,7 @@ $attributes = [
 	if ( '_blank' === $target ) :
 		?>
 		<span class="screen-reader-text">
-			<?php esc_html_e( '(opens in a new tab)', 'jm-theme' ); ?>
+			<?php esc_html_e( '(opens in a new tab)', 'jmc-theme' ); ?>
 		</span>
 	<?php endif; ?>
 	</a>

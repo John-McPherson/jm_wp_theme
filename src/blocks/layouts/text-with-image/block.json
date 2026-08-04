@@ -93,7 +93,7 @@
     "customClassName": true,
     "html": false
   },
-  "textdomain": "text-with-image",
+  "textdomain": "jmc-theme",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",

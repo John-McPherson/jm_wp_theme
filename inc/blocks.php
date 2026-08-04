@@ -92,11 +92,10 @@ add_filter(
 	 */
 	function ( $categories ): array {
 		$categories[] = [
-			[
-				'slug'  => 'jmc-section',
-				'title' => __( 'Sections', 'jm-theme' ),
-				'icon'  => 'customizer',
-			],
+			'slug'  => 'jmc-section',
+			'title' => __( 'Sections', 'jmc-theme' ),
+			'icon'  => 'customizer',
+
 		];
 		return $categories;
 	}

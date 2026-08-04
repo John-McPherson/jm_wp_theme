@@ -7,7 +7,7 @@
   "category": "jm",
   "icon": "index-card",
   "description": "A linked service card with a predefined icon.",
-  "textdomain": "jm-theme",
+  "textdomain": "jmc-theme",
 
   "attributes": {
     "icon": {

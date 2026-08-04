@@ -29,16 +29,16 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="jm-theme"/>
+				<element value="jmc-theme"/>
 			</property>
 		</properties>
 	</rule>
 
-	<!-- Require the theme's established prefix. -->
+	<!-- Require all theme-owned global PHP symbols to use the jmc prefix. -->
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="jm"/>
+				<element value="jmc"/>
 			</property>
 		</properties>
 	</rule>

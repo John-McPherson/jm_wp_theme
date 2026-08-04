@@ -7,7 +7,7 @@
   "category": "jm",
   "icon": "button",
   "description": "A reusable linked button.",
-  "textdomain": "jm-theme",
+  "textdomain": "jmc-theme",
 
   "attributes": {
     "text": {

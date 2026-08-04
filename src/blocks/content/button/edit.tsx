@@ -25,7 +25,7 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<Sidebar>
-				<Sidebar.Section title={ __( 'Button Type', 'jm-theme' ) }>
+				<Sidebar.Section title={ __( 'Button Type', 'jmc-theme' ) }>
 					<SelectInput
 						{ ...bind.select( 'buttonType' ) }
 						type="style"

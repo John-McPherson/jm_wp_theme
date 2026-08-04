@@ -13,16 +13,16 @@ type MediaInputProps = {
 
 const labels = {
 	image: {
-		select: __( 'Select image', 'jm-theme' ),
-		replace: __( 'Replace image', 'jm-theme' ),
+		select: __( 'Select image', 'jmc-theme' ),
+		replace: __( 'Replace image', 'jmc-theme' ),
 	},
 	video: {
-		select: __( 'Select video', 'jm-theme' ),
-		replace: __( 'Replace video', 'jm-theme' ),
+		select: __( 'Select video', 'jmc-theme' ),
+		replace: __( 'Replace video', 'jmc-theme' ),
 	},
 	audio: {
-		select: __( 'Select audio', 'jm-theme' ),
-		replace: __( 'Replace audio', 'jm-theme' ),
+		select: __( 'Select audio', 'jmc-theme' ),
+		replace: __( 'Replace audio', 'jmc-theme' ),
 	},
 };
 

@@ -56,13 +56,13 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<Sidebar>
-				<Sidebar.Section title={ __( 'Palette Settings', 'jm-theme' ) }>
+				<Sidebar.Section title={ __( 'Palette Settings', 'jmc-theme' ) }>
 					<SelectInput
 						{ ...bind.select( 'palette' ) }
 						type="palette"
 					/>
 				</Sidebar.Section>
-				<Sidebar.Section title={ __( 'Order Settings', 'jm-theme' ) }>
+				<Sidebar.Section title={ __( 'Order Settings', 'jmc-theme' ) }>
 					<SelectInput { ...bind.select( 'order' ) } type="order" />
 				</Sidebar.Section>
 			</Sidebar>

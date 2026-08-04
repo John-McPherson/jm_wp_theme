@@ -7,7 +7,7 @@
   "category": "jmc-blocks",
   "icon": "editor-paragraph",
   "description": "A reusable paragraph content block.",
-  "textdomain": "jm-theme",
+  "textdomain": "jmc-theme",
 
   "attributes": {
     "text": {
