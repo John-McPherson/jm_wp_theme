@@ -4,7 +4,7 @@
   "name": "jm/text-with-image",
   "version": "0.1.0",
   "title": "Text with Image",
-  "category": "jm-blocks",
+  "category": "jm-section",
   "icon": "layout",
   "description": "Text section with image",
   "attributes": {

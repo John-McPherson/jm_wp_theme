@@ -7,7 +7,6 @@ declare(strict_types=1);
  *     anchor?: string,
  *     className?: string,
  *     palette?: string,
- *     order?: string
  * } $attributes
  * @var string $content Rendered inner-block content.
  */
@@ -19,27 +18,14 @@ $palette = jm_html_allowed_value(
         'secondary',
         'inverse',
     ],
-    default: 'inverse'
+    default: 'default'
 );
 
-$order = jm_html_allowed_value(
-    value: $attributes['order'] ?? null,
-    allowed: [
-        'left',
-        'right',
-    ],
-    default: 'right'
-);
 
 $palette_classes = [
     'default'   => '',
     'secondary' => 'jm-palette--secondary',
     'inverse'   => 'jm-palette--inverse',
-];
-
-$order_classes = [
-    'left'  => 'jm-column-left',
-    'right' => 'jm-column-right',
 ];
 
 
@@ -50,7 +36,7 @@ $custom_classes = isset($attributes['className'])
 $section_attributes = [
     'classes' => array_filter([
         'jm-section',
-        'jm-cta',
+        'jm-service-grid',
         $palette_classes[$palette],
         ...$custom_classes,
     ]),
@@ -59,9 +45,6 @@ $section_attributes = [
 $container_attributes = [
     'classes' => array_filter([
         'jm-section__container',
-
-        $order_classes[$order],
-
     ]),
 
 ];
@@ -78,6 +61,5 @@ if (!empty($attributes['anchor'])) {
 <section <?php jm_the_attributes($section_attributes); ?>>
     <div <?php jm_the_attributes($container_attributes); ?>>
         <?php echo $content; ?>
-
     </div>
 </section>

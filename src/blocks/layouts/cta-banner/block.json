@@ -13,31 +13,47 @@
       "type": "string",
       "enum": ["default", "secondary", "inverse"],
       "default": "inverse"
+    },
+    "order": {
+      "type": "string",
+      "enum": ["left", "right"],
+      "default": "right"
     }
   },
   "example": {
     "attributes": {
-      "palette": "inverse"
+      "palette": "inverse",
+      "order": "right"
     },
     "innerBlocks": [
       {
-        "name": "jm/heading",
-        "attributes": {
-          "text": "Have a project in mind?",
-          "level": "2"
-        }
+        "name": "jm/column",
+        "innerBlocks": [
+          {
+            "name": "jm/heading",
+            "attributes": {
+              "text": "Have a project in mind?",
+              "level": "2"
+            }
+          }
+        ]
       },
       {
-        "name": "jm/paragraph",
-        "attributes": {
-          "text": "Let’s talk about how we can help."
-        }
-      },
-      {
-        "name": "jm/button",
-        "attributes": {
-          "text": "Get in touch"
-        }
+        "name": "jm/column",
+        "innerBlocks": [
+          {
+            "name": "jm/paragraph",
+            "attributes": {
+              "text": "Let’s talk about how we can help."
+            }
+          },
+          {
+            "name": "jm/button",
+            "attributes": {
+              "text": "Get in touch"
+            }
+          }
+        ]
       }
     ],
     "viewportWidth": 1200
@@ -47,7 +63,7 @@
     "customClassName": true,
     "html": false
   },
-  "textdomain": "jm",
+  "textdomain": "jm-theme",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",

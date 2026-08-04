@@ -1,0 +1,71 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jm/service-card",
+  "version": "0.1.0",
+  "title": "Service Card",
+  "category": "jm",
+  "icon": "index-card",
+  "description": "A linked service card with a predefined icon.",
+  "textdomain": "jm-theme",
+
+  "attributes": {
+    "icon": {
+      "type": "string",
+
+      "default": "domestic"
+    },
+    "link": {
+      "type": "object",
+      "default": {
+        "url": "",
+        "opensInNewTab": false,
+        "target": "",
+        "rel": ""
+      }
+    }
+  },
+
+  "ancestor": ["jm/service-grid"],
+
+  "allowedBlocks": ["jm/heading", "jm/paragraph"],
+
+  "example": {
+    "attributes": {
+      "icon": "domestic",
+      "link": {
+        "url": "#",
+        "opensInNewTab": false,
+        "target": "",
+        "rel": ""
+      }
+    },
+    "innerBlocks": [
+      {
+        "name": "jm/heading",
+        "attributes": {
+          "text": "Electrical Installations",
+          "level": "3"
+        }
+      },
+      {
+        "name": "jm/paragraph",
+        "attributes": {
+          "text": "Complete design and installation for commercial projects."
+        }
+      }
+    ]
+  },
+
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false,
+    "inserter": false
+  },
+
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}
