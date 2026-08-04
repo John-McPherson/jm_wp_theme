@@ -1,27 +1,27 @@
-import { InspectorControls } from "@wordpress/block-editor";
-import { PanelBody } from "@wordpress/components";
-import { ReactNode } from "react";
+import { InspectorControls } from '@wordpress/block-editor';
+import { PanelBody } from '@wordpress/components';
+import { ReactNode } from 'react';
 
 type SidebarProps = {
-  children: ReactNode;
+	children: ReactNode;
 };
 
 type SectionProps = {
-  title: string;
-  children: ReactNode;
-  initialOpen?: boolean;
+	title: string;
+	children: ReactNode;
+	initialOpen?: boolean;
 };
 
-function Sidebar({ children }: SidebarProps) {
-  return <InspectorControls>{children}</InspectorControls>;
+function Sidebar( { children }: SidebarProps ) {
+	return <InspectorControls>{ children }</InspectorControls>;
 }
 
-function Section({ title, children, initialOpen = true }: SectionProps) {
-  return (
-    <PanelBody title={title} initialOpen={initialOpen}>
-      {children}
-    </PanelBody>
-  );
+function Section( { title, children, initialOpen = true }: SectionProps ) {
+	return (
+		<PanelBody title={ title } initialOpen={ initialOpen }>
+			{ children }
+		</PanelBody>
+	);
 }
 
 Sidebar.Section = Section;

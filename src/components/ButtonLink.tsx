@@ -1,27 +1,27 @@
-import LinkToolBar from "./LinkToolBar";
-import TextInput from "./TextInput";
+import LinkToolBar from './LinkToolBar';
+import TextInput from './TextInput';
 
 type ButtonProps = {
-  text: {
-    value: string;
-    set: (value: string) => void;
-  };
-  link: {
-    value: { url: string; opensInNewTab: boolean };
-    set: (value: { url: string; opensInNewTab: boolean }) => void;
-    reset: () => void;
-  };
-  className: string;
+	text: {
+		value: string;
+		set: ( value: string ) => void;
+	};
+	link: {
+		value: { url: string; opensInNewTab: boolean };
+		set: ( value: { url: string; opensInNewTab: boolean } ) => void;
+		reset: () => void;
+	};
+	className: string;
 };
 
-const ButtonLink = ({ text, link, className }: ButtonProps) => {
-  const classes = [className, "jm-button"].filter(Boolean).join(" ");
-  return (
-    <>
-      <LinkToolBar {...link} />
-      <TextInput {...text} className={classes} />
-    </>
-  );
+const ButtonLink = ( { text, link, className }: ButtonProps ) => {
+	const classes = [ className, 'jm-button' ].filter( Boolean ).join( ' ' );
+	return (
+		<>
+			<LinkToolBar { ...link } />
+			<TextInput { ...text } className={ classes } />
+		</>
+	);
 };
 
 export default ButtonLink;
