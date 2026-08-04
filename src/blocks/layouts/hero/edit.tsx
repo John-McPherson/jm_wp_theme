@@ -61,7 +61,9 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<Sidebar>
-				<Sidebar.Section title={ __( 'Palette Settings', 'jmc-theme' ) }>
+				<Sidebar.Section
+					title={ __( 'Palette Settings', 'jmc-theme' ) }
+				>
 					<SelectInput
 						{ ...bind.select( 'palette' ) }
 						type="palette"
