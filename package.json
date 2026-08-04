@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build:assets": "rsync -av --delete src/assets/ build/assets/",
+    "build:assets": "mkdir -p build/assets && rsync -av --delete src/assets/ build/assets/",
     "build:styles": "sass src/scss/style.scss:build/css/style.css src/scss/editor-style.scss:build/css/editor-style.css --load-path=src/scss --no-source-map --style=compressed",
     "build:js": "wp-scripts build --output-path=build/js",
     "build": "npm run build:assets && npm run build:styles && npm run build:js",
