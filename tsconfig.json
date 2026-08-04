@@ -6,7 +6,7 @@
     "jsx": "react-jsx",
     "allowJs": true,
     "checkJs": false,
-
+    "skipLibCheck": true,
     "strict": false,
     "noEmit": true,
     "resolveJsonModule": true

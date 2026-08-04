@@ -9,7 +9,8 @@
     "build:js": "wp-scripts build --output-path=build/js",
     "build": "npm run build:assets && npm run build:styles && npm run build:js",
     "start": "concurrently \"wp-scripts start --output-path=build/js\" \"sass --watch src/scss/style.scss:build/css/style.css src/scss/editor-style.scss:build/css/editor-style.css --load-path=src/scss\"",
-    "package": "npm run build && rm -rf dist && mkdir -p dist && rsync -av --delete build/ dist/ && rsync -av theme.json style.css functions.php dist/"
+    "package": "npm run build && rm -rf dist && mkdir -p dist && rsync -av --delete build/ dist/ && rsync -av theme.json style.css functions.php dist/",
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
     "@wordpress/i18n": "^6.22.0",
     "@wordpress/scripts": "^32.4.0",
     "concurrently": "^10.0.3",
-    "sass": "^1.101.0"
+    "sass": "^1.101.0",
+    "typescript": "^6.0.3"
   }
 }
