@@ -1,4 +1,9 @@
 <?php
+/**
+ * Enqueue theme styles for blocks and editor.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 

@@ -18,7 +18,7 @@ $text = jmc_args_string(
 	key: 'text'
 );
 
-if ( $text === '' ) {
+if ( '' === $text ) {
 	return;
 }
 

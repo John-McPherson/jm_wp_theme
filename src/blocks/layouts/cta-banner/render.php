@@ -81,7 +81,10 @@ if ( ! empty( $attributes['anchor'] ) ) {
 
 <section <?php jmc_the_attributes( $section_attributes ); ?>>
 	<div <?php jmc_the_attributes( $container_attributes ); ?>>
-		<?php echo $content; ?>
+		<?php
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered and filtered inner-block markup supplied by WordPress.
+		echo $content;
+		?>
 
 	</div>
 </section>

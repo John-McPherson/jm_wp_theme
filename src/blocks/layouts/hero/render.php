@@ -72,7 +72,10 @@ if ( is_string( $image_url ) && $image_url !== '' ) {
 
 <section <?php jmc_the_attributes( $section_attributes ); ?>>
 	<div class="jmc-hero__text ">
-		<?php echo $content; ?>
+		<?php
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered and filtered inner-block markup supplied by WordPress.
+		echo $content;
+		?>
 	</div>
 
 	<?php if ( is_string( $image_url ) && $image_url !== '' ) : ?>

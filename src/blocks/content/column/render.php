@@ -6,5 +6,8 @@ declare(strict_types=1);
 
 ?>
 <div class="jmc-section__column">
-	<?php echo $content; ?>
+	<?php
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered and filtered inner-block markup supplied by WordPress.
+	echo $content;
+	?>
 </div>

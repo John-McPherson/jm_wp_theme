@@ -89,11 +89,14 @@ $image_html = $image_id > 0
 <section <?php jmc_the_attributes( $section_attributes ); ?>>
 	<div class="jmc-section__container">
 		<div class="jmc-section__column">
-			<?php echo $content; ?>
+			<?php
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered and filtered inner-block markup supplied by WordPress.
+			echo $content;
+			?>
 		</div>
 
 		<div class="jmc-section__column">
-			<?php if ( $image_html !== '' ) : ?>
+			<?php if ( '' !== $image_html ) : ?>
 				<div class="jmc-image jmc-text-with-image__image">
 					<?php echo $image_html; ?>
 				</div>

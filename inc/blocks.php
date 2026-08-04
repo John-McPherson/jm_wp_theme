@@ -1,4 +1,9 @@
 <?php
+/**
+ * Register theme blocks and filter block availability.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 

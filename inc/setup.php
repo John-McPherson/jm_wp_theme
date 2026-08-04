@@ -1,4 +1,9 @@
 <?php
+/**
+ * Configure theme support for editor styles and layouts.
+ *
+ * @package JMC_Theme
+ */
 
 declare(strict_types=1);
 
