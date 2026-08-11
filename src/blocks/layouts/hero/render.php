@@ -54,7 +54,7 @@ $section_attributes = [
 	'classes' => [
 		'jmc-section',
 		'jmc-hero',
-		$palette_classes[ $palette ],
+		$palette_classes[ $palette ] ?? null,
 		$attributes['className'] ?? null,
 	],
 ];
