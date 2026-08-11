@@ -2,9 +2,11 @@
 
 ## Current state
 
-GitHub Actions installs locked Node and Composer dependencies, audits production npm dependencies, type-checks, runs PHP syntax checks, lints JavaScript/TypeScript and SCSS, runs PHPCS, builds the theme, creates `dist/`, and verifies required package paths.
+GitHub Actions installs locked Node and Composer dependencies, audits production npm dependencies, runs focused PHPUnit regression tests, type-checks, runs PHP syntax checks, lints JavaScript/TypeScript and SCSS, runs PHPCS, builds the theme, creates `dist/`, and verifies required package paths.
 
-The repository does not yet contain unit, integration, browser, visual-regression, or automated accessibility tests. Static quality gates are not behavioural verification.
+The repository contains focused PHPUnit coverage for the Hero block’s server-side palette rendering. The regression test covers omitted, default, supported, and malformed palette values and converts PHP notices and warnings into test failures.
+
+Broader PHP unit and render coverage, integration tests, browser tests, visual-regression tests, and automated accessibility tests are not yet configured. Static quality gates and focused regression tests do not replace full behavioural verification.
 
 ## Local quality gate
 
@@ -13,6 +15,7 @@ Before review, run:
 ```bash
 npm ci
 composer install
+composer test
 npm run typecheck
 npm run lint:php
 npm run lint:js
@@ -22,7 +25,21 @@ npm run build
 npm run package
 ```
 
-Confirm the command set passes from a clean dependency install. CI is authoritative for the supported Linux/Node/PHP combination.
+Confirm the command set passes from a clean dependency install. CI is authoritative for the supported Linux, Node, and PHP combination.
+
+## PHP regression tests
+
+PHPUnit configuration is defined in `phpunit.xml.dist`. PHP tests and their isolated WordPress test doubles live under `tests/phpunit/`.
+
+Run the PHP test suite with:
+
+```bash
+composer test
+```
+
+Render regression tests must exercise omitted, default, supported, and deliberately malformed attribute values where applicable. PHP notices and warnings should cause test failures.
+
+The current test doubles provide only the behaviour required by isolated render tests. They are not a substitute for WordPress integration tests and should not reproduce unrelated WordPress functionality.
 
 ## Manual feature verification
 
@@ -41,14 +58,15 @@ For every changed block, component, template, or pattern:
 
 Tracked under `v0.4.0 – Quality & Testing`:
 
-- PHP unit tests for component-argument and HTML-attribute helpers.
-- PHP render tests for dynamic blocks, validation, defaults, and malformed input.
-- Incremental TypeScript strictness and typed block editor contracts.
-- Playwright editor/frontend smoke tests.
-- axe checks for representative editor and frontend states.
-- Optional visual regression coverage for palettes and responsive variants.
+- Expand PHP unit coverage for component-argument and HTML-attribute helpers.
+- Expand PHP render coverage across dynamic blocks, validation, defaults, and malformed input.
+- Add WordPress integration coverage where isolated test doubles cannot represent runtime behaviour accurately.
+- Increase TypeScript strictness and add typed block-editor contract tests.
+- Add Playwright editor and frontend smoke tests.
+- Add axe checks for representative editor and frontend states.
+- Consider visual-regression coverage for palettes and responsive variants.
 
-Do not describe these checks as configured until they run in CI.
+Do not describe planned checks as configured until they run in CI.
 
 ## Accessibility release matrix
 
@@ -57,14 +75,14 @@ Automated scans cannot validate reading order, usable focus, meaningful alternat
 - Keyboard-only navigation.
 - 200% zoom and 320 CSS-pixel reflow.
 - Reduced-motion preference.
-- At least one desktop screen-reader/browser combination.
+- At least one desktop screen-reader and browser combination.
 - VoiceOver with iOS Safari for primary navigation and contact journeys.
 
 ## Compatibility and package verification
 
 Test the lowest supported WordPress and PHP versions declared in `style.css`, plus the current production target. Update `Tested up to` only after testing that WordPress release.
 
-CI currently verifies that required files exist in `dist/`; it does not install or activate the package in WordPress. Before release:
+CI currently verifies that required files exist in `dist`; it does not install or activate the package in WordPress. Before release:
 
 1. Produce `dist/` with `npm run package`.
 2. Archive the packaged theme directory.

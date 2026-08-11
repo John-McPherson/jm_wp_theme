@@ -31,7 +31,7 @@ $palette = jmc_html_allowed_value(
 );
 
 $palette_classes = [
-	'primary'   => null,
+	'default'   => null,
 	'secondary' => 'jmc-palette--secondary',
 	'inverse'   => 'jmc-palette--inverse',
 ];
@@ -54,7 +54,7 @@ $section_attributes = [
 	'classes' => [
 		'jmc-section',
 		'jmc-hero',
-		$palette_classes[ $palette ],
+		$palette_classes[ $palette ] ?? null,
 		$attributes['className'] ?? null,
 	],
 ];
