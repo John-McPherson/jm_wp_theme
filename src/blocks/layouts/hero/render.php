@@ -31,7 +31,7 @@ $palette = jmc_html_allowed_value(
 );
 
 $palette_classes = [
-	'primary'   => null,
+	'default'   => null,
 	'secondary' => 'jmc-palette--secondary',
 	'inverse'   => 'jmc-palette--inverse',
 ];
