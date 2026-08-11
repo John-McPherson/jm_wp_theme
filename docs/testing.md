@@ -2,73 +2,76 @@
 
 ## Current state
 
-The repository has CI quality gates but no unit, integration, browser, visual-regression, or automated accessibility test suite. GitHub Actions installs locked Node and Composer dependencies, runs the configured type-check and linters, then builds the theme.
+GitHub Actions installs locked Node and Composer dependencies, audits production npm dependencies, type-checks, runs PHP syntax checks, lints JavaScript/TypeScript and SCSS, runs PHPCS, builds the theme, creates `dist/`, and verifies required package paths.
 
-## Before every review
+The repository does not yet contain unit, integration, browser, visual-regression, or automated accessibility tests. Static quality gates are not behavioural verification.
+
+## Local quality gate
+
+Before review, run:
 
 ```bash
+npm ci
+composer install
 npm run typecheck
 npm run lint:php
 npm run lint:js
 npm run lint:styles
 npm run lint:phpcs
 npm run build
+npm run package
 ```
 
-Then verify:
+Confirm the command set passes from a clean dependency install. CI is authoritative for the supported Linux/Node/PHP combination.
 
-- No Sass, TypeScript, or block build errors.
-- No PHP warnings in the affected WordPress flow.
-- No browser console errors.
-- Changed blocks can be inserted, configured, saved, reloaded, and rendered.
-- Each of the nine custom blocks renders correctly in every allowed parent/child composition.
-- Empty, default, populated, and invalid attribute states are safe.
-- Editor and frontend presentation remain aligned.
-- Layout works at narrow mobile, tablet, desktop, and wide desktop widths.
-- Keyboard focus and reduced-motion behaviour meet the accessibility standard.
+## Manual feature verification
 
-## PHP checks
+For every changed block, component, template, or pattern:
 
-- Syntax linting for all PHP files is configured.
-- WordPress Coding Standards via PHPCS is configured.
-- PHPStan with WordPress stubs at an agreed level.
-- Unit tests for argument and HTML-attribute helpers.
-- Integration tests for block discovery and dynamic rendering.
+- Exercise empty, default, populated, and deliberately invalid states.
+- Insert, configure, save, reload, and render affected blocks.
+- Check PHP debug logs and the browser console.
+- Compare editor and frontend output.
+- Test narrow mobile, tablet, desktop, and wide desktop widths.
+- Test every supported palette, order, and variant.
+- Verify allowed parent/child composition and block locking.
+- Test keyboard operation, visible focus, reduced motion, zoom, and reflow.
 
-## Frontend checks
+## Planned automated coverage
 
-- TypeScript type-checking, `wp-scripts lint-js`, and `wp-scripts lint-style` are configured.
-- Unit tests for attribute transformations and editor controls.
-- Playwright tests for block-editor and frontend smoke flows.
-- axe integration for representative pages and block states.
-- Visual regression snapshots for palettes and responsive variants.
+Tracked under `v0.4.0 – Quality & Testing`:
 
-## Accessibility manual matrix
+- PHP unit tests for component-argument and HTML-attribute helpers.
+- PHP render tests for dynamic blocks, validation, defaults, and malformed input.
+- Incremental TypeScript strictness and typed block editor contracts.
+- Playwright editor/frontend smoke tests.
+- axe checks for representative editor and frontend states.
+- Optional visual regression coverage for palettes and responsive variants.
 
-Automated scans cannot validate reading order, usable focus, meaningful alternative text, or sensible screen-reader output. At release candidates, test:
+Do not describe these checks as configured until they run in CI.
+
+## Accessibility release matrix
+
+Automated scans cannot validate reading order, usable focus, meaningful alternative text, or sensible assistive-technology output. At release candidates, test:
 
 - Keyboard-only navigation.
-- 200% browser zoom and 320px reflow.
+- 200% zoom and 320 CSS-pixel reflow.
 - Reduced-motion preference.
-- At least one desktop screen reader/browser combination.
+- At least one desktop screen-reader/browser combination.
 - VoiceOver with iOS Safari for primary navigation and contact journeys.
 
-## WordPress compatibility matrix
+## Compatibility and package verification
 
-At minimum, verify the lowest supported WordPress/PHP versions declared in `style.css` and the current supported production versions. Update `Tested up to` only after testing that WordPress release.
+Test the lowest supported WordPress and PHP versions declared in `style.css`, plus the current production target. Update `Tested up to` only after testing that WordPress release.
 
-The current header declares both `Requires at least` and `Tested up to` as WordPress `7.1`, with PHP `8.0`. Treat those values as release claims that require evidence, not merely desired targets.
+CI currently verifies that required files exist in `dist/`; it does not install or activate the package in WordPress. Before release:
 
-## Release smoke test
-
-1. Produce the release archive.
-2. Install it into a clean WordPress instance without `node_modules` or repository source files.
-3. Activate the theme.
-4. Open the site editor and frontend.
-5. Insert and render every custom block.
+1. Produce `dist/` with `npm run package`.
+2. Archive the packaged theme directory.
+3. Install it in a clean supported WordPress environment without source dependencies.
+4. Activate it and open the Site Editor and frontend.
+5. Render all custom blocks and representative templates.
 6. Confirm CSS, scripts, fonts, images, components, templates, and PHP includes load.
-7. Check debug logs and the browser console.
+7. Review PHP logs and the browser console.
 
-A working development checkout is not evidence that the distributable archive works.
-
-CI currently runs `npm run build`, not `npm run package`, so the release-directory failure is not detected automatically. Add package execution and structural assertions before treating CI as a release gate.
+A working development checkout is not evidence that the distributable package works.
