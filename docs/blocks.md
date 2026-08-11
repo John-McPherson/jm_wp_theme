@@ -28,7 +28,7 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; direct inserter disabled                                         |
 | `jmc/service-card`    | Linked service summary with a predefined icon                                      | Dynamic PHP               | Restricted to `jmc/service-grid`; allows Heading and Paragraph children                                                |
 | `jmc/cta-banner`      | Two-column call-to-action section                                                  | Dynamic PHP               | Palettes: default, secondary, inverse; left/right order; defaults to inverse/right                                     |
-| `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; defaults to default palette                                           |
+| `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default |
 | `jmc/service-grid`    | Introductory content beside a responsive service-card grid                         | Dynamic PHP               | Allows Column children; palettes and left/right order; defaults to default/left                                        |
 | `jmc/text-with-image` | Composable text content paired with an image                                       | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; contains legacy-looking attributes that need contract review |
 
@@ -59,6 +59,18 @@ This table should be updated whenever a block is added, renamed, deprecated, or 
 
 Palettes are semantic presentation contracts, not arbitrary colour choices. A block must expose only palettes it can render accessibly. The default stored in `block.json`, options shown in the editor, PHP allowlist, and SCSS selector must agree exactly.
 
+### Hero palette contract
+
+The Hero block uses the same palette vocabulary in `block.json`, editor controls, PHP validation, and frontend classes:
+
+| Attribute value | Frontend class |
+| --- | --- |
+| `default` | No additional palette class |
+| `secondary` | `jmc-palette--secondary` |
+| `inverse` | `jmc-palette--inverse` |
+
+The omitted and declared default value is `default`. PHP treats unexpected palette input as `default`, so malformed or legacy content renders without an undefined-key notice and without an additional palette class. When changing this contract, verify the omitted value, every supported value, and malformed input under WordPress debug mode in both the editor and frontend.
+
 Variants change structural presentation. If descendants require the value, provide it through block context with a namespaced key such as `jmc/variant` rather than copying attributes through unrelated blocks.
 
 ## Images
@@ -81,7 +93,6 @@ Changes confined to a dynamic block's PHP frontend markup normally do not need a
 ## Current issues to resolve
 
 - Normalise internal content-block categories to one registered category, or remove category metadata where it has no effect.
-- Re-check Hero palette behaviour across metadata, editor, PHP, and SCSS whenever its contract changes.
 - Revisit the `jmc/`-only global allowlist before FSE templates require core blocks.
 - Change the `style.css` text-domain header from `jmc-custom-theme` to the canonical `jmc-theme` used by translations and block metadata.
 - Review and remove or formally support the older top-level content attributes still declared by `jmc/text-with-image`.
