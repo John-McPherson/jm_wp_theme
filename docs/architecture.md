@@ -2,7 +2,7 @@
 
 ## Purpose
 
-JMC Custom Theme is a Full Site Editing theme with a deliberately small WordPress bootstrap, dynamically rendered custom blocks, reusable PHP view components, and a shared token system for the editor and frontend.
+JMC Custom Theme is a Full Site Editing theme with a small WordPress bootstrap, dynamic custom blocks, reusable PHP view components, and shared design tokens for the editor and frontend.
 
 ## Runtime flow
 
@@ -20,58 +20,68 @@ flowchart TD
 
 ## Responsibilities
 
-### Bootstrap
+### Bootstrap and modules
 
-`functions.php` loads the modules under `inc/`. Keep it declarative: it should wire modules together, not contain feature logic.
+`functions.php` wires together focused modules and helpers:
 
-### Theme modules
+- `inc/setup.php` declares theme support and editor styles.
+- `inc/enqueue.php` loads the compiled shared stylesheet when it exists and uses its modification time for cache busting.
+- `inc/blocks.php` recursively registers compiled block metadata, registers the section category, and applies the current editor allowlist.
+- `inc/helpers/` contains reusable framework-level PHP helpers.
 
-- `inc/setup.php` declares WordPress theme support and editor styles.
-- `inc/enqueue.php` loads the compiled shared stylesheet and uses the file modification time for cache busting.
-- `inc/blocks.php` discovers compiled block metadata under `build/js/blocks`, registers custom block categories, and controls the editor block allowlist.
-- `inc/helpers/` contains reusable, framework-level PHP helpers.
+Feature logic should not accumulate in the bootstrap.
 
 ### Blocks
 
-Block metadata and editor code originate in `src/blocks/content/` and `src/blocks/layouts/`, then compile to `build/js/blocks`. WordPress recursively registers each compiled directory containing a `block.json`. All nine current blocks are dynamic and delegate frontend output to PHP render files and reusable components.
+Source metadata and editor code live in `src/blocks/content/` and `src/blocks/layouts/`; production compilation writes to `build/js/blocks/`. Registration scans each compiled directory containing `block.json`.
 
-The four layout blocks (`cta-banner`, `hero`, `service-grid`, and `text-with-image`) are editor-insertable sections. The five content blocks are composition primitives; their metadata currently disables direct insertion so layouts control the authoring experience.
+The current library contains nine dynamic blocks:
 
-Attributes crossing the editor/PHP boundary are untrusted input. Render code must validate allowed values, escape output at the final boundary, and return no markup for genuinely empty states.
+- Four insertable sections: `cta-banner`, `hero`, `service-grid`, and `text-with-image`.
+- Five composition blocks: `button`, `column`, `heading`, `paragraph`, and `service-card`.
 
-### Components
+Attributes crossing from the editor into PHP are untrusted. Render code must validate allowlisted values, escape at the final boundary, and avoid meaningless empty markup.
 
-`jmc_component()` resolves a component name beneath `components/` and passes arguments through WordPress template-part loading. Components own reusable markup; blocks own Gutenberg-specific attributes, context, and composition.
+### Components and helpers
 
-Use the typed argument helpers in `inc/helpers/component_args.php` and the escaped attribute helpers in `inc/helpers/html/attributes.php`. Do not concatenate raw attributes into HTML.
+`jmc_component()` resolves names beneath `components/` and delegates to WordPress template-part loading. Components own reusable markup; blocks own Gutenberg attributes, context, and composition.
 
-### Styling and design tokens
+Use the typed argument helpers in `inc/helpers/component-args.php` and escaped HTML-attribute helpers in `inc/helpers/html/attributes.php`. Do not concatenate raw attributes into markup.
 
-`theme.json` exposes WordPress-facing primitives such as colour, typography, spacing, radii, and layout widths. SCSS maps primitives into aliases, semantic roles, palettes, layout rules, components, and blocks. Both frontend and editor entry points consume the shared foundations.
+### Styling and tokens
+
+`theme.json` exposes WordPress-facing colour, typography, spacing, radius, and layout primitives. SCSS maps them into semantic roles, palettes, layouts, components, and block rules. Frontend and editor entry points share the same foundations.
+
+### Build and package
+
+`src/` is the source of truth. `npm run build` creates runtime assets under `build/`. `npm run package` recreates `dist/` with runtime PHP, templates, components, configuration, and compiled assets. CI verifies the package structure, but clean WordPress installation/activation remains planned release-hardening work.
 
 ## Dependency rules
 
-1. `functions.php` may depend on `inc/`, but feature logic must stay out of the bootstrap.
+1. `functions.php` may depend on `inc/`; feature logic stays out of the bootstrap.
 2. Blocks may use components and helpers.
-3. Components may use helpers but must not depend on a particular block.
+3. Components may use helpers but must not depend on a specific block.
 4. Helpers must not render a specific feature.
-5. Source files may generate `build/`; generated files must never become the source of truth.
-6. Presentation variants must use an allowlist and semantic class names.
+5. Generated files must never become the source of truth.
+6. Presentation variants use allowlists and semantic class names.
 
 ## Naming
 
 - PHP functions: `jmc_` prefix and `snake_case`.
 - Blocks: `jmc/<name>`.
 - CSS classes: `jmc-` prefix with BEM-style elements where useful.
-- CSS custom properties: semantic names rather than raw colour names at the component boundary.
-- Text domain: `jmc-theme` in PHP, TypeScript, and block metadata. The `style.css` header must be aligned before release.
+- Text domain: `jmc-theme` in PHP, TypeScript, and block metadata.
 
-## Known architectural constraints
+The `style.css` header currently uses `jmc-custom-theme`; align it before release.
 
-- The global block allowlist currently permits only `jmc/` blocks. Reassess this before navigation, query, template, and other core FSE blocks are required.
-- Internal content-block metadata still uses the unregistered legacy categories `jm` and `jmc-blocks`.
-- The packaging inclusion list includes runtime dependencies but also references missing optional directories, causing the command to fail.
-- Templates, navigation, and production deployment architecture are still under development.
-- `templates/index.html` is currently the only FSE template; template parts and patterns have not been introduced.
+## Known constraints
 
-Major architectural changes should be captured as a short decision record in `docs/adr/` once that directory is introduced.
+- The global block allowlist exposes only `jmc/` blocks and must become context-aware before header, navigation, query, and broader FSE workflows are completed.
+- Some internal block metadata still uses legacy, unregistered categories.
+- TypeScript strict mode is disabled and existing contracts contain weak typing.
+- Header/footer template parts, patterns, and full template coverage are not implemented.
+- Automated behavioural and accessibility tests are not configured.
+- Packaging uses Unix-specific shell tools and is not clean-install tested.
+- Production hosting, deployment, health-check, and rollback commands are undecided.
+
+Track architectural changes through focused issues. Add short decision records under `docs/adr/` when a decision materially affects multiple blocks, workflows, or future maintainers.
