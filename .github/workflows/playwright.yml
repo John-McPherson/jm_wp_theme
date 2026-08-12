@@ -23,7 +23,7 @@ jobs:
       WP_USERNAME: admin
       WP_PASSWORD: password
       WP_ENV_CORE: WordPress/WordPress#master
-      THEME_SLUG: amc_electrical
+      THEME_SLUG: jm_wp_theme
 
     steps:
       - name: Check out repository
