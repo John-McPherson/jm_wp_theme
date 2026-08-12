@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - dev
+      - 21-implement-header-structure-and-site-identity
 
 concurrency:
   group: playwright-${{ github.workflow }}-${{ github.ref }}
@@ -25,6 +26,7 @@ jobs:
       WP_BASE_URL: http://localhost:8888
       WP_USERNAME: admin
       WP_PASSWORD: password
+      THEME_SLUG: jm_wp_theme
 
     steps:
       - name: Check out repository
@@ -52,18 +54,47 @@ jobs:
         shell: bash
         run: |
           for attempt in {1..30}; do
-            if curl --fail --silent http://localhost:8888 >/dev/null; then
+            if curl --fail --silent "${WP_BASE_URL}" >/dev/null; then
+              echo "WordPress is ready"
               exit 0
             fi
 
+            echo "Waiting for WordPress (${attempt}/30)..."
             sleep 2
           done
 
           echo "WordPress did not become ready"
           docker ps --all
+          npx wp-env logs || true
           exit 1
 
-      - name: Run Playwright
+      - name: List installed themes
+        run: npx wp-env run cli wp theme list
+
+      - name: Activate custom theme
+        run: |
+          npx wp-env run cli wp theme activate "${THEME_SLUG}"
+          npx wp-env run cli wp theme status "${THEME_SLUG}"
+
+      - name: Verify active theme
+        shell: bash
+        run: |
+          ACTIVE_THEME="$(
+            npx wp-env run cli wp option get stylesheet |
+            tail -n 1 |
+            tr -d '\r'
+          )"
+
+          echo "Expected theme: ${THEME_SLUG}"
+          echo "Active theme: ${ACTIVE_THEME}"
+
+          if [ "${ACTIVE_THEME}" != "${THEME_SLUG}" ]; then
+            echo "The expected theme is not active."
+            npx wp-env run cli wp theme list
+            exit 1
+          fi
+
+      - name: Run Playwright tests
         run: npm run test:e2e
 
       - name: Upload Playwright report
@@ -86,4 +117,8 @@ jobs:
 
       - name: Show WordPress logs
         if: ${{ failure() }}
-        run: npx wp-env logs
+        run: npx wp-env logs || true
+
+      - name: Stop WordPress
+        if: ${{ always() }}
+        run: npm run env:stop || true
