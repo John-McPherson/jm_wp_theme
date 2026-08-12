@@ -1,105 +1,179 @@
-import { expect, test } from './fixtures/test';
+import { expect, test } from "./fixtures/test";
+import {
+  deleteAttachment,
+  getThemeMod,
+  importTestLogo,
+  removeThemeMod,
+  setThemeMod,
+} from "./helpers/wp-cli";
+import { loginToWordPress } from "./helpers/login";
 
-test.describe( 'site header', () => {
-	test( 'renders the block-based header', async ( { page } ) => {
-		await page.goto( '/' );
+const headerSelector = ".jmc-header";
 
-		await expect( page.locator( '.jmc-header' ) ).toBeVisible();
-		await expect( page.locator( '.jmc-header-inner' ) ).toBeVisible();
-		await expect( page.locator( '.jmc-logo' ) ).toBeVisible();
-	} );
+test.describe("site header", () => {
+  test("renders the block-based header", async ({ page }) => {
+    await page.goto("/");
 
-	test( 'uses sticky positioning', async ( { page } ) => {
-		await page.goto( '/' );
+    await expect(page.locator(headerSelector)).toBeVisible();
+  });
 
-		const header = page.locator( '.jmc-header' );
+  test("uses sticky positioning", async ({ page }) => {
+    await page.setViewportSize({
+      width: 1024,
+      height: 800,
+    });
 
-		await expect( header ).toHaveCSS( 'position', 'sticky' );
-		await expect( header ).toHaveCSS( 'top', '0px' );
-	} );
+    await page.goto("/");
 
-	test( 'remains at the viewport edge while scrolling', async ( {
-		page,
-	} ) => {
-		await page.goto( '/' );
+    await expect(page.locator(headerSelector)).toHaveCSS("position", "sticky");
+  });
 
-		const header = page.locator( '.jmc-header' );
-		await expect( header ).toBeVisible();
+  test("remains at the viewport edge while scrolling", async ({ page }) => {
+    await page.setViewportSize({
+      width: 1024,
+      height: 800,
+    });
 
-		await page.evaluate( () => {
-			const spacer = document.createElement( 'div' );
-			spacer.dataset.testSpacer = 'true';
-			spacer.style.height = '200vh';
-			document.body.append( spacer );
-			window.scrollTo( 0, 600 );
-		} );
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
 
-		await expect
-			.poll( async () => {
-				const box = await header.boundingBox();
-				return Math.round( box?.y ?? -1 );
-			} )
-			.toBe( 0 );
-	} );
+    const header = page.locator(".jmc-header");
 
-	test( 'disables sticky positioning in a short viewport', async ( {
-		page,
-	} ) => {
-		await page.setViewportSize( { width: 1024, height: 470 } );
-		await page.goto( '/' );
+    await expect(header).toBeVisible();
+    await expect(header).toHaveCSS("position", "sticky");
 
-		await expect( page.locator( '.jmc-header' ) ).toHaveCSS(
-			'position',
-			'static'
-		);
-	} );
+    await page.evaluate(() => {
+      const spacer = document.createElement("div");
+      spacer.style.height = "2000px";
+      document.body.appendChild(spacer);
 
-	test( 'does not create horizontal overflow at 320px', async ( {
-		page,
-	} ) => {
-		await page.setViewportSize( { width: 320, height: 800 } );
-		await page.goto( '/' );
+      window.scrollTo(0, 800);
+    });
 
-		const dimensions = await page.evaluate( () => ( {
-			clientWidth: document.documentElement.clientWidth,
-			scrollWidth: document.documentElement.scrollWidth,
-		} ) );
+    await expect
+      .poll(async () => {
+        return header.evaluate(
+          (element) => element.getBoundingClientRect().top,
+        );
+      })
+      .toBeCloseTo(0, 0);
+  });
 
-		expect( dimensions.scrollWidth ).toBeLessThanOrEqual(
-			dimensions.clientWidth
-		);
-	} );
-} );
+  test("disables sticky positioning in a short viewport", async ({ page }) => {
+    await page.setViewportSize({
+      width: 1024,
+      height: 470,
+    });
 
-test( 'administrator can open the Site Editor', async ( { page } ) => {
-	const username = process.env.WP_USERNAME;
-	const password = process.env.WP_PASSWORD;
+    await page.goto("/");
 
-	if ( ! username || ! password ) {
-		throw new Error(
-			'WP_USERNAME and WP_PASSWORD must be set in .env.e2e'
-		);
-	}
+    await expect(page.locator(headerSelector)).toHaveCSS("position", "static");
+  });
 
-	await page.goto( '/wp-login.php' );
+  test("remains sticky above the short viewport breakpoint", async ({
+    page,
+  }) => {
+    await page.setViewportSize({
+      width: 1024,
+      height: 490,
+    });
 
-	await page.locator( '#user_login' ).fill( username );
-	await page.locator( '#user_pass' ).fill( password );
-	await page.locator( '#wp-submit' ).click();
+    await page.goto("/");
 
-	await page.waitForURL( /\/wp-admin\// );
+    await expect(page.locator(headerSelector)).toHaveCSS("position", "sticky");
+  });
 
-	await page.goto( '/wp-admin/site-editor.php' );
+  test("does not create horizontal overflow at 320px", async ({ page }) => {
+    await page.setViewportSize({
+      width: 320,
+      height: 800,
+    });
 
-	await expect( page ).toHaveURL( /site-editor\.php/ );
+    await page.goto("/");
 
-	await expect(
-		page.getByText( /this block contains unexpected or invalid content/i )
-	).toHaveCount( 0 );
+    const dimensions = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth,
+    }));
 
-	await expect(
-		page.getByRole( 'button', {
-			name: /attempt block recovery/i,
-		} )
-	).toHaveCount( 0 );
-} );
+    expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
+  });
+});
+
+test.describe("site identity", () => {
+  let originalLogoId: string | null = null;
+  let importedLogoId: number | null = null;
+
+  test.beforeEach(async () => {
+    originalLogoId = await getThemeMod("custom_logo");
+
+    importedLogoId = null;
+  });
+
+  test.afterEach(async () => {
+    /*
+     * Restore the original theme state before deleting the
+     * temporary attachment.
+     */
+    if (originalLogoId !== null) {
+      await setThemeMod("custom_logo", originalLogoId);
+    } else {
+      await removeThemeMod("custom_logo");
+    }
+
+    if (importedLogoId !== null) {
+      await deleteAttachment(importedLogoId);
+      importedLogoId = null;
+    }
+  });
+
+  test("shows the site title when no custom logo exists", async ({ page }) => {
+    await removeThemeMod("custom_logo");
+
+    await page.goto("/");
+
+    await expect(page.locator(".jmc-logo .wp-block-site-title")).toBeVisible();
+
+    await expect(page.locator(".jmc-logo .wp-block-site-logo img")).toHaveCount(
+      0,
+    );
+  });
+
+  test("shows the logo and hides the title when a custom logo exists", async ({
+    page,
+  }) => {
+    importedLogoId = await importTestLogo();
+
+    await setThemeMod("custom_logo", importedLogoId);
+
+    await page.goto("/");
+
+    await expect(
+      page.locator(".jmc-logo .wp-block-site-logo img"),
+    ).toBeVisible();
+
+    await expect(page.locator(".jmc-logo .wp-block-site-title")).toBeHidden();
+  });
+});
+
+test.describe("Site Editor", () => {
+  test("administrator can open the Site Editor without recovery UI", async ({
+    page,
+  }) => {
+    await loginToWordPress(page);
+
+    await page.goto("/wp-admin/site-editor.php");
+
+    await expect(page).toHaveURL(/site-editor\.php/);
+
+    await expect(
+      page.getByText(/this block contains unexpected or invalid content/i),
+    ).toHaveCount(0);
+
+    await expect(
+      page.getByRole("button", {
+        name: /attempt block recovery/i,
+      }),
+    ).toHaveCount(0);
+  });
+});

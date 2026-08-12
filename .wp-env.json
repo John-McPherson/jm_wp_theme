@@ -1,10 +1,7 @@
 {
-  "core": null,
+  "$schema": "https://schemas.wp.org/trunk/wp-env.json",
+  "core": "WordPress/WordPress#master",
   "themes": ["."],
   "port": 8888,
-  "testsPort": 8889,
-  "config": {
-    "WP_DEBUG": true,
-    "SCRIPT_DEBUG": true
-  }
+  "testsEnvironment": false
 }
