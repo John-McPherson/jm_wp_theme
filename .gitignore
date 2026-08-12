@@ -34,3 +34,8 @@ yarn-error.log*
 *.tmp
 *.swp
 *~
+
+# Playwright
+/playwright-report/
+/test-results/
+/artifacts/
