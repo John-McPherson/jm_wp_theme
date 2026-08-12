@@ -1,21 +1,34 @@
 @layer palettes {
+  .jmc-palette--inverse {
+    --jmc-background-color: var(--jmc-color-brand-900);
+    --jmc-heading-color: var(--jmc-color-base-50);
+    --jmc-text-color: var(--jmc-color-base-100);
+    --jmc-text-highlight: var(--jmc-color-accent-300);
 
-	.jmc-palette--inverse {
-		--jmc-background-color: var(--jmc-color-brand-900);
-		--jmc-heading-color: var(--jmc-color-base-50);
-		--jmc-text-color: var(--jmc-color-base-100);
-		--jmc-text-highlight: var(--jmc-color-accent-300);
+    // Boundaries and elevation
 
-		// Primary buttons
-		--jmc-button-background: var(--jmc-color-base-100);
-		--jmc-button-color: var(--jmc-color-brand-900);
-		--jmc-button-hover-background: var(--jmc-color-accent-300);
-		--jmc-button-hover-color: var(--jmc-color-brand-900);
+    --jmc-border-color: color-mix(
+      in srgb,
+      var(--jmc-color-base-50) 18%,
+      transparent
+    );
 
-		// Secondary buttons
-		--jmc-button-secondary-background: transparent;
-		--jmc-button-secondary-color: var(--jmc-color-base-100);
-		--jmc-button-secondary-hover-background: var(--jmc-color-base-100);
-		--jmc-button-secondary-hover-color: var(--jmc-color-brand-900);
-	}
+    --jmc-shadow-color: color-mix(
+      in srgb,
+      var(--jmc-color-base-50) 12%,
+      transparent
+    );
+
+    // Primary buttons
+    --jmc-button-background: var(--jmc-color-base-100);
+    --jmc-button-color: var(--jmc-color-brand-900);
+    --jmc-button-hover-background: var(--jmc-color-accent-300);
+    --jmc-button-hover-color: var(--jmc-color-brand-900);
+
+    // Secondary buttons
+    --jmc-button-secondary-background: transparent;
+    --jmc-button-secondary-color: var(--jmc-color-base-100);
+    --jmc-button-secondary-hover-background: var(--jmc-color-base-100);
+    --jmc-button-secondary-hover-color: var(--jmc-color-brand-900);
+  }
 }
