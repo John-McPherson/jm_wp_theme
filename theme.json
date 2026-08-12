@@ -1,7 +1,13 @@
 {
   "$schema": "https://schemas.wp.org/trunk/theme.json",
   "version": 3,
-
+  "templateParts": [
+    {
+      "name": "header",
+      "title": "Site header",
+      "area": "header"
+    }
+  ],
   "settings": {
     "layout": {
       "contentSize": "768px",
