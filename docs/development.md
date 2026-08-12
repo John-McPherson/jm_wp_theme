@@ -21,6 +21,19 @@ npm run build
 
 Activate the theme, then start JavaScript and Sass watchers with `npm start`. Static files in `src/assets/` are copied only by the build command, so rerun `npm run build:assets` or `npm run build` when they change.
 
+### Isolated WordPress environment
+
+The browser suite uses `wp-env` rather than a developer's normal WordPress database. Copy the example environment file and start Docker before running the suite:
+
+```bash
+cp .env.e2e.example .env.e2e
+npm run env:start
+npm run test:e2e
+npm run env:stop
+```
+
+The development site is available at `http://localhost:8888` with username `admin` and password `password`. Playwright runs against Chromium, Firefox, and WebKit. Generated reports and failure evidence are written under `artifacts/e2e/` and are not committed.
+
 `.nvmrc` is the current Node contract. `package.json` does not yet declare an `engines` range, so non-nvm environments must select the matching major version explicitly.
 
 ## Branch and issue workflow
