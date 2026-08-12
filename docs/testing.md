@@ -4,9 +4,11 @@
 
 GitHub Actions installs locked Node and Composer dependencies, audits production npm dependencies, runs focused PHPUnit regression tests, type-checks, runs PHP syntax checks, lints JavaScript/TypeScript and SCSS, runs PHPCS, builds the theme, creates `dist/`, and verifies required package paths.
 
-The repository contains focused PHPUnit coverage for the Hero block’s server-side palette rendering. The regression test covers omitted, default, supported, and malformed palette values and converts PHP notices and warnings into test failures.
+The repository contains focused PHPUnit coverage for the Hero block’s server-side palette rendering and header template contracts. Header coverage verifies template-part registration, inclusion from the intended template, editable Site Logo and Site Title blocks, and the absence of hard-coded business identity markup.
 
-Broader PHP unit and render coverage, integration tests, browser tests, visual-regression tests, and automated accessibility tests are not yet configured. Static quality gates and focused regression tests do not replace full behavioural verification.
+Playwright browser tests run against an isolated `wp-env` site in Chromium, Firefox, and WebKit. They cover header rendering, sticky and short-viewport behaviour, the authenticated admin-toolbar offset, narrow-viewport overflow, configured and missing-logo states, deterministic title fallback, the logo homepage link, and Site Editor block-recovery regressions.
+
+Broader WordPress integration coverage, visual-regression tests, and automated accessibility tests are not yet configured. Static quality gates and focused regression tests do not replace full behavioural verification.
 
 ## Local quality gate
 
