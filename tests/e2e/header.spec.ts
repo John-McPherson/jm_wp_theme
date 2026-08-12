@@ -1,10 +1,12 @@
 import { expect, test } from './fixtures/test';
 import {
 	deleteAttachment,
+	getOption,
 	getThemeMod,
 	importTestLogo,
 	removeThemeMod,
 	setThemeMod,
+	updateOption,
 } from './helpers/wp-cli';
 import { loginToWordPress } from './helpers/login';
 
@@ -28,6 +30,25 @@ test.describe( 'site header', () => {
 		await expect( page.locator( headerSelector ) ).toHaveCSS(
 			'position',
 			'sticky'
+		);
+	} );
+
+	test( 'offsets the sticky header below the admin toolbar', async ( {
+		page,
+	} ) => {
+		await page.setViewportSize( {
+			width: 1024,
+			height: 800,
+		} );
+
+		await loginToWordPress( page );
+		await page.goto( '/' );
+
+		await expect( page.locator( 'body' ) ).toHaveClass( /admin-bar/ );
+
+		await expect( page.locator( headerSelector ) ).toHaveCSS(
+			'top',
+			'32px'
 		);
 	} );
 
@@ -142,18 +163,17 @@ test.describe( 'site header', () => {
 test.describe( 'site identity', () => {
 	let originalLogoId: string | null = null;
 	let importedLogoId: number | null = null;
+	let originalSiteTitle = '';
 
 	test.beforeEach( async () => {
 		originalLogoId = await getThemeMod( 'custom_logo' );
-
+		originalSiteTitle = await getOption( 'blogname' );
 		importedLogoId = null;
 	} );
 
 	test.afterEach( async () => {
-		/*
-		 * Restore the original theme state before deleting the
-		 * temporary attachment.
-		 */
+		await updateOption( 'blogname', originalSiteTitle );
+
 		if ( originalLogoId !== null ) {
 			await setThemeMod( 'custom_logo', originalLogoId );
 		} else {
@@ -170,18 +190,19 @@ test.describe( 'site identity', () => {
 		page,
 	} ) => {
 		await removeThemeMod( 'custom_logo' );
+		await updateOption( 'blogname', 'AMC Electrical E2E' );
 
 		await page.goto( '/' );
 
-		await expect(
-			page.locator( '.jmc-logo .wp-block-site-title' )
-		).toBeVisible();
+		const siteTitle = page.locator( '.jmc-logo .wp-block-site-title' );
+
+		await expect( siteTitle ).toBeVisible();
+		await expect( siteTitle ).toContainText( 'AMC Electrical E2E' );
 
 		await expect(
 			page.locator( '.jmc-logo .wp-block-site-logo img' )
 		).toHaveCount( 0 );
 	} );
-
 	test( 'shows the logo and hides the title when a custom logo exists', async ( {
 		page,
 	} ) => {
@@ -198,6 +219,31 @@ test.describe( 'site identity', () => {
 		await expect(
 			page.locator( '.jmc-logo .wp-block-site-title' )
 		).toBeHidden();
+	} );
+	test( 'links the configured logo to the homepage', async ( { page } ) => {
+		importedLogoId = await importTestLogo();
+
+		await setThemeMod( 'custom_logo', importedLogoId );
+
+		await page.goto( '/' );
+
+		const logoLink = page.locator( '.jmc-logo .wp-block-site-logo a' );
+
+		await expect( logoLink ).toBeVisible();
+
+		const href = await logoLink.getAttribute( 'href' );
+
+		expect( href ).not.toBeNull();
+
+		const actualUrl = new URL( href as string, page.url() );
+
+		const expectedUrl = new URL(
+			process.env.WP_BASE_URL ?? 'http://localhost:8888'
+		);
+
+		expect( actualUrl.origin + actualUrl.pathname ).toBe(
+			expectedUrl.origin + expectedUrl.pathname
+		);
 	} );
 } );
 

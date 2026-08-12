@@ -94,3 +94,16 @@ export async function deleteAttachment(
 ): Promise< void > {
 	await runWpCli( [ 'post', 'delete', String( attachmentId ), '--force' ] );
 }
+
+export async function getOption( name: string ): Promise< string > {
+	const { stdout } = await runWpCli( [ 'option', 'get', name ] );
+
+	return stdout;
+}
+
+export async function updateOption(
+	name: string,
+	value: string
+): Promise< void > {
+	await runWpCli( [ 'option', 'update', name, value ] );
+}
