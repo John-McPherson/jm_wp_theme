@@ -3,3 +3,51 @@
 @use "./tokens/index.scss" as *;
 @use "./palettes/index.scss" as *;
 @use "./layout/index.scss" as *;
+
+@use "./base/typography" as *;
+html {
+  scroll-padding-block-start: 5rem;
+}
+
+.jmc-header {
+  position: sticky;
+  background-color: var(--jmc-background-color);
+  min-height: 5rem;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  inset-block-start: 0;
+  z-index: 100;
+  box-shadow: 0 1px 0 rgb(0 0 0 / 10%);
+
+  &-inner {
+    max-width: var(--jmc-container-xl);
+    padding: 0 var(--jmc-padding-xl);
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: end;
+
+    .wp-block-site-title {
+      @include h2();
+    }
+  }
+
+
+  .jmc-logo {
+    display: flex;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    &:has(.wp-block-site-logo) {
+      .wp-block-site-title {
+        display: none;
+      }
+    }
+  }
+  @media (max-height: 30rem) {
+    position: static;
+  }
+}
