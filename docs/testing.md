@@ -29,6 +29,23 @@ npm run package
 
 Confirm the command set passes from a clean dependency install. CI is authoritative for the supported Linux, Node, and PHP combination.
 
+## Browser end-to-end tests
+
+Start Docker, create the local environment file once, and run the isolated WordPress environment:
+
+```bash
+cp .env.e2e.example .env.e2e
+npm run env:start
+npm run test:e2e
+npm run env:stop
+```
+
+Use `npm run test:e2e:headed` or `npm run test:e2e:debug` while diagnosing a test. Use Playwright's `--project=chromium`, `--project=firefox`, or `--project=webkit` option to target one engine.
+
+Tests that change WordPress options or theme modifications must capture and restore the original state. The shared CI environment runs with one worker to prevent database-state races.
+
+The HTML report is written to `artifacts/e2e/report/`; screenshots, videos, traces, and error contexts are written to `artifacts/e2e/test-results/`. These are disposable artifacts and must not be committed. Future visual-regression baselines are test source and should remain under `tests/e2e/`, separate from generated failure artifacts.
+
 ## PHP regression tests
 
 PHPUnit configuration is defined in `phpunit.xml.dist`. PHP tests and their isolated WordPress test doubles live under `tests/phpunit/`.
@@ -64,7 +81,7 @@ Tracked under `v0.4.0 – Quality & Testing`:
 - Expand PHP render coverage across dynamic blocks, validation, defaults, and malformed input.
 - Add WordPress integration coverage where isolated test doubles cannot represent runtime behaviour accurately.
 - Increase TypeScript strictness and add typed block-editor contract tests.
-- Add Playwright editor and frontend smoke tests.
+- Expand Playwright editor and frontend coverage beyond the header.
 - Add axe checks for representative editor and frontend states.
 - Consider visual-regression coverage for palettes and responsive variants.
 
