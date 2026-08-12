@@ -8,11 +8,9 @@
 
 		// Boundaries and elevation
 
-		--jmc-border-color:
- color-mix(in srgb, var(--jmc-color-base-700) 18%, transparent);
+		--jmc-border-color: color-mix(in srgb, var(--jmc-color-base-700) 18%, transparent);
 
-		--jmc-shadow-color:
- color-mix(in srgb, var(--jmc-color-base-700) 12%, transparent);
+		--jmc-shadow-color: color-mix(in srgb, var(--jmc-color-base-700) 12%, transparent);
 
 		// Primary buttons
 		--jmc-button-background: var(--jmc-color-brand-700);
