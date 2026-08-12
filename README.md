@@ -12,6 +12,7 @@ Custom Full Site Editing WordPress theme for AMC Electrical, built with PHP, Typ
 - npm
 - Composer 2
 - `rsync` for asset builds and packaging
+- Docker Desktop or another Docker-compatible runtime for the isolated WordPress E2E environment
 
 ## Setup
 
