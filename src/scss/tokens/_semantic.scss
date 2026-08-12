@@ -12,6 +12,10 @@
 		--jmc-button-hover-background: var(--jmc-color-brand-900);
 		--jmc-button-hover-color: var(--jmc-color-base-100);
 
+		// Boundaries and elevation
+		--jmc-border-color: var(--jmc-color-base-300);
+		--jmc-shadow-color: color-mix(in srgb, var(--jmc-color-base-900) 12%, transparent);
+
 		// Secondary buttons
 		--jmc-button-secondary-background: transparent;
 		--jmc-button-secondary-color: var(--jmc-color-brand-700);

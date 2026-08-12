@@ -1,0 +1,137 @@
+name: Playwright E2E
+
+on:
+  pull_request:
+  push:
+
+concurrency:
+  group: playwright-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: WordPress E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      CI: true
+      WP_BASE_URL: http://localhost:8888
+      WP_USERNAME: admin
+      WP_PASSWORD: password
+      WP_ENV_CORE: WordPress/WordPress#master
+      THEME_SLUG: jm_wp_theme
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Build theme
+        run: npm run build
+
+      - name: Start WordPress
+        run: npm run env:start
+
+      - name: Wait for WordPress
+        shell: bash
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent "${WP_BASE_URL}" >/dev/null; then
+              echo "WordPress is ready."
+              exit 0
+            fi
+
+            echo "Waiting for WordPress (${attempt}/30)..."
+            sleep 2
+          done
+
+          echo "WordPress did not become ready."
+          docker ps --all
+          npx wp-env logs || true
+          exit 1
+
+      - name: Verify WordPress environment
+        run: |
+          echo "Node: $(node --version)"
+          echo "npm: $(npm --version)"
+          npx wp-env run cli wp core version
+          npx wp-env run cli wp theme list
+
+      - name: Activate theme
+        shell: bash
+        run: |
+          npx wp-env run cli wp theme activate "${THEME_SLUG}"
+
+          ACTIVE_THEME="$(
+            npx wp-env run cli wp option get stylesheet |
+            tail -n 1 |
+            tr -d '\r'
+          )"
+
+          echo "Expected theme: ${THEME_SLUG}"
+          echo "Active theme: ${ACTIVE_THEME}"
+
+          if [ "${ACTIVE_THEME}" != "${THEME_SLUG}" ]; then
+            echo "Expected theme was not activated."
+            npx wp-env run cli wp theme list
+            exit 1
+          fi
+
+      - name: Verify test fixture
+        run: |
+          npx wp-env run cli wp eval '
+            $path = get_theme_file_path(
+              "tests/e2e/fixtures/logo.png"
+            );
+
+            echo $path . PHP_EOL;
+
+            if (! file_exists($path)) {
+              fwrite(STDERR, "Logo fixture is missing." . PHP_EOL);
+              exit(1);
+            }
+          '
+
+      - name: Run Playwright tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: artifacts/e2e/report/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Upload failure evidence
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failures-${{ github.run_id }}
+          path: artifacts/e2e/test-results/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Show WordPress logs
+        if: ${{ failure() }}
+        run: npx wp-env logs || true
+
+      - name: Stop WordPress
+        if: ${{ always() }}
+        run: npm run env:stop || true
