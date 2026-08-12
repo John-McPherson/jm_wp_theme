@@ -4,9 +4,11 @@
 
 GitHub Actions installs locked Node and Composer dependencies, audits production npm dependencies, runs focused PHPUnit regression tests, type-checks, runs PHP syntax checks, lints JavaScript/TypeScript and SCSS, runs PHPCS, builds the theme, creates `dist/`, and verifies required package paths.
 
-The repository contains focused PHPUnit coverage for the Hero block’s server-side palette rendering. The regression test covers omitted, default, supported, and malformed palette values and converts PHP notices and warnings into test failures.
+The repository contains focused PHPUnit coverage for the Hero block’s server-side palette rendering and header template contracts. Header coverage verifies template-part registration, inclusion from the intended template, editable Site Logo and Site Title blocks, and the absence of hard-coded business identity markup.
 
-Broader PHP unit and render coverage, integration tests, browser tests, visual-regression tests, and automated accessibility tests are not yet configured. Static quality gates and focused regression tests do not replace full behavioural verification.
+Playwright browser tests run against an isolated `wp-env` site in Chromium, Firefox, and WebKit. They cover header rendering, sticky and short-viewport behaviour, the authenticated admin-toolbar offset, narrow-viewport overflow, configured and missing-logo states, deterministic title fallback, the logo homepage link, and Site Editor block-recovery regressions.
+
+Broader WordPress integration coverage, visual-regression tests, and automated accessibility tests are not yet configured. Static quality gates and focused regression tests do not replace full behavioural verification.
 
 ## Local quality gate
 
@@ -26,6 +28,23 @@ npm run package
 ```
 
 Confirm the command set passes from a clean dependency install. CI is authoritative for the supported Linux, Node, and PHP combination.
+
+## Browser end-to-end tests
+
+Start Docker, create the local environment file once, and run the isolated WordPress environment:
+
+```bash
+cp .env.e2e.example .env.e2e
+npm run env:start
+npm run test:e2e
+npm run env:stop
+```
+
+Use `npm run test:e2e:headed` or `npm run test:e2e:debug` while diagnosing a test. Use Playwright's `--project=chromium`, `--project=firefox`, or `--project=webkit` option to target one engine.
+
+Tests that change WordPress options or theme modifications must capture and restore the original state. The shared CI environment runs with one worker to prevent database-state races.
+
+The HTML report is written to `artifacts/e2e/report/`; screenshots, videos, traces, and error contexts are written to `artifacts/e2e/test-results/`. These are disposable artifacts and must not be committed. Future visual-regression baselines are test source and should remain under `tests/e2e/`, separate from generated failure artifacts.
 
 ## PHP regression tests
 
@@ -62,7 +81,7 @@ Tracked under `v0.4.0 – Quality & Testing`:
 - Expand PHP render coverage across dynamic blocks, validation, defaults, and malformed input.
 - Add WordPress integration coverage where isolated test doubles cannot represent runtime behaviour accurately.
 - Increase TypeScript strictness and add typed block-editor contract tests.
-- Add Playwright editor and frontend smoke tests.
+- Expand Playwright editor and frontend coverage beyond the header.
 - Add axe checks for representative editor and frontend states.
 - Consider visual-regression coverage for palettes and responsive variants.
 
