@@ -7,6 +7,7 @@
 - Node.js 24, selected through `.nvmrc`
 - npm and Composer 2
 - `rsync`
+- Docker Desktop or another Docker-compatible runtime for `wp-env`
 - A Git working copy inside `wp-content/themes`
 
 ## Initial setup
