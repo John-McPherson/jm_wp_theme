@@ -45,6 +45,11 @@ npm start
 | `npm run lint:js` | Lint JavaScript and TypeScript |
 | `npm run lint:styles` | Lint SCSS |
 | `npm run lint:phpcs` | Run WordPress Coding Standards |
+| `npm run env:start` | Start the isolated WordPress environment at `http://localhost:8888` |
+| `npm run env:stop` | Stop the isolated WordPress environment |
+| `npm run test:e2e` | Run Playwright in Chromium, Firefox, and WebKit |
+| `npm run test:e2e:headed` | Run Playwright with visible browser windows |
+| `npm run test:e2e:report` | Open the latest HTML report |
 | `npm run package` | Build and assemble the release directory in `dist/` |
 
 ## Structure
@@ -57,7 +62,10 @@ npm start
 | `src/` | Authoring sources: SCSS, TypeScript, blocks, and static assets |
 | `build/` | Generated runtime assets used by WordPress |
 | `templates/` | FSE templates; currently the minimal `index.html` fallback |
-| `theme.json` | WordPress settings and design primitives |
+| `parts/` | Registered FSE template parts, including the editable site header |
+| `tests/e2e/` | Playwright browser tests, helpers, and committed fixtures |
+| `artifacts/e2e/` | Ignored Playwright reports, traces, videos, screenshots, and failure output |
+| `theme.json` | WordPress settings, design primitives, and template-part registration |
 | `docs/` | Architecture and operational documentation |
 
 ## Engineering documentation
@@ -77,7 +85,7 @@ npm start
 
 The theme provides nine dynamic, server-rendered blocks: five internal composition blocks and four editor-insertable section blocks. GitHub Actions installs locked dependencies, type-checks, lints PHP/TypeScript/SCSS, runs PHPCS, builds the theme, packages `dist/`, and verifies required package paths.
 
-The header, navigation, footer, complete template coverage, behavioural tests, automated accessibility checks, and clean-install package verification remain planned work. The current global block allowlist also needs to become context-aware before core Site Editor blocks are required.
+The site-identity header template part and cross-browser Playwright smoke coverage are now configured. Primary navigation, header CTA, footer, complete template coverage, automated accessibility checks, visual regression baselines, and clean-install package verification remain planned work. The current global block allowlist also needs to become context-aware before core Site Editor blocks are required.
 
 ## Browser support
 
