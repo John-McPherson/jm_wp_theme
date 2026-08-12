@@ -20,7 +20,7 @@ html {
 
 	&-inner {
 		display: flex;
-		align-items: flex-end;
+		align-items: center;
 		justify-content: space-between;
 
 		width: 100%;
@@ -32,7 +32,6 @@ html {
 			@include typography.h2;
 		}
 	}
-
 
 	.jmc-logo .wp-block-site-logo img {
 
@@ -55,7 +54,7 @@ html {
 			}
 		}
 	}
-	//remove sticky on landscape devices
+	// Disable sticky positioning in short landscape viewports.
 	@media (max-height: 30rem) {
 		position: static;
 	}
