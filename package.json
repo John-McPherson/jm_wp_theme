@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit",
     "lint:php": "find . -type f -name \"*.php\" -not -path \"./node_modules/*\" -not -path \"./vendor/*\" -not -path \"./build/*\" -not -path \"./dist/*\" -print0 | xargs -0 -n1 php -l",
     "lint:js": "wp-scripts lint-js",
-    "lint:styles": "wp-scripts lint-style",
+    "lint:styles": "wp-scripts lint-style --fix",
     "lint:phpcs": "vendor/bin/phpcs"
   },
   "repository": {

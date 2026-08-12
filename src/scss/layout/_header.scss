@@ -1,64 +1,67 @@
 @use "../base/typography" as typography;
 
 html {
-  scroll-padding-block-start: var(--jmc-header-height);
+	scroll-padding-block-start: var(--jmc-header-height);
 }
 
 .jmc-header {
-  position: sticky;
-  inset-block-start: 0;
-  z-index: 100; // TODO: Replace with z-index token.
+	position: sticky;
+	inset-block-start: 0;
+	z-index: 100; // TODO: Replace with z-index token.
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 
-  min-height: var(--jmc-header-height);
-  background-color: var(--jmc-background-color);
+	min-height: var(--jmc-header-height);
+	background-color: var(--jmc-background-color);
 
-  box-shadow: 0 1px 2px var(--jmc-shadow-color);
+	box-shadow: 0 1px 2px var(--jmc-shadow-color);
 
-  &-inner {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
+	&-inner {
+		display: flex;
+		align-items: flex-end;
+		justify-content: space-between;
 
-    width: 100%;
-    max-width: var(--jmc-container-xl);
-    padding-inline: var(--jmc-padding-xl);
+		width: 100%;
+		max-width: var(--jmc-container-xl);
+		padding-inline: var(--jmc-padding-xl);
 
-    .wp-block-site-title {
-      @include typography.h2;
-    }
-  }
+		.wp-block-site-title {
 
-  .jmc-logo {
-    display: flex;
-    align-items: center;
+			@include typography.h2;
+		}
+	}
 
-    /*
+	.jmc-logo {
+		display: flex;
+		align-items: center;
+
+		/*
 		 * Keep the site title as a fallback until an actual logo image
 		 * has been configured.
 		 */
-    &:has(.wp-block-site-logo img) {
-      .wp-block-site-title {
-        display: none;
-      }
-    }
-  }
-  //remove sticky on landscape devices
-  @media (max-height: 30rem) {
-    position: static;
-  }
+		&:has(.wp-block-site-logo img) {
+
+			.wp-block-site-title {
+				display: none;
+			}
+		}
+	}
+	//remove sticky on landscape devices
+	@media (max-height: 30rem) {
+		position: static;
+	}
 }
 
 /* Account for the WordPress admin toolbar. */
 .admin-bar .jmc-header {
-  inset-block-start: 32px;
+	inset-block-start: 32px;
 }
 
 @media (max-width: 782px) {
-  .admin-bar .jmc-header {
-    inset-block-start: 46px;
-  }
+
+	.admin-bar .jmc-header {
+		inset-block-start: 46px;
+	}
 }

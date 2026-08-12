@@ -1,34 +1,29 @@
 @layer palettes {
-  .jmc-palette--secondary {
-    --jmc-background-color: var(--jmc-color-accent-100);
-    --jmc-heading-color: var(--jmc-color-brand-900);
-    --jmc-text-color: var(--jmc-color-base-700);
-    --jmc-text-highlight: var(--jmc-color-accent-600);
 
-    // Boundaries and elevation
+	.jmc-palette--secondary {
+		--jmc-background-color: var(--jmc-color-accent-100);
+		--jmc-heading-color: var(--jmc-color-brand-900);
+		--jmc-text-color: var(--jmc-color-base-700);
+		--jmc-text-highlight: var(--jmc-color-accent-600);
 
-    --jmc-border-color: color-mix(
-      in srgb,
-      var(--jmc-color-base-700) 18%,
-      transparent
-    );
+		// Boundaries and elevation
 
-    --jmc-shadow-color: color-mix(
-      in srgb,
-      var(--jmc-color-base-700) 12%,
-      transparent
-    );
+		--jmc-border-color:
+ color-mix(in srgb, var(--jmc-color-base-700) 18%, transparent);
 
-    // Primary buttons
-    --jmc-button-background: var(--jmc-color-brand-700);
-    --jmc-button-color: var(--jmc-color-base-50);
-    --jmc-button-hover-background: var(--jmc-color-brand-900);
-    --jmc-button-hover-color: var(--jmc-color-base-50);
+		--jmc-shadow-color:
+ color-mix(in srgb, var(--jmc-color-base-700) 12%, transparent);
 
-    // Secondary buttons
-    --jmc-button-secondary-background: transparent;
-    --jmc-button-secondary-color: var(--jmc-color-brand-700);
-    --jmc-button-secondary-hover-background: var(--jmc-color-brand-700);
-    --jmc-button-secondary-hover-color: var(--jmc-color-base-50);
-  }
+		// Primary buttons
+		--jmc-button-background: var(--jmc-color-brand-700);
+		--jmc-button-color: var(--jmc-color-base-50);
+		--jmc-button-hover-background: var(--jmc-color-brand-900);
+		--jmc-button-hover-color: var(--jmc-color-base-50);
+
+		// Secondary buttons
+		--jmc-button-secondary-background: transparent;
+		--jmc-button-secondary-color: var(--jmc-color-brand-700);
+		--jmc-button-secondary-hover-background: var(--jmc-color-brand-700);
+		--jmc-button-secondary-hover-color: var(--jmc-color-base-50);
+	}
 }
