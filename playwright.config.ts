@@ -14,7 +14,7 @@ export default defineConfig( {
 		? [ [ 'line' ], [ 'html', { open: 'never' } ] ]
 		: [ [ 'list' ], [ 'html', { open: 'never' } ] ],
 	use: {
-		baseURL: process.env.WP_BASE_URL ?? 'http://localhost:8889',
+		baseURL: process.env.WP_BASE_URL ?? 'http://localhost:8888',
 		trace: 'on-first-retry',
 		screenshot: 'only-on-failure',
 		video: 'retain-on-failure',
