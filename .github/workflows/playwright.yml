@@ -26,6 +26,7 @@ jobs:
       WP_BASE_URL: http://localhost:8888
       WP_USERNAME: admin
       WP_PASSWORD: password
+      WP_ENV_CORE: WordPress/WordPress#7.1
       THEME_SLUG: jm_wp_theme
 
     steps:
@@ -46,6 +47,9 @@ jobs:
 
       - name: Build theme
         run: npm run build
+
+      - name: Destroy stale WordPress environment
+        run: npx wp-env destroy || true
 
       - name: Start WordPress
         run: npm run env:start
@@ -68,8 +72,12 @@ jobs:
           npx wp-env logs || true
           exit 1
 
-      - name: List installed themes
-        run: npx wp-env run cli wp theme list
+      - name: Show environment versions
+        run: |
+          echo "Node: $(node --version)"
+          echo "npm: $(npm --version)"
+          npx wp-env run cli wp core version
+          npx wp-env run cli wp theme list
 
       - name: Activate custom theme
         run: |
