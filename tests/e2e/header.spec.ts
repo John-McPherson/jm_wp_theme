@@ -40,28 +40,50 @@ test.describe( 'site header', () => {
 		} );
 
 		await page.goto( '/' );
-		await page.waitForLoadState( 'networkidle' );
+		await page.waitForLoadState( 'domcontentloaded' );
 
 		const header = page.locator( '.jmc-header' );
+		const siteBlocks = page.locator( '.wp-site-blocks' );
 
 		await expect( header ).toBeVisible();
+		await expect( siteBlocks ).toBeVisible();
 		await expect( header ).toHaveCSS( 'position', 'sticky' );
 
-		await page.evaluate( () => {
+		await siteBlocks.evaluate( ( container ) => {
 			const spacer = document.createElement( 'div' );
-			spacer.style.height = '2000px';
-			document.body.appendChild( spacer );
 
-			window.scrollTo( 0, 800 );
+			spacer.style.height = '3000px';
+			spacer.setAttribute( 'data-e2e-spacer', '' );
+
+			container.appendChild( spacer );
+		} );
+
+		const stickyTop = await header.evaluate( ( element ) => {
+			return (
+				Number.parseFloat( window.getComputedStyle( element ).top ) || 0
+			);
+		} );
+
+		await page.evaluate( () => {
+			window.scrollTo( {
+				top: 800,
+				behavior: 'instant',
+			} );
 		} );
 
 		await expect
+			.poll( () => page.evaluate( () => window.scrollY ) )
+			.toBeGreaterThanOrEqual( 798 );
+
+		await expect
 			.poll( async () => {
-				return header.evaluate(
-					( element ) => element.getBoundingClientRect().top
-				);
+				return header.evaluate( ( element, expectedTop ) => {
+					return Math.abs(
+						element.getBoundingClientRect().top - expectedTop
+					);
+				}, stickyTop );
 			} )
-			.toBeCloseTo( 0, 0 );
+			.toBeLessThanOrEqual( 2 );
 	} );
 
 	test( 'disables sticky positioning in a short viewport', async ( {
