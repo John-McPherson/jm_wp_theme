@@ -34,11 +34,12 @@ html {
 	}
 
 
-    .jmc-logo .wp-block-site-logo img {
-	
-width: clamp(8rem, 20vw, 13rem);
-	height: auto;
-}
+	.jmc-logo .wp-block-site-logo img {
+
+		width: clamp(8rem, 20vw, 13rem);
+		height: auto;
+	}
+
 	.jmc-logo {
 		display: flex;
 		align-items: center;
