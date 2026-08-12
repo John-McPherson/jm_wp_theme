@@ -26,7 +26,7 @@ jobs:
       WP_BASE_URL: http://localhost:8888
       WP_USERNAME: admin
       WP_PASSWORD: password
-      WP_ENV_CORE: WordPress/WordPress#7.1
+      WP_ENV_CORE: WordPress/WordPress#trunk
       THEME_SLUG: jm_wp_theme
 
     steps:
@@ -78,6 +78,30 @@ jobs:
           echo "npm: $(npm --version)"
           npx wp-env run cli wp core version
           npx wp-env run cli wp theme list
+
+      - name: Verify WordPress 7.1 or newer
+        shell: bash
+        run: |
+          WORDPRESS_VERSION="$(
+            npx wp-env run cli wp core version |
+            tail -n 1 |
+            tr -d '\r'
+          )"
+
+          echo "WordPress version: ${WORDPRESS_VERSION}"
+
+          if ! npx wp-env run cli php -r "
+            exit(
+              version_compare(
+                '${WORDPRESS_VERSION}',
+                '7.1',
+                '>='
+              ) ? 0 : 1
+            );
+          "; then
+            echo "WordPress 7.1 or newer is required."
+            exit 1
+          fi
 
       - name: Activate custom theme
         run: |
