@@ -22,6 +22,18 @@ export default function Edit( { attributes, setAttributes } ) {
 		const navigationOptions = menus.map( ( menu ) => {
 			return { label: menu.title.rendered, value: menu.id };
 		} );
+
+		if ( navigationOptions.length === 0 ) {
+			navigationOptions.push( {
+				label: __( 'No navigation menus found', 'jmc-theme' ),
+				value: '',
+			} );
+		}
+
+		if ( ! attributes.navigationId ) {
+			setAttributes( { navigationId: navigationOptions[ 0 ].value } );
+		}
+
 		navSelect = (
 			<SelectInput
 				{ ...bind.select( 'navigationId' ) }

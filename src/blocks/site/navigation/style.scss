@@ -1,56 +1,86 @@
-@use "../../../scss/base/typography" as *;
-@use "../../../scss/abstracts/index" as *;
+@use "../../../scss/abstracts/mixins" as m;
+@use "../../../scss/layers/" as *;
 
-@layer components {
+@layer site {
+	.jmc-navigation {
+		--toggle-display: flex;
 
-	.jmc-button {
-		--color: var(--jmc-button-color);
-		--background: var(--jmc-button-background);
-		--hover-color: var(--jmc-button-hover-color);
-		--hover-background: var(--jmc-button-hover-background);
+		&__toggle {
+			position: relative;
+			display: var(--toggle-display);
+			width: 3rem;
+			height: 3rem;
+			padding: 0;
+			background: transparent;
+			border: 0;
 
-		&__secondary {
-			--color: var(--jmc-button-secondary-color);
-			--background: var(--jmc-button-secondary-background);
-			--hover-color: var(--jmc-button-secondary-hover-color);
-			--hover-background: var(--jmc-button-secondary-hover-background);
+			&-text,
+			.sro {
+				@include m.sr-only;
+			}
+
+			&-open,
+			&-close {
+				position: absolute;
+				inset: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-weight: 700;
+				transition:
+					opacity 0.2s ease,
+					transform 0.2s ease;
+			}
+
+			&-close {
+				opacity: 0;
+				transform: translateY(0.3rem);
+			}
+
+			&[aria-expanded="true"] {
+				.jmc-navigation__toggle-close {
+					opacity: 1;
+					transform: translateY(0);
+				}
+
+				.jmc-navigation__toggle-open {
+					opacity: 0;
+					transform: translateY(-0.3rem);
+				}
+			}
+
+			@include m.min(var(--jmc-container-md)) {
+				--toggle-display: none;
+			}
 		}
 
-		@include h5;
-
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-
-		width: 100%;
-
-		padding: var(--jmc-padding-xs) var(--jmc-padding-m);
-
-		background: var(--background);
-
-		color: var(--color);
-
-		border: 1.5px solid currentcolor;
-
-		font-weight: 600;
-		letter-spacing: 0.02em;
-
-		transition: 0.2s ease;
-
-		&:not(:last-child) {
-			margin-bottom: var(--jmc-section-padding-sm);
+		&__list {
+			position: absolute;
+			inset: 0;
+			display: flex;
+			flex-direction: column;
+			gap: var(--jmc-section-padding-sm);
+			width: 100vw;
+			height: 100vh;
+			margin-top: var(--jmc-header-height);
+			padding-top: var(--jmc-section-padding-sm);
+			padding-inline: var(--jmc-page-margin);
+			background-color: var(--jmc-background-color);
+			border-top: 1px solid var(--jmc-shadow-color);
+			clip-path: inset(0 0 100%);
+			transition: clip-path 0.3s ease-in-out;
 		}
-	}
 
-	.jmc-button:hover {
-		background: var(--hover-background);
-		color: var(--hover-color);
-	}
-}
+		&:has(&__toggle[aria-expanded="true"]) &__list {
+			clip-path: inset(0);
+		}
 
-@include min($compact) {
-
-	.jmc-button {
-		width: fit-content;
+		@media (prefers-reduced-motion: reduce) {
+			&__toggle-open,
+			&__toggle-close,
+			&__list {
+				transition: none;
+			}
+		}
 	}
 }
