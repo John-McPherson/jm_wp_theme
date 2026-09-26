@@ -46,6 +46,9 @@ jobs:
       - name: Run PHP tests
         run: composer test
 
+      - name: Run Jest unit tests
+        run: npm run test:unit -- --runInBand
+
       - name: Type-check
         run: npm run typecheck
 

@@ -1,6 +1,9 @@
 import { expect, test } from './fixtures/test';
 import {
 	deleteAttachment,
+	deletePost,
+	createNavigationRecord,
+	createNavigationTestPage,
 	getOption,
 	getThemeMod,
 	importTestLogo,
@@ -157,6 +160,77 @@ test.describe( 'site header', () => {
 		expect( dimensions.scrollWidth ).toBeLessThanOrEqual(
 			dimensions.clientWidth
 		);
+	} );
+} );
+
+test.describe( 'theme navigation', () => {
+	let navigationId: number;
+	let pageId: number;
+
+	test.beforeEach( async () => {
+		navigationId = await createNavigationRecord( [
+			{ label: 'Home', url: '/' },
+			{ label: 'Services', url: '/services/' },
+		] );
+		pageId = await createNavigationTestPage( navigationId );
+	} );
+
+	test.afterEach( async () => {
+		await deletePost( pageId );
+		await deletePost( navigationId );
+	} );
+
+	test( 'opens and closes the enhanced mobile menu by keyboard', async ( {
+		page,
+	} ) => {
+		await page.setViewportSize( { width: 320, height: 800 } );
+		await page.goto( `/?page_id=${ pageId }` );
+
+		const navigation = page.locator( '.jmc-navigation' );
+		const toggle = navigation.getByRole( 'button', {
+			name: /toggle navigation menu/i,
+		} );
+		const list = navigation.locator( '.jmc-navigation__list' );
+
+		await expect( navigation ).not.toHaveClass( /no-js/ );
+		await expect( toggle ).toHaveAttribute( 'aria-expanded', 'false' );
+		await expect( list ).toHaveAttribute( 'aria-hidden', 'true' );
+
+		await toggle.click();
+		await expect( toggle ).toHaveAttribute( 'aria-expanded', 'true' );
+		await expect( list ).toBeVisible();
+
+		await page.keyboard.press( 'Escape' );
+		await expect( toggle ).toBeFocused();
+		await expect( toggle ).toHaveAttribute( 'aria-expanded', 'false' );
+		await expect( list ).toBeHidden();
+	} );
+
+	test( 'keeps primary links available without JavaScript', async ( {
+		browser,
+	} ) => {
+		const context = await browser.newContext( {
+			javaScriptEnabled: false,
+		} );
+		const page = await context.newPage();
+
+		try {
+			await page.goto( `/?page_id=${ pageId }` );
+
+			const navigation = page.locator( '.jmc-navigation' );
+
+			await expect( navigation ).toHaveClass( /no-js/ );
+			await expect(
+				navigation.getByRole( 'link', { name: 'Services' } )
+			).toBeVisible();
+			await expect(
+				navigation.getByRole( 'button', {
+					name: /toggle navigation menu/i,
+				} )
+			).toBeHidden();
+		} finally {
+			await context.close();
+		}
 	} );
 } );
 

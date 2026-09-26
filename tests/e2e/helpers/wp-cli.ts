@@ -107,3 +107,54 @@ export async function updateOption(
 ): Promise< void > {
 	await runWpCli( [ 'option', 'update', name, value ] );
 }
+
+type NavigationLink = {
+	label: string;
+	url: string;
+};
+
+export async function createNavigationRecord(
+	links: NavigationLink[]
+): Promise< number > {
+	const content = links
+		.map( ( link ) => {
+			return `<!-- wp:navigation-link ${ JSON.stringify( link ) } /-->`;
+		} )
+		.join( '' );
+
+	const { stdout } = await runWpCli( [
+		'post',
+		'create',
+		'--post_type=wp_navigation',
+		'--post_status=publish',
+		'--post_title=Navigation E2E',
+		`--post_content=${ content }`,
+		'--porcelain',
+	] );
+
+	return Number( stdout );
+}
+
+export async function createNavigationTestPage(
+	navigationId: number
+): Promise< number > {
+	const content = `<!-- wp:jmc/navigation ${ JSON.stringify( {
+		navigationId,
+	} ) } /-->`;
+
+	const { stdout } = await runWpCli( [
+		'post',
+		'create',
+		'--post_type=page',
+		'--post_status=publish',
+		'--post_title=Navigation E2E page',
+		`--post_content=${ content }`,
+		'--porcelain',
+	] );
+
+	return Number( stdout );
+}
+
+export async function deletePost( postId: number ): Promise< void > {
+	await runWpCli( [ 'post', 'delete', String( postId ), '--force' ] );
+}
