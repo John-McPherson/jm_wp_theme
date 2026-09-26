@@ -50,6 +50,7 @@
     "@wordpress/i18n": "^6.22.0",
     "@wordpress/icons": "^15.3.0",
     "@wordpress/scripts": "^32.4.0",
+    "@wordpress/server-side-render": "^6.32.0",
     "concurrently": "^10.0.3",
     "dotenv": "^17.4.2",
     "sass": "^1.101.0",

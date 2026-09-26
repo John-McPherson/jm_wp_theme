@@ -1,0 +1,134 @@
+@use "../../../scss/abstracts/mixins" as m;
+@use "../../../scss/abstracts/index" as *;
+@use "../../../scss/layers/" as *;
+
+@layer site {
+
+	.jmc-navigation {
+		--navigation-list-clip: inset(0 0 100%);
+
+		&__toggle {
+			position: relative;
+			width: 3rem;
+			height: 3rem;
+			padding: 0;
+			background: transparent;
+			border: 0;
+
+			.sro {
+
+				@include m.sr-only;
+			}
+
+			&-open,
+			&-close {
+				position: absolute;
+				inset: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-weight: 700;
+				transition:
+					opacity 0.2s ease,
+					transform 0.2s ease;
+			}
+
+			&-close {
+				opacity: 0;
+				transform: translateY(0.3rem);
+			}
+
+			&[aria-expanded="true"] {
+
+				.jmc-navigation__toggle-close {
+					opacity: 1;
+					transform: translateY(0);
+				}
+
+				.jmc-navigation__toggle-open {
+					opacity: 0;
+					transform: translateY(-0.3rem);
+				}
+			}
+		}
+
+		&__list {
+			position: absolute;
+			inset: 0;
+			display: flex;
+			flex-direction: column;
+			gap: var(--jmc-section-padding-sm);
+			width: 100%;
+			height: 100vh;
+			margin-top: var(--jmc-header-height);
+			padding-top: var(--jmc-section-padding-sm);
+			padding-inline: var(--jmc-page-margin);
+			background-color: var(--jmc-background-color);
+			border-top: 1px solid var(--jmc-shadow-color);
+			clip-path: var(--navigation-list-clip);
+			transition: clip-path 0.3s ease-in-out;
+
+
+			[aria-current="page"] {
+				font-weight: 700;
+				pointer-events: none;
+			}
+		}
+
+		&:has(&__toggle[aria-expanded="true"]) {
+			--navigation-list-clip: inset(0);
+		}
+
+		&.no-js {
+			--navigation-list-clip: none;
+
+			.jmc-navigation__toggle {
+				display: none;
+			}
+
+			.jmc-navigation__list {
+				position: static;
+				width: auto;
+				height: auto;
+				margin-top: 0;
+				padding: var(--jmc-section-padding-sm) var(--jmc-page-margin);
+				background-color: transparent;
+				border-top: 0;
+				transition: none;
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+
+			&__toggle-open,
+			&__toggle-close,
+			&__list {
+				transition: none;
+			}
+		}
+
+		@include bp($tablet) {
+
+			&,
+			&:has(&__toggle[aria-expanded="true"]) {
+				--navigation-list-clip: none;
+			}
+
+			&__list,
+			&.no-js .jmc-navigation__list {
+				position: static;
+				flex-direction: row;
+				width: auto;
+				height: auto;
+				margin-top: 0;
+				padding: 0;
+				background-color: transparent;
+				border-top: 0;
+			}
+
+			&__toggle {
+				display: none;
+			}
+		}
+	}
+}
