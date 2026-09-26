@@ -15,40 +15,58 @@ declare(strict_types=1);
  * @var WP_Block $block
  */
 
-$navigation_id = absint( $attributes['navigationId'] ?? 0 );
+$navigation_id = absint( maybeint: $attributes['navigationId'] ?? 0 );
 
-$navigation = get_post( $navigation_id );
+$navigation = get_post( post: $navigation_id );
 
 if ( ! $navigation || 'wp_navigation' !== $navigation->post_type ) {
 	return;
 }
 
-$menu_blocks = parse_blocks( $navigation->post_content );
+$menu_blocks = parse_blocks( content: $navigation->post_content );
 
 
-$links = [];
+$links = get_navigation_links( menu_blocks: $menu_blocks );
 
-foreach ( $menu_blocks as $menu_block ) {
-	if ( 'core/navigation-link' === $menu_block['blockName'] || 'core/navigation-submenu' === $menu_block['blockName'] ) {
-		$links[] = [
-			'id'    => absint( $menu_block['attrs']['id'] ?? 0 ),
-			'title' => $menu_block['attrs']['label'] ?? '',
-			'url'   => $menu_block['attrs']['url'] ?? '',
-		];
-
-
-	}
+if ( [] === $links ) {
+	return;
 }
+
+$list_id = wp_unique_id( 'jmc-navigation__list-' );
+
+$navigation_attributes = [
+	'classes'    => [
+		'jmc-navigation',
+		'no-js',
+	],
+	'aria-label' => esc_attr( $navigation->post_title ),
+];
+
+$naivigation_button_attributes = [
+	'classes'       => [
+		'jmc-navigation__toggle',
+	],
+	'aria-expanded' => 'false',
+	'aria-controls' => $list_id,
+];
+
+$navigation_list_attributes = [
+	'id'      => $list_id,
+	'classes' => [
+		'jmc-navigation__list',
+	],
+];
+
 
 ?>
 
-<nav class="jmc-navigation no-js" aria-label="<?php echo esc_attr( $navigation->post_title ); ?>">
-	<button class="jmc-navigation__toggle" aria-expanded="true" aria-controls="jmc-navigation__list">
+<nav <?php jmc_the_attributes( $navigation_attributes ); ?>>
+	<button <?php jmc_the_attributes( $naivigation_button_attributes ); ?>>
 		<span class="jmc-navigation__toggle-open" aria-hidden="true">menu</span>
 		<span class="jmc-navigation__toggle-close" aria-hidden="true">close</span>
 		<span class="sro"><?php esc_html_e( 'Toggle navigation menu', 'jmc-theme' ); ?></span>
 	</button>
-	<ul  id="jmc-navigation__list" class="jmc-navigation__list">
+	<ul <?php jmc_the_attributes( $navigation_list_attributes ); ?>>
 		<?php foreach ( $links as $link_item ) : ?>
 			<li class="jmc-navigation__item">
 				<a href="<?php echo esc_url( $link_item['url'] ); ?>" class="jmc-navigation__link">
