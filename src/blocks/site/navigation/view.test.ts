@@ -1,16 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
-import {
-	afterEach,
-	beforeEach,
-	describe,
-	expect,
-	it,
-	jest,
-} from '@jest/globals';
-
 import { MainNavigation } from './view';
 
 const renderNavigation = (): void => {
@@ -42,8 +29,12 @@ describe( 'MainNavigation', () => {
 		jest.runAllTimers();
 
 		const navigation = document.querySelector( '.jmc-navigation' );
-		const button = document.querySelector< HTMLButtonElement >( '.jmc-navigation__toggle' );
-		const list = document.querySelector< HTMLUListElement >( '.jmc-navigation__list' );
+		const button = document.querySelector< HTMLButtonElement >(
+			'.jmc-navigation__toggle'
+		);
+		const list = document.querySelector< HTMLUListElement >(
+			'.jmc-navigation__list'
+		);
 
 		expect( navigation?.classList.contains( 'no-js' ) ).toBe( false );
 		expect( button?.getAttribute( 'aria-expanded' ) ).toBe( 'false' );
@@ -54,17 +45,23 @@ describe( 'MainNavigation', () => {
 		new MainNavigation().init();
 		jest.runAllTimers();
 
-		const button = document.querySelector< HTMLButtonElement >( '.jmc-navigation__toggle' );
-		const list = document.querySelector< HTMLUListElement >( '.jmc-navigation__list' );
+		const button = document.querySelector< HTMLButtonElement >(
+			'.jmc-navigation__toggle'
+		);
+		const list = document.querySelector< HTMLUListElement >(
+			'.jmc-navigation__list'
+		);
 
 		button?.click();
 
 		expect( button?.getAttribute( 'aria-expanded' ) ).toBe( 'true' );
 		expect( list?.hidden ).toBe( false );
 
-		document.dispatchEvent( new KeyboardEvent( 'keydown', { key: 'Escape' } ) );
+		document.dispatchEvent(
+			new KeyboardEvent( 'keydown', { key: 'Escape' } )
+		);
 
-		expect( document.activeElement ).toBe( button );
+		expect( button?.ownerDocument.activeElement ).toBe( button );
 		expect( button?.getAttribute( 'aria-expanded' ) ).toBe( 'false' );
 		expect( list?.hidden ).toBe( true );
 	} );
