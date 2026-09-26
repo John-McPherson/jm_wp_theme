@@ -1,6 +1,5 @@
 import { SelectControl } from '@wordpress/components';
 
-
 type Option = {
 	label: string;
 	value: string;
@@ -36,9 +35,6 @@ const defaultOptions: Record< string, Option[] > = {
 		{ label: 'Secondary', value: 'secondary' },
 	],
 } as const;
-
-
-
 
 const SelectInput = ( { value, set, type = 'palette', options }: Props ) => {
 	return (
