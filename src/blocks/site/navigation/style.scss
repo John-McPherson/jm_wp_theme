@@ -1,4 +1,5 @@
 @use "../../../scss/abstracts/mixins" as m;
+@use "../../../scss/abstracts/index" as *;
 @use "../../../scss/layers/" as *;
 
 @layer site {
@@ -15,7 +16,6 @@
 			background: transparent;
 			border: 0;
 
-			&-text,
 			.sro {
 
 				@include m.sr-only;
@@ -51,10 +51,6 @@
 					transform: translateY(-0.3rem);
 				}
 			}
-
-			@include m.min(var(--jmc-container-md)) {
-				--toggle-display: none;
-			}
 		}
 
 		&__list {
@@ -84,6 +80,28 @@
 			&__toggle-close,
 			&__list {
 				transition: none;
+			}
+		}
+
+		@include bp($tablet) {
+
+			&__list {
+				position: static;
+				display: flex;
+				flex-direction: row;
+				gap: var(--jmc-section-padding-sm);
+				width: auto;
+				height: auto;
+				margin-top: 0;
+				padding-top: 0;
+				padding-inline: 0;
+				background-color: transparent;
+				border-top: 0;
+				clip-path: none;
+			}
+
+			&__toggle {
+				display: none;
 			}
 		}
 	}
