@@ -39,6 +39,7 @@
   "homepage": "https://github.com/John-McPherson/jm_wp_theme#readme",
   "devDependencies": {
     "@playwright/test": "^1.62.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.19.43",
     "@types/react": "^18.3.31",
     "@wordpress/block-editor": "^15.22.0",
