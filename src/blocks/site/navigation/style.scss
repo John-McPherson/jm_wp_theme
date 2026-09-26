@@ -73,6 +73,7 @@
 				font-weight: 700;
 				pointer-events: none;
 			}
+
 		}
 
 		&:has(&__toggle[aria-expanded="true"]) {

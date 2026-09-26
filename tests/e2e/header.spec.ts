@@ -194,7 +194,7 @@ test.describe( 'theme navigation', () => {
 
 		await expect( navigation ).not.toHaveClass( /no-js/ );
 		await expect( toggle ).toHaveAttribute( 'aria-expanded', 'false' );
-		await expect( list ).toBeHidden();
+		await expect( list ).toHaveAttribute( 'aria-hidden', 'true' );
 
 		await toggle.click();
 		await expect( toggle ).toHaveAttribute( 'aria-expanded', 'true' );
@@ -209,7 +209,9 @@ test.describe( 'theme navigation', () => {
 	test( 'keeps primary links available without JavaScript', async ( {
 		browser,
 	} ) => {
-		const context = await browser.newContext( { javaScriptEnabled: false } );
+		const context = await browser.newContext( {
+			javaScriptEnabled: false,
+		} );
 		const page = await context.newPage();
 
 		try {
