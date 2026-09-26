@@ -1,5 +1,6 @@
 import { SelectControl } from '@wordpress/components';
 
+
 type Option = {
 	label: string;
 	value: string;
@@ -8,10 +9,11 @@ type Option = {
 type Props = {
 	value: string;
 	set: ( value: string ) => void;
-	type: keyof typeof options;
+	type?: keyof typeof defaultOptions;
+	options?: readonly Option[];
 };
 
-const options: Record< string, Option[] > = {
+const defaultOptions: Record< string, Option[] > = {
 	palette: [
 		{ label: 'Default', value: 'default' },
 		{ label: 'Inverse', value: 'inverse' },
@@ -35,12 +37,15 @@ const options: Record< string, Option[] > = {
 	],
 } as const;
 
-const SelectInput = ( { value, set, type = 'palette' }: Props ) => {
+
+
+
+const SelectInput = ( { value, set, type = 'palette', options }: Props ) => {
 	return (
 		<SelectControl
 			label={ type.toUpperCase() }
 			value={ String( value ) }
-			options={ options[ type ] }
+			options={ options || defaultOptions[ type ] }
 			onChange={ set }
 		/>
 	);
