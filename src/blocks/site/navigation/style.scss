@@ -67,6 +67,12 @@
 			border-top: 1px solid var(--jmc-shadow-color);
 			clip-path: var(--navigation-list-clip);
 			transition: clip-path 0.3s ease-in-out;
+
+
+			[aria-current="page"] {
+				font-weight: 700;
+				pointer-events: none;
+			}
 		}
 
 		&:has(&__toggle[aria-expanded="true"]) {
