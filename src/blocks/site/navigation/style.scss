@@ -2,6 +2,7 @@
 @use "../../../scss/layers/" as *;
 
 @layer site {
+
 	.jmc-navigation {
 		--toggle-display: flex;
 
@@ -16,6 +17,7 @@
 
 			&-text,
 			.sro {
+
 				@include m.sr-only;
 			}
 
@@ -38,6 +40,7 @@
 			}
 
 			&[aria-expanded="true"] {
+
 				.jmc-navigation__toggle-close {
 					opacity: 1;
 					transform: translateY(0);
@@ -76,6 +79,7 @@
 		}
 
 		@media (prefers-reduced-motion: reduce) {
+
 			&__toggle-open,
 			&__toggle-close,
 			&__list {
