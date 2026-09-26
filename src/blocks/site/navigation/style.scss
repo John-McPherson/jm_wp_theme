@@ -4,12 +4,33 @@
 
 @layer site {
 
+	.no-js {
+
+		.jmc-navigation__toggle {
+			display: none;
+		}
+
+		.jmc-navigation__list {
+			position: static;
+			width: auto;
+			height: auto;
+			margin-top: 0;
+			padding: var(--jmc-section-padding-sm) var(--jmc-page-margin);
+			background-color: transparent;
+			border-top: 0;
+			clip-path: none;
+			transition: none;
+		}
+
+
+	}
+
 	.jmc-navigation {
-		--toggle-display: flex;
+
 
 		&__toggle {
 			position: relative;
-			display: var(--toggle-display);
+
 			width: 3rem;
 			height: 3rem;
 			padding: 0;

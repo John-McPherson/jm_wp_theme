@@ -42,13 +42,13 @@ foreach ( $menu_blocks as $menu_block ) {
 
 ?>
 
-<nav class="jmc-navigation" aria-label="<?php echo esc_attr( $navigation->post_title ); ?>">
-	<button class="jmc-navigation__toggle" aria-expanded="false" aria-controls="jmc-navigation__list">
+<nav class="jmc-navigation no-js" aria-label="<?php echo esc_attr( $navigation->post_title ); ?>">
+	<button class="jmc-navigation__toggle" aria-expanded="true" aria-controls="jmc-navigation__list">
 		<span class="jmc-navigation__toggle-open" aria-hidden="true">menu</span>
 		<span class="jmc-navigation__toggle-close" aria-hidden="true">close</span>
 		<span class="sro"><?php esc_html_e( 'Toggle navigation menu', 'jmc-theme' ); ?></span>
 	</button>
-	<ul  id="jmc-navigation__list" class="jmc-navigation__list">
+	<ul  id="jmc-navigation__list" class="jmc-navigation__list" hidden="false">
 		<?php foreach ( $links as $link_item ) : ?>
 			<li class="jmc-navigation__item">
 				<a href="<?php echo esc_url( $link_item['url'] ); ?>" class="jmc-navigation__link">
