@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/navigation",
+  "version": "0.1.0",
+  "title": "Navigation",
+  "category": "jmc-section",
+  "icon": "menu",
+  "description": "Display a navigation menu for your site.",
+  "attributes": {
+    "navigationId": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "example": {},
+  "supports": {
+    "inserter": false,
+    "html": false
+  },
+  "textdomain": "jmc-theme",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php",
+  "viewScript": "file:./view.js"
+}

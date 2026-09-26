@@ -97,6 +97,12 @@ add_filter(
 			'icon'  => 'customizer',
 
 		];
+		$categories[] = [
+			'slug'  => 'jmc-site',
+			'title' => __( 'Site', 'jmc-theme' ),
+			'icon'  => 'admin-site-alt3',
+
+		];
 		return $categories;
 	}
 );
