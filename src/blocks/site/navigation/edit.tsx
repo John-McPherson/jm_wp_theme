@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { useEntityRecords } from '@wordpress/core-data';
 import { Spinner } from '@wordpress/components';
+import { ServerSideRender } from '@wordpress/server-side-render';
 
 import bindFields from '../../../utils/bindFields';
 import Sidebar from '../../../components/Sidebar';
@@ -40,7 +41,10 @@ export default function Edit( { attributes, setAttributes } ) {
 				</Sidebar.Section>
 			</Sidebar>
 
-			<nav>nav goes here1</nav>
+			<ServerSideRender
+				block="jmc/navigation"
+				attributes={ attributes }
+			/>
 		</>
 	);
 }
