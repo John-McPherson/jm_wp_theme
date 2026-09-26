@@ -4,33 +4,11 @@
 
 @layer site {
 
-	.no-js {
-
-		.jmc-navigation__toggle {
-			display: none;
-		}
-
-		.jmc-navigation__list {
-			position: static;
-			width: auto;
-			height: auto;
-			margin-top: 0;
-			padding: var(--jmc-section-padding-sm) var(--jmc-page-margin);
-			background-color: transparent;
-			border-top: 0;
-			clip-path: none;
-			transition: none;
-		}
-
-
-	}
-
 	.jmc-navigation {
-
+		--navigation-list-clip: inset(0 0 100%);
 
 		&__toggle {
 			position: relative;
-
 			width: 3rem;
 			height: 3rem;
 			padding: 0;
@@ -80,19 +58,38 @@
 			display: flex;
 			flex-direction: column;
 			gap: var(--jmc-section-padding-sm);
-			width: 100vw;
+			width: 100%;
 			height: 100vh;
 			margin-top: var(--jmc-header-height);
 			padding-top: var(--jmc-section-padding-sm);
 			padding-inline: var(--jmc-page-margin);
 			background-color: var(--jmc-background-color);
 			border-top: 1px solid var(--jmc-shadow-color);
-			clip-path: inset(0 0 100%);
+			clip-path: var(--navigation-list-clip);
 			transition: clip-path 0.3s ease-in-out;
 		}
 
-		&:has(&__toggle[aria-expanded="true"]) &__list {
-			clip-path: inset(0);
+		&:has(&__toggle[aria-expanded="true"]) {
+			--navigation-list-clip: inset(0);
+		}
+
+		&.no-js {
+			--navigation-list-clip: none;
+
+			.jmc-navigation__toggle {
+				display: none;
+			}
+
+			.jmc-navigation__list {
+				position: static;
+				width: auto;
+				height: auto;
+				margin-top: 0;
+				padding: var(--jmc-section-padding-sm) var(--jmc-page-margin);
+				background-color: transparent;
+				border-top: 0;
+				transition: none;
+			}
 		}
 
 		@media (prefers-reduced-motion: reduce) {
@@ -106,19 +103,21 @@
 
 		@include bp($tablet) {
 
-			&__list {
+			&,
+			&:has(&__toggle[aria-expanded="true"]) {
+				--navigation-list-clip: none;
+			}
+
+			&__list,
+			&.no-js .jmc-navigation__list {
 				position: static;
-				display: flex;
 				flex-direction: row;
-				gap: var(--jmc-section-padding-sm);
 				width: auto;
 				height: auto;
 				margin-top: 0;
-				padding-top: 0;
-				padding-inline: 0;
+				padding: 0;
 				background-color: transparent;
 				border-top: 0;
-				clip-path: none;
 			}
 
 			&__toggle {

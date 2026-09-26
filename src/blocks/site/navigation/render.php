@@ -48,7 +48,7 @@ foreach ( $menu_blocks as $menu_block ) {
 		<span class="jmc-navigation__toggle-close" aria-hidden="true">close</span>
 		<span class="sro"><?php esc_html_e( 'Toggle navigation menu', 'jmc-theme' ); ?></span>
 	</button>
-	<ul  id="jmc-navigation__list" class="jmc-navigation__list" hidden="false">
+	<ul  id="jmc-navigation__list" class="jmc-navigation__list">
 		<?php foreach ( $links as $link_item ) : ?>
 			<li class="jmc-navigation__item">
 				<a href="<?php echo esc_url( $link_item['url'] ); ?>" class="jmc-navigation__link">

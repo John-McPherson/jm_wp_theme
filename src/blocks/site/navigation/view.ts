@@ -30,6 +30,9 @@ class MainNavigation {
 
 		window.addEventListener( 'resize', this.handleResize );
 
+		this.menuList.hidden = true;
+		this.menuButton.setAttribute( 'aria-expanded', String( this.isOpen ) );
+
 		this.handleResize();
 
 		setTimeout( () => {
