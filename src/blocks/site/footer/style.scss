@@ -1,0 +1,23 @@
+@use "../../../scss/abstracts/index" as *;
+
+@layer blocks {
+
+	// Paints the selected palette across the full width; the container keeps
+	// content aligned with the header.
+	.jmc-footer-inner {
+		display: flex;
+		justify-content: center;
+
+		width: 100%;
+		padding-block: var(--jmc-padding-xl);
+		padding-inline: var(--jmc-page-margin);
+
+		background-color: var(--jmc-background-color);
+		color: var(--jmc-text-color);
+
+		&__container {
+			width: 100%;
+			max-width: var(--jmc-container-xl);
+		}
+	}
+}

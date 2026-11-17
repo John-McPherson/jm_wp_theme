@@ -15,6 +15,7 @@ declare(strict_types=1);
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/component-args.php';
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/html/attributes.php';
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/link.php';
+require_once dirname( __DIR__, 2 ) . '/inc/helpers/text.php';
 
 /**
  * Render a theme component.

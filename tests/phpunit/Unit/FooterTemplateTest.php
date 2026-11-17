@@ -107,6 +107,22 @@ final class FooterTemplateTest extends TestCase {
 	}
 
 	/**
+	 * The footer must wrap its content in the palette-aware footer container,
+	 * with the business details inside it. Both are locked against removal
+	 * because neither block is insertable.
+	 */
+	public function test_footer_container_contains_locked_business_details(): void {
+		$footer = $this->read_theme_file( 'parts/footer.html' );
+
+		$this->assertMatchesRegularExpression(
+			'/^\s*<!--\s+wp:jmc\/footer\s+\{"palette":"inverse","lock":\{"remove":true\}\}\s+-->'
+			. '.*<!--\s+wp:jmc\/footer-business\s+\{"lock":\{"remove":true\}\}\s+\/-->'
+			. '.*<!--\s+\/wp:jmc\/footer\s+-->\s*$/s',
+			$footer
+		);
+	}
+
+	/**
 	 * Business identity must not be hard-coded into the template.
 	 */
 	public function test_footer_does_not_hard_code_business_details(): void {

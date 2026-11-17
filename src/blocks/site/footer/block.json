@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/footer",
+  "version": "0.1.0",
+  "title": "Footer",
+  "category": "jmc-site",
+  "icon": "align-full-width",
+  "description": "The site footer container, with a selectable colour palette.",
+  "attributes": {
+    "palette": {
+      "type": "string",
+      "enum": ["default", "secondary", "inverse"],
+      "default": "default"
+    }
+  },
+  "allowedBlocks": ["jmc/footer-business"],
+  "example": {
+    "attributes": {
+      "palette": "inverse"
+    },
+    "innerBlocks": [
+      {
+        "name": "jmc/footer-business",
+        "attributes": {
+          "companyName": "Example Electrical Ltd",
+          "phone": "01234 567890"
+        }
+      }
+    ]
+  },
+  "supports": {
+    "className": true,
+    "html": false,
+    "inserter": false,
+    "multiple": false
+  },
+  "textdomain": "jmc-theme",
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

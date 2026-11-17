@@ -17,5 +17,6 @@ require_once get_theme_file_path( '/inc/helpers/components.php' );
 require_once get_theme_file_path( '/inc/helpers/component-args.php' );
 require_once get_theme_file_path( '/inc/helpers/navigation.php' );
 require_once get_theme_file_path( '/inc/helpers/link.php' );
+require_once get_theme_file_path( '/inc/helpers/text.php' );
 
 require_once get_theme_file_path( '/inc/helpers/html/attributes.php' );

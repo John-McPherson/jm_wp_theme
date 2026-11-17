@@ -1,0 +1,27 @@
+@use "../../../scss/abstracts/index" as *;
+
+@layer blocks {
+
+	// Content-level styles only; the footer's column layout arrives with the
+	// footer layout styles.
+	.jmc-footer-business {
+		display: flex;
+		flex-direction: column;
+		gap: var(--jmc-padding-s);
+
+		&__name {
+			font-weight: 700;
+		}
+
+		&__contact {
+			display: flex;
+			flex-direction: column;
+			gap: var(--jmc-padding-xs);
+			font-style: normal;
+		}
+
+		p {
+			margin: 0;
+		}
+	}
+}

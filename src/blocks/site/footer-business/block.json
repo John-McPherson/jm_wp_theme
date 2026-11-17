@@ -1,0 +1,52 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "jmc/footer-business",
+	"version": "0.1.0",
+	"title": "Footer Business Details",
+	"category": "jmc-site",
+	"icon": "building",
+	"parent": ["jmc/footer"],
+	"description": "The business name, address, telephone number, email address and service area shown in the site footer.",
+	"attributes": {
+		"companyName": {
+			"type": "string",
+			"default": ""
+		},
+		"address": {
+			"type": "string",
+			"default": ""
+		},
+		"phone": {
+			"type": "string",
+			"default": ""
+		},
+		"email": {
+			"type": "string",
+			"default": ""
+		},
+		"serviceArea": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"example": {
+		"attributes": {
+			"companyName": "Example Electrical Ltd",
+			"address": "1 High Street<br>Example Town<br>AB1 2CD",
+			"phone": "01234 567890",
+			"email": "hello@example.com",
+			"serviceArea": "Serving Example Town and the surrounding area."
+		}
+	},
+	"supports": {
+		"className": true,
+		"html": false,
+		"inserter": false,
+		"multiple": false
+	},
+	"textdomain": "jmc-theme",
+	"editorScript": "file:./index.js",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}
