@@ -22,7 +22,8 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 
 | Block                 | Purpose                                                                            | Rendering                 | Notes                                                                                                                  |
 | --------------------- | ---------------------------------------------------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `jmc/button`          | Linked call-to-action                                                              | Dynamic PHP               | Internal composition block; primary button by default; direct inserter disabled                                        |
+| `jmc/button`          | Linked call-to-action                                                              | Dynamic PHP               | Internal composition block; primary or secondary; Button, Phone Button and Email Button variations (`linkType`); direct inserter disabled; see [Buttons](#buttons) |
+| `jmc/buttons`         | Group of one or more `jmc/button` blocks                                           | Dynamic PHP               | Allows only `jmc/button`; unlocked inside locked sections; adds buttons from its own **+** menu; renders nothing when every button is omitted; direct inserter disabled |
 | `jmc/column`          | Groups related inner content within a section                                      | Dynamic PHP               | Structural composition block; direct inserter disabled                                                                 |
 | `jmc/footer`          | Site footer container with a selectable palette                                    | Dynamic PHP               | Site chrome; direct inserter disabled; single instance; allows only footer blocks, each rendered as a column, with the legal row spanning the bottom; inverse and locked in the footer part |
 | `jmc/footer-business` | Business name, address, telephone, email, and service area                          | Dynamic PHP               | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
@@ -33,7 +34,7 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jmc/variant` context; level defaults to `2`; direct inserter disabled                                            |
 | `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; direct inserter disabled                                         |
 | `jmc/service-list`    | Linked cards for the published child pages of the Services page                    | Dynamic PHP               | Restricted to `jmc/service-grid`; direct inserter disabled; card heading level `2`–`6`, default `3`; previewed in the editor with `ServerSideRender`; see [Services grid](#services-grid) |
-| `jmc/cta-banner`      | Two-column call-to-action section                                                  | Dynamic PHP               | Palettes: default, secondary, inverse; left/right order; defaults to inverse/right                                     |
+| `jmc/cta-banner`      | Call-to-action section with a heading, supporting copy, and one or more buttons     | Dynamic PHP               | Columns and Stacked variations (`layout`); palettes; left/right order (columns only); defaults to inverse/right/columns; see [Call-to-action banner](#call-to-action-banner) |
 | `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default |
 | `jmc/service-grid`    | Introductory content and the published services in one responsive grid              | Dynamic PHP               | Two locked Column children: the intro and `jmc/service-list`; palettes; defaults to default; the `order` attribute is currently unused |
 | `jmc/text-with-image` | Composable text content paired with an image                                       | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; contains legacy-looking attributes that need contract review |
@@ -92,9 +93,96 @@ The link is validated by `jmc_safe_link_url()` (`inc/helpers/link.php`):
 | `tel:` link | Normalised to `tel:` plus an optional leading `+` and 3–15 digits; spaces, dashes, dots, and brackets are removed |
 | Anything else, including `javascript:`, `data:`, `mailto:`, `//host`, and values containing whitespace or control characters | Rejected |
 
+`mailto:` links are rejected unless the caller passes `allow_mailto: true`; the header CTA does not, `jmc/button` does (see [Buttons](#buttons)).
+
 The block renders nothing when the label is empty or the link is missing, malformed, or rejected. Telephone links never open in a new tab. Output uses the `button-link` component with the `jmc-button--small` size modifier.
 
 The block is not insertable, so a site whose header template part has been customised in the Site Editor does not pick it up from `parts/header.html`. Either reset the header template part, or add `<!-- wp:jmc/header-cta {"lock":{"remove":true}} /-->` inside the `jmc/navigation` block of the saved part.
+
+## Call-to-action banner
+
+`jmc/cta-banner` is an insertable section for a closing call to action: a heading, supporting copy, and one or more contact actions. Its content is a locked template of two `jmc/column` blocks:
+
+```text
+jmc/cta-banner
+├── jmc/column
+│   └── jmc/heading (level 2)
+└── jmc/column
+    ├── jmc/paragraph
+    └── jmc/buttons
+        └── jmc/button (one or more)
+```
+
+Authors edit the text and buttons but cannot add, remove, or move the columns, heading, or paragraph. `jmc/buttons` is unlocked, so buttons can be added, removed, and reordered inside it.
+
+### Attributes
+
+| Attribute | Values | Default | Output |
+| --- | --- | --- | --- |
+| `layout` | `columns`, `stacked` | `columns` | `stacked` adds `jmc-cta--stacked` |
+| `palette` | `default`, `secondary`, `inverse` | `inverse` | No class, `jmc-palette--secondary`, or `jmc-palette--inverse` |
+| `order` | `left`, `right` | `right` | `jmc-column-left` or `jmc-column-right` on the container; columns layout only |
+
+Unknown or malformed values fall back to the default. The `layout` attribute is exposed as two block variations, **CTA Banner** (columns, the default) and **CTA Banner (Stacked)**, which can be chosen in the inserter or switched from the block's variation control.
+
+- **Columns** stacks the two columns on narrow screens and places them side by side from the `$tablet` width. `order` decides which side the copy and buttons sit on; the editor labels it **Buttons Left** / **Buttons Right**.
+- **Stacked** keeps one centred column at every width, limited to `--jmc-container-sm`, with the heading above the copy and centred buttons. `order` has no effect and its control is hidden.
+
+### Empty content
+
+Headings, paragraphs, buttons, and the buttons group each render nothing when empty. The banner then removes any column left with no content, so it does not hold an empty grid cell, and a remaining single column spans the full width. When nothing is left, the banner renders nothing at all. The editor still shows the template's placeholders.
+
+### Migrating existing banners
+
+Banners saved before `jmc/buttons` was introduced hold `jmc/button` directly in the second column. They keep rendering on the frontend. Because the section is locked to its template, opening one in the editor replaces that button with an empty `jmc/buttons` group, so its label and destination must be re-entered before saving.
+
+## Buttons
+
+`jmc/button` renders a single `.jmc-button` link through the `button-link` component. It is hidden from the inserter, so inside `jmc/buttons` new buttons are added from the group's **+** menu (**Button**, **Phone button**, or **Email button**). Its `buttonType` attribute selects `primary` (default) or `secondary` (`jmc-button__secondary`).
+
+### Link types
+
+`linkType` decides where the button links. It is exposed as three block variations that can be switched from the block's variation control:
+
+| `linkType` | Variation | Destination |
+| --- | --- | --- |
+| `link` (default) | Button | The button's own `link` (`{ url, opensInNewTab }`), edited from the toolbar |
+| `phone` | Phone Button | The site-wide business phone number |
+| `email` | Email Button | The site-wide business email address |
+
+Unknown values fall back to `link`. Phone and email buttons have no link toolbar; their sidebar shows the shared detail instead (see [Business contact settings](#business-contact-settings)). New phone and email buttons start with the labels "Call us" and "Email us".
+
+### Link validation
+
+A `link` button's destination is validated by `jmc_safe_link_url()` with `allow_mailto: true`:
+
+| Destination | Result |
+| --- | --- |
+| `http://` or `https://` URL with a host, or a site-relative path | Rendered unchanged |
+| `tel:` link | Normalised to `tel:` plus an optional `+` and 3–15 digits |
+| `mailto:` link | One valid address, optionally followed by a query such as `?subject=Quote%20request`; the scheme is lower-cased |
+| Anything else, including `#`, `javascript:`, `//host`, several recipients, and values containing whitespace | Rejected |
+
+In the editor, a bare phone number or email address typed into the link field is saved as a `tel:` or `mailto:` link (`src/utils/contactLink.ts`). Without this, the link control would save it as `https://01234 567890` or `https://hello@example.com`.
+
+The button renders nothing when its label is empty or its destination is missing or rejected. `opensInNewTab` opens a web link in a new tab with `rel="noopener noreferrer"` and a screen-reader hint; content saved with the older `link.target: "_blank"` shape is honoured too. Telephone and email links never open in a new tab.
+
+### Buttons group
+
+`jmc/buttons` wraps its buttons in `<div class="jmc-buttons">`: full-width and stacked on narrow screens, then a wrapping row from the `$compact` width. It renders nothing when all of its buttons are omitted. It can be used in any section, though only `jmc/cta-banner` places it today.
+
+## Business contact settings
+
+The business phone number and email address used by Phone and Email buttons are site-wide options, registered in `inc/contact.php` with helpers in `inc/helpers/contact.php`:
+
+| Option | Edited in | Stored value |
+| --- | --- | --- |
+| `jmc_business_phone` | **Settings → General → Business phone number**, or a Phone button's sidebar | The number as written, with whitespace collapsed, only when it is a valid `tel:` number; otherwise empty |
+| `jmc_business_email` | **Settings → General → Business email address**, or an Email button's sidebar | One valid address; otherwise empty |
+
+Both are registered with `show_in_rest`, so the block editor edits them through the site entity and they are saved with the site settings: changing one updates every button of that type. Users who cannot manage options cannot read them, so the button sidebar shows a notice instead of the field. An invalid value is saved as empty, which hides those buttons.
+
+`jmc_business_contact_url( 'phone' | 'email' )` re-validates the stored value and returns a `tel:` or `mailto:` URL, or an empty string. `jmc/footer-business` does not use these settings yet; see #115.
 
 ## Services grid
 
@@ -193,7 +281,7 @@ Its palette follows the Hero contract: `default` (no class), `secondary` (`jmc-p
 
 ### Business details
 
-`jmc/footer-business` is the source of truth for the business details shown in the footer. Edit them in the Site Editor (**Appearance → Editor → Patterns → Template parts → Site footer**), directly on the block. Each field is optional and stored as a string attribute:
+`jmc/footer-business` is the source of truth for the business details shown in the footer. Phone and Email buttons use the separate [business contact settings](#business-contact-settings) instead; #115 tracks moving the footer onto them. Edit them in the Site Editor (**Appearance → Editor → Patterns → Template parts → Site footer**), directly on the block. Each field is optional and stored as a string attribute:
 
 | Attribute | Output | Icon | Validation |
 | --- | --- | --- | --- |
@@ -286,6 +374,8 @@ Two WordPress styles sit outside the theme's cascade layers and therefore beat a
 ## Button sizes
 
 `.jmc-button` is the default size. Add `.jmc-button--small` for dense UI such as the header; it changes only padding, type size, and border width, never colours, so it combines with `.jmc-button__secondary` and every palette.
+
+Keyboard focus (`:focus-visible`) uses the hover colours plus a 2px `--jmc-text-highlight` outline offset by 2px. Every button colour pair meets WCAG AA in the default, secondary, and inverse palettes (lowest text pair 8.15:1), and the focus outline is at least 3:1 against each palette background (lowest 3.65:1, default palette).
 
 ## Images
 
