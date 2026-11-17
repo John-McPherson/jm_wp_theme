@@ -1,6 +1,7 @@
+import apiFetch from '@wordpress/api-fetch';
 import { useBlockProps } from '@wordpress/block-editor';
+import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { Icon, envelope, home, mapMarker } from '@wordpress/icons';
 
 import bindFields from '../../../utils/bindFields';
 import Sidebar from '../../../components/Sidebar';
@@ -20,20 +21,74 @@ type EditProps = {
 	setAttributes: ( attributes: Partial< FooterBusinessAttributes > ) => void;
 };
 
-// The same icons the frontend renders with wp_get_icon().
 const ICON_CLASS = 'jmc-footer-business__icon';
 
-// Mirrors the theme-registered `jmc/phone` icon (see inc/icons.php).
-const phone = (
-	<svg xmlns="http://www.w3.org/2000/svg" viewBox="-3 -3 26 26">
-		<path d="M12.06 6l-.21-.2c-.52-.54-.43-.79.08-1.3l2.72-2.75c.81-.82.96-1.21 1.73-.48l.21.2zm.53.45l4.4-4.4c.7.94 2.34 3.47 1.53 5.34-.73 1.67-1.09 1.75-2 3-1.85 2.11-4.18 4.37-6 6.07-1.26.91-1.31 1.33-3 2-1.8.71-4.4-.89-5.38-1.56l4.4-4.4 1.18 1.62c.34.46 1.2-.06 1.8-.66 1.04-1.05 3.18-3.18 4-4.07.59-.59 1.12-1.45.66-1.8zM1.57 16.5l-.21-.21c-.68-.74-.29-.9.52-1.7l2.74-2.72c.51-.49.75-.6 1.27-.11l.2.21z" />
-	</svg>
+// Theme collection holding the footer's Lucide icons (see inc/icons.php).
+const ICON_COLLECTION = 'jmc';
+
+type IconContent = Record< string, string >;
+
+/**
+ * Fetch the registered SVG for each theme icon, so the editor shows the same
+ * markup the frontend renders with wp_get_icon().
+ */
+const useThemeIcons = (): IconContent => {
+	const [ icons, setIcons ] = useState< IconContent >( {} );
+
+	useEffect( () => {
+		let isMounted = true;
+
+		apiFetch( { path: `/wp/v2/icons/${ ICON_COLLECTION }` } )
+			.then( ( response ) => {
+				if ( ! isMounted || ! Array.isArray( response ) ) {
+					return;
+				}
+
+				const content: IconContent = {};
+
+				response.forEach(
+					( icon: { name?: unknown; content?: unknown } | null ) => {
+						if (
+							typeof icon?.name === 'string' &&
+							typeof icon?.content === 'string'
+						) {
+							content[ icon.name ] = icon.content;
+						}
+					}
+				);
+
+				setIcons( content );
+			} )
+			// Icons are decorative: the lines still work without them.
+			.catch( () => undefined );
+
+		return () => {
+			isMounted = false;
+		};
+	}, [] );
+
+	return icons;
+};
+
+type LineIconProps = {
+	content?: string;
+};
+
+// Decorative, like the frontend. Renders an empty, sized box until loaded.
+// Markup comes from the core icon registry, which validates SVG on registration.
+const LineIcon = ( { content = '' }: LineIconProps ) => (
+	<span
+		className={ ICON_CLASS }
+		aria-hidden="true"
+		dangerouslySetInnerHTML={ { __html: content } }
+	/>
 );
 
 export default function Edit( { attributes, setAttributes }: EditProps ) {
 	const blockProps = useBlockProps( { className: 'jmc-footer-business' } );
 
 	const bind = bindFields( attributes, setAttributes );
+	const icons = useThemeIcons();
 
 	return (
 		<>
@@ -63,7 +118,7 @@ export default function Edit( { attributes, setAttributes }: EditProps ) {
 				/>
 				<address className="jmc-footer-business__contact">
 					<div className="jmc-footer-business__line jmc-footer-business__address">
-						<Icon icon={ mapMarker } className={ ICON_CLASS } />
+						<LineIcon content={ icons[ 'jmc/map-pin' ] } />
 						<TextInput
 							{ ...bind.text( 'address' ) }
 							tagName="span"
@@ -71,7 +126,7 @@ export default function Edit( { attributes, setAttributes }: EditProps ) {
 						/>
 					</div>
 					<div className="jmc-footer-business__line jmc-footer-business__phone">
-						<Icon icon={ phone } className={ ICON_CLASS } />
+						<LineIcon content={ icons[ 'jmc/phone' ] } />
 						<TextInput
 							{ ...bind.text( 'phone' ) }
 							tagName="span"
@@ -82,7 +137,7 @@ export default function Edit( { attributes, setAttributes }: EditProps ) {
 						/>
 					</div>
 					<div className="jmc-footer-business__line jmc-footer-business__email">
-						<Icon icon={ envelope } className={ ICON_CLASS } />
+						<LineIcon content={ icons[ 'jmc/mail' ] } />
 						<TextInput
 							{ ...bind.text( 'email' ) }
 							tagName="span"
@@ -91,7 +146,7 @@ export default function Edit( { attributes, setAttributes }: EditProps ) {
 					</div>
 				</address>
 				<div className="jmc-footer-business__line jmc-footer-business__service-area">
-					<Icon icon={ home } className={ ICON_CLASS } />
+					<LineIcon content={ icons[ 'jmc/house' ] } />
 					<span>
 						<span className="jmc-footer-business__label">
 							{ __( 'Areas covered:', 'jmc-theme' ) }
