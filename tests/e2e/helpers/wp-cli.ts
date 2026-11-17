@@ -107,3 +107,60 @@ export async function updateOption(
 ): Promise< void > {
 	await runWpCli( [ 'option', 'update', name, value ] );
 }
+
+type CreatePostArgs = {
+	type: string;
+	title: string;
+	content?: string;
+};
+
+export async function createPost( {
+	type,
+	title,
+	content = '',
+}: CreatePostArgs ): Promise< number > {
+	const { stdout } = await runWpCli( [
+		'post',
+		'create',
+		`--post_type=${ type }`,
+		`--post_title=${ title }`,
+		`--post_content=${ content }`,
+		'--post_status=publish',
+		'--user=admin',
+		'--porcelain',
+	] );
+
+	const postId = Number( stdout.split( '\n' ).at( -1 )?.trim() );
+
+	if ( ! Number.isInteger( postId ) || postId <= 0 ) {
+		throw new Error( `Could not determine created post ID: ${ stdout }` );
+	}
+
+	return postId;
+}
+
+export async function updatePostContent(
+	postId: number,
+	content: string
+): Promise< void > {
+	await runWpCli( [
+		'post',
+		'update',
+		String( postId ),
+		`--post_content=${ content }`,
+		'--user=admin',
+	] );
+}
+
+export async function getPermalink( postId: number ): Promise< string > {
+	const { stdout } = await runWpCli( [
+		'eval',
+		`echo get_permalink(${ postId });`,
+	] );
+
+	return stdout;
+}
+
+export async function deletePost( postId: number ): Promise< void > {
+	await runWpCli( [ 'post', 'delete', String( postId ), '--force' ] );
+}
