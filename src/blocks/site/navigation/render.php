@@ -67,10 +67,21 @@ $navigation_list_attributes = [
 		<span class="sro"><?php esc_html_e( 'Toggle navigation menu', 'jmc-theme' ); ?></span>
 	</button>
 	<ul <?php jmc_the_attributes( $navigation_list_attributes ); ?>>
-		<?php foreach ( $links as $link_item ) : ?>
+		<?php
+		foreach ( $links as $link_item ) :
+
+			$link_attributes = [
+				'href'  => esc_url( $link_item['url'] ),
+				'class' => 'jmc-navigation__link',
+			];
+
+			if ( is_page( $link_item['id'] ) ) {
+				$link_attributes['aria-current'] = 'page';
+			}
+			?>
 			
 			<li class="jmc-navigation__item">
-				<a href="<?php echo esc_url( $link_item['url'] ); ?>" class="jmc-navigation__link" aria-current="<?php echo esc_attr( is_page( $link_item['id'] ) ? 'page' : 'false' ); ?>">
+				<a <?php jmc_the_attributes( $link_attributes ); ?>>>
 					<?php echo esc_html( $link_item['title'] ); ?> 
 				</a>
 			</li>
