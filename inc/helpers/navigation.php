@@ -7,6 +7,39 @@
 
 declare(strict_types=1);
 
+/**
+ * Find a navigation menu (`wp_navigation` post) by its slug.
+ *
+ * Menus the theme registers (see `jmc_navigation_menus()`) have fixed slugs,
+ * so templates can reference them in every environment, unlike post IDs.
+ *
+ * @param string   $slug        Menu slug, such as `legal`.
+ * @param string[] $post_status Statuses to match; published menus by default.
+ *
+ * @return WP_Post|null The menu, or null when none matches.
+ */
+function jmc_get_navigation_by_slug(
+	string $slug,
+	array $post_status = [ 'publish' ]
+): ?object {
+	$slug = sanitize_key( $slug );
+
+	if ( '' === $slug ) {
+		return null;
+	}
+
+	$menus = get_posts(
+		[
+			'post_type'      => 'wp_navigation',
+			'name'           => $slug,
+			'post_status'    => $post_status,
+			'posts_per_page' => 1,
+			'no_found_rows'  => true,
+		]
+	);
+
+	return $menus[0] ?? null;
+}
 
 /**
  * Normalise supported Navigation blocks into a flat link collection.
