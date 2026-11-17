@@ -5,11 +5,11 @@
 GitHub Actions runs the quality workflow once per pull request, and on pushes to `dev` and `main`, as two parallel jobs:
 
 - **PHP** — on the minimum supported PHP version (8.0) and a current one (8.3): installs locked Composer dependencies, runs PHP syntax checks, PHPCS, and the focused PHPUnit regression tests.
-- **Node** — on the version in `.nvmrc`: installs locked npm dependencies, type-checks, lints JavaScript/TypeScript and SCSS, builds the theme and creates `dist/` in one step, and verifies required package paths.
+- **Node** — on the version in `.nvmrc`: installs locked npm dependencies, runs the Jest unit tests, type-checks, lints JavaScript/TypeScript and SCSS, builds the theme and creates `dist/` in one step, and verifies required package paths.
 
-The repository contains focused PHPUnit coverage for the Hero block’s server-side palette rendering and header template contracts. Header coverage verifies template-part registration, inclusion from the intended template, editable Site Logo and Site Title blocks, and the absence of hard-coded business identity markup.
+The repository contains focused PHPUnit coverage for the Hero block’s server-side palette rendering, header template contracts, and Navigation-block normalisation. Navigation coverage verifies supported links and submenu descendants are flattened in menu order, while incomplete and unsupported entries are skipped safely.\n\nJest unit tests cover the Navigation controller’s initial mobile state, toggle behaviour, Escape handling with focus return, and safe initialisation when required markup is absent.
 
-Playwright browser tests run against an isolated `wp-env` site pinned to the WordPress release in `.wp-env.json`. Pull requests run Chromium only for fast feedback; pushes to `dev` and `main` run Chromium, Firefox, and WebKit as parallel jobs. A nightly scheduled run tests every browser against WordPress `master` to catch upstream breakage. Playwright browsers are cached between runs. The tests cover header rendering, sticky and short-viewport behaviour, the authenticated admin-toolbar offset, narrow-viewport overflow, configured and missing-logo states, deterministic title fallback, the logo homepage link, and Site Editor block-recovery regressions.
+Playwright browser tests run against an isolated `wp-env` site pinned to the WordPress release in `.wp-env.json`. Pull requests run Chromium only for fast feedback; pushes to `dev` and `main` run Chromium, Firefox, and WebKit as parallel jobs. A nightly scheduled run tests every browser against WordPress `master` to catch upstream breakage. Playwright browsers are cached between runs. The tests cover header rendering, sticky and short-viewport behaviour, the authenticated admin-toolbar offset, narrow-viewport overflow, configured and missing-logo states, deterministic title fallback, the logo homepage link, Site Editor block-recovery regressions, and navigation enhancement. Navigation tests create and remove isolated `wp_navigation` records and pages, verify mobile toggle/Escape/focus behaviour, and verify the no-JavaScript fallback.
 
 Broader WordPress integration coverage, visual-regression tests, and automated accessibility tests are not yet configured. Static quality gates and focused regression tests do not replace full behavioural verification.
 
@@ -21,6 +21,7 @@ Before review, run:
 npm ci
 composer install
 composer test
+npm run test:unit -- --runInBand
 npm run typecheck
 npm run lint:php
 npm run lint:js
@@ -32,18 +33,17 @@ npm run package
 
 Confirm the command set passes from a clean dependency install. CI is authoritative for the supported Linux, Node, and PHP combination.
 
-## Browser end-to-end tests
+## JavaScript unit tests\n\nJest is provided through `@wordpress/scripts`. Run all JavaScript unit tests with:\n\n```bash\nnpm run test:unit -- --runInBand\n```\n\nRun only the Navigation controller test while developing:\n\n```bash\nnpm run test:unit -- src/blocks/site/navigation/view.test.ts --runInBand\n```\n\nUse watch mode for an interactive local workflow:\n\n```bash\nnpm run test:unit -- --watch\n```\n\n## Browser end-to-end tests
 
 Start Docker, create the local environment file once, and run the isolated WordPress environment:
 
 ```bash
 cp .env.e2e.example .env.e2e
 npm run env:start
-npm run test:e2e
-npm run env:stop
+npm run build\nnpm run test:e2e\nnpm run env:stop
 ```
 
-Use `npm run test:e2e:headed` or `npm run test:e2e:debug` while diagnosing a test. Use Playwright's `--project=chromium`, `--project=firefox`, or `--project=webkit` option to target one engine.
+Use `npm run test:e2e:headed` or `npm run test:e2e:debug` while diagnosing a test. Use Playwright's `--project=chromium`, `--project=firefox`, or `--project=webkit` option to target one engine.\n\nRun only the Navigation browser tests in Chromium:\n\n```bash\nnpm run test:e2e -- tests/e2e/header.spec.ts -g "theme navigation" --project=chromium\n```\n\nRun `npm run build` after changing block scripts or metadata, before starting or testing the local WordPress environment.
 
 Tests that change WordPress options or theme modifications must capture and restore the original state. The shared CI environment runs with one worker to prevent database-state races.
 

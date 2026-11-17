@@ -51,29 +51,28 @@ add_action(
 // only allow theme blocks.
 add_filter(
 	'allowed_block_types_all',
-	/**
-	 * Filter block types to only include theme-owned blocks.
-	 *
-	 * @param array<string> $allowed_blocks   Currently allowed blocks.
-	 * @param array<string, mixed> $_editor_context Editor context data.
-	 *
-	 * @return array<string> Updated allowed blocks.
-	 */
-	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Parameters are required by the WordPress filter callback signature.
-	function ( $_allowed_blocks, $_editor_context ): array {
+	function ( $allowed_blocks, $editor_context ) {
+		// Leave FSE / Site Editor unchanged.
+		if ( isset( $editor_context->name ) && 'core/edit-site' === $editor_context->name ) {
+			return $allowed_blocks;
+		}
 
 		$registered_blocks = WP_Block_Type_Registry::get_instance()->get_all_registered();
 
-		$allowed = [];
+		// Respect any existing allowed-block configuration first.
+		$blocks_to_filter = is_array( $allowed_blocks )
+		? $allowed_blocks
+		: array_keys( $registered_blocks );
 
-		foreach ( $registered_blocks as $block ) {
-
-			if ( str_starts_with( $block->name, 'jmc/' ) ) {
-				$allowed[] = $block->name;
-			}
-		}
-
-		return $allowed;
+		// In regular editors, allow only non-core blocks.
+		return array_values(
+			array_filter(
+				$blocks_to_filter,
+				function ( $block_name ) {
+					return 0 !== strpos( $block_name, 'core/' );
+				}
+			)
+		);
 	},
 	10,
 	2
@@ -95,6 +94,12 @@ add_filter(
 			'slug'  => 'jmc-section',
 			'title' => __( 'Sections', 'jmc-theme' ),
 			'icon'  => 'customizer',
+
+		];
+		$categories[] = [
+			'slug'  => 'jmc-site',
+			'title' => __( 'Site', 'jmc-theme' ),
+			'icon'  => 'admin-site-alt3',
 
 		];
 		return $categories;

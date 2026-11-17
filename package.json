@@ -17,6 +17,7 @@
     "lint:styles": "wp-scripts lint-style",
     "lint:styles:fix": "wp-scripts lint-style --fix",
     "lint:phpcs": "vendor/bin/phpcs",
+    "test:unit": "wp-scripts test-unit-js",
     "env:start": "wp-env start",
     "env:stop": "wp-env stop",
     "test:e2e": "playwright test",
@@ -36,8 +37,10 @@
     "url": "https://github.com/John-McPherson/jm_wp_theme/issues"
   },
   "homepage": "https://github.com/John-McPherson/jm_wp_theme#readme",
+  "prettier": "@wordpress/prettier-config",
   "devDependencies": {
     "@playwright/test": "^1.62.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.19.43",
     "@types/react": "^18.3.31",
     "@wordpress/block-editor": "^15.22.0",
@@ -50,6 +53,7 @@
     "@wordpress/i18n": "^6.22.0",
     "@wordpress/icons": "^15.3.0",
     "@wordpress/scripts": "^32.4.0",
+    "@wordpress/server-side-render": "^6.32.0",
     "concurrently": "^10.0.3",
     "dotenv": "^17.4.2",
     "sass": "^1.101.0",
