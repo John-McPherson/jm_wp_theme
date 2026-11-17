@@ -222,7 +222,7 @@ function __( string $text, string $domain = 'default' ): string {
  * @return string Placeholder SVG markup, or an empty string.
  */
 function wp_get_icon( string $name, array $args = [] ): string {
-	if ( ! in_array( $name, [ 'core/envelope', 'core/home', 'core/map-marker', 'jmc/phone' ], true ) ) {
+	if ( ! in_array( $name, [ 'jmc/house', 'jmc/mail', 'jmc/map-pin', 'jmc/phone' ], true ) ) {
 		return '';
 	}
 

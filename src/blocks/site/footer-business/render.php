@@ -44,12 +44,12 @@ if ( '' === $company_name && ! $has_contact && '' === $service_area ) {
 }
 
 /*
- * Output a registered icon (the registry behind the core Icon block). Icons are
- * decorative, so wp_get_icon() marks them aria-hidden: each line's text
+ * Output a theme Lucide icon from the core icon registry (see inc/icons.php).
+ * Icons are decorative, so wp_get_icon() marks them aria-hidden: each line's text
  * already says what it is.
  */
 $the_icon = static function ( string $name ): void {
-	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Core-registered SVG markup built by WP_HTML_Tag_Processor.
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Registered SVG markup built by WP_HTML_Tag_Processor.
 	echo wp_get_icon( $name, [ 'class' => 'jmc-footer-business__icon' ] );
 };
 
@@ -69,7 +69,7 @@ $wrapper_attributes = [
 		<address class="jmc-footer-business__contact">
 			<?php if ( '' !== $address ) : ?>
 				<p class="jmc-footer-business__line jmc-footer-business__address">
-					<?php $the_icon( 'core/map-marker' ); ?>
+					<?php $the_icon( 'jmc/map-pin' ); ?>
 					<span><?php echo implode( '<br>', array_map( 'esc_html', explode( "\n", $address ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Each line is escaped; only the joining <br> is markup. ?></span>
 				</p>
 			<?php endif; ?>
@@ -87,7 +87,7 @@ $wrapper_attributes = [
 
 			<?php if ( '' !== $email ) : ?>
 				<p class="jmc-footer-business__line jmc-footer-business__email">
-					<?php $the_icon( 'core/envelope' ); ?>
+					<?php $the_icon( 'jmc/mail' ); ?>
 					<a href="<?php echo esc_url( 'mailto:' . $email ); ?>"><?php echo esc_html( $email ); ?></a>
 				</p>
 			<?php endif; ?>
@@ -96,7 +96,7 @@ $wrapper_attributes = [
 
 	<?php if ( '' !== $service_area ) : ?>
 		<p class="jmc-footer-business__line jmc-footer-business__service-area">
-			<?php $the_icon( 'core/home' ); ?>
+			<?php $the_icon( 'jmc/house' ); ?>
 			<span><span class="jmc-footer-business__label"><?php esc_html_e( 'Areas covered:', 'jmc-theme' ); ?></span> <?php echo esc_html( $service_area ); ?></span>
 		</p>
 	<?php endif; ?>

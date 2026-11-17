@@ -44,10 +44,10 @@ final class FooterBusinessRenderTest extends TestCase {
 	}
 
 	/**
-	 * Each contact and service-area line leads with its decorative registered icon;
+	 * Each contact and service-area line leads with its decorative theme Lucide icon;
 	 * the business name has none.
 	 */
-	public function test_lines_use_core_icons(): void {
+	public function test_lines_use_theme_icons(): void {
 		$html = $this->render_business(
 			[
 				'companyName' => 'Example Electrical Ltd',
@@ -60,10 +60,10 @@ final class FooterBusinessRenderTest extends TestCase {
 
 		foreach (
 			[
-				'address'      => 'core/map-marker',
+				'address'      => 'jmc/map-pin',
 				'phone'        => 'jmc/phone',
-				'email'        => 'core/envelope',
-				'service-area' => 'core/home',
+				'email'        => 'jmc/mail',
+				'service-area' => 'jmc/house',
 			] as $line => $icon
 		) {
 			self::assertMatchesRegularExpression(

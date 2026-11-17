@@ -52,10 +52,14 @@ describe( 'toIconOptions', () => {
 		expect( toIconOptions( response ) ).toEqual( [] );
 	} );
 
-	it( 'hides interface icons such as the card arrow', () => {
+	it( 'hides interface icons: the card arrow and footer icons', () => {
 		expect(
 			toIconOptions( [
 				{ name: 'jmc/arrow-right', label: 'Arrow right' },
+				{ name: 'jmc/house', label: 'House' },
+				{ name: 'jmc/mail', label: 'Email' },
+				{ name: 'jmc/map-pin', label: 'Map pin' },
+				{ name: 'jmc/phone', label: 'Phone' },
 				{ name: 'jmc/cctv', label: 'CCTV' },
 			] )
 		).toEqual( [ { label: 'CCTV', value: 'jmc/cctv', content: '' } ] );

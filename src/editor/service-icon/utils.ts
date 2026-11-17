@@ -17,9 +17,15 @@ export const SERVICE_ICON_COLLECTION = 'jmc';
 
 /**
  * Theme icons used by the interface rather than as service icons: the card
- * arrow and the footer's filled phone glyph.
+ * arrow and the footer business details icons.
  */
-const INTERFACE_ICONS = new Set( [ 'jmc/arrow-right', 'jmc/phone' ] );
+const INTERFACE_ICONS = new Set( [
+	'jmc/arrow-right',
+	'jmc/house',
+	'jmc/mail',
+	'jmc/map-pin',
+	'jmc/phone',
+] );
 
 export type ServicesSettings = {
 	pageId: number;
