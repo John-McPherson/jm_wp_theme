@@ -2,11 +2,14 @@
 
 ## Current state
 
-GitHub Actions installs locked Node and Composer dependencies, audits production npm dependencies, runs focused PHPUnit regression tests, type-checks, runs PHP syntax checks, lints JavaScript/TypeScript and SCSS, runs PHPCS, builds the theme, creates `dist/`, and verifies required package paths.
+GitHub Actions runs the quality workflow once per pull request, and on pushes to `dev` and `main`, as two parallel jobs:
+
+- **PHP** — on the minimum supported PHP version (8.0) and a current one (8.3): installs locked Composer dependencies, runs PHP syntax checks, PHPCS, and the focused PHPUnit regression tests.
+- **Node** — on the version in `.nvmrc`: installs locked npm dependencies, type-checks, lints JavaScript/TypeScript and SCSS, builds the theme and creates `dist/` in one step, and verifies required package paths.
 
 The repository contains focused PHPUnit coverage for the Hero block’s server-side palette rendering and header template contracts. Header coverage verifies template-part registration, inclusion from the intended template, editable Site Logo and Site Title blocks, and the absence of hard-coded business identity markup.
 
-Playwright browser tests run against an isolated `wp-env` site in Chromium, Firefox, and WebKit. They cover header rendering, sticky and short-viewport behaviour, the authenticated admin-toolbar offset, narrow-viewport overflow, configured and missing-logo states, deterministic title fallback, the logo homepage link, and Site Editor block-recovery regressions.
+Playwright browser tests run against an isolated `wp-env` site pinned to the WordPress release in `.wp-env.json`. Pull requests run Chromium only for fast feedback; pushes to `dev` and `main` run Chromium, Firefox, and WebKit as parallel jobs. A nightly scheduled run tests every browser against WordPress `master` to catch upstream breakage. Playwright browsers are cached between runs. The tests cover header rendering, sticky and short-viewport behaviour, the authenticated admin-toolbar offset, narrow-viewport overflow, configured and missing-logo states, deterministic title fallback, the logo homepage link, and Site Editor block-recovery regressions.
 
 Broader WordPress integration coverage, visual-regression tests, and automated accessibility tests are not yet configured. Static quality gates and focused regression tests do not replace full behavioural verification.
 
