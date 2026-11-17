@@ -68,6 +68,14 @@
 			clip-path: var(--navigation-list-clip);
 			transition: clip-path 0.3s ease-in-out;
 
+			// `display: flex` overrides the UA `[hidden]` rule, so hide the closed
+			// menu from focus and assistive tech once the clip animation finishes.
+			&[hidden] {
+				visibility: hidden;
+				transition:
+					clip-path 0.3s ease-in-out,
+					visibility 0s linear 0.3s;
+			}
 
 			[aria-current="page"] {
 				font-weight: 700;
@@ -103,7 +111,8 @@
 
 			&__toggle-open,
 			&__toggle-close,
-			&__list {
+			&__list,
+			&__list[hidden] {
 				transition: none;
 			}
 		}

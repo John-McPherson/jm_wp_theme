@@ -197,13 +197,12 @@ test.describe( 'theme navigation', () => {
 
 		await toggle.click();
 		await expect( toggle ).toHaveAttribute( 'aria-expanded', 'true' );
-		await expect( list ).toHaveAttribute( 'aria-hidden', 'false' );
+		await expect( list ).toBeVisible();
 
 		await page.keyboard.press( 'Escape' );
-
 		await expect( toggle ).toBeFocused();
 		await expect( toggle ).toHaveAttribute( 'aria-expanded', 'false' );
-		await expect( list ).toHaveAttribute( 'aria-hidden', 'true' );
+		await expect( list ).toBeHidden();
 	} );
 
 	test( 'keeps primary links available without JavaScript', async ( {
