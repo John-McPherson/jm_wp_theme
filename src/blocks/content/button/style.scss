@@ -1,3 +1,6 @@
+// Declare the theme layer order first: this stylesheet can be the first
+// layered CSS on the page (e.g. via the header CTA), which fixes the order.
+@use "../../../scss/layers/" as *;
 @use "../../../scss/base/typography" as *;
 @use "../../../scss/abstracts/index" as *;
 
@@ -39,6 +42,16 @@
 
 		&:not(:last-child) {
 			margin-bottom: var(--jmc-section-padding-sm);
+		}
+
+		// Compact size for dense UI such as the site header. Doubled class so it
+		// beats any later `.jmc-button` rules; only sizing changes, not colours.
+		&#{&}--small {
+			padding: var(--jmc-padding-2xs) var(--jmc-padding-s);
+			font-size: var(--jmc-h6);
+			line-height: 1.35;
+			letter-spacing: var(--jmc-letter-spacing-h6);
+			border-width: 1px;
 		}
 	}
 
