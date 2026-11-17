@@ -75,7 +75,8 @@ $navigation_list_attributes = [
 				'class' => 'jmc-navigation__link',
 			];
 
-			if ( is_page( $link_item['id'] ) ) {
+			// is_page( 0 ) matches every page, so custom links (no ID) must be skipped.
+			if ( $link_item['id'] > 0 && is_page( $link_item['id'] ) ) {
 				$link_attributes['aria-current'] = 'page';
 			}
 			?>
