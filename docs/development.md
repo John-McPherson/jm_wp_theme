@@ -68,6 +68,8 @@ See [Roadmap and issue workflow](roadmap.md) for milestone scope and label conve
 
 - Consume existing semantic tokens before adding values.
 - Put global foundations in shared layers and feature rules beside the feature.
+- Change the cascade-layer order only in `src/scss/layers/index.scss`; `inc/enqueue.php` prints it before any other CSS, so block stylesheets must not `@use` it.
+- Keep each component's rules in one stylesheet; depend on another block's style handle in `block.json` rather than duplicating its rules.
 - Validate every palette and interactive state in both editor and frontend.
 - Keep `theme.json` and SCSS token definitions deliberately synchronized.
 

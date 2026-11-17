@@ -51,7 +51,7 @@ This table should be updated whenever a block is added, renamed, deprecated, or 
 4. Implement and type the editor component.
 5. Implement server rendering and validate every incoming attribute.
 6. Use existing PHP components for reusable markup.
-7. Add block styles and ensure the editor imports them where required.
+7. Add block styles and ensure the editor imports them where required. Wrap rules in a theme layer (usually `@layer blocks`) and do not `@use` `scss/layers`; the layer order is printed globally by `inc/enqueue.php`. Style only the block's own classes: if a block relies on another block's styles, list that block's style handle in `block.json` (for example `"style": ["jmc-button-style", "file:./style-index.css"]`) instead of copying its rules.
 8. Run `npm run build` and confirm compiled metadata exists under `build/js/blocks`.
 9. Test empty, default, populated, and deliberately invalid attributes.
 10. Test responsive layouts, all supported palettes, keyboard operation, and editor/frontend parity.
