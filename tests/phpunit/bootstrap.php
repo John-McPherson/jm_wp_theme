@@ -246,4 +246,153 @@ function home_url( string $path = '' ): string {
 	return 'https://example.com/' . ltrim( $path, '/' );
 }
 
+/**
+ * Sanitize a string key.
+ *
+ * Test double matching core: lowercase, keeping only a–z, 0–9, `_` and `-`.
+ *
+ * @param string $key String key.
+ *
+ * @return string Sanitized key.
+ */
+function sanitize_key( string $key ): string {
+	return (string) preg_replace( '/[^a-z0-9_\-]/', '', strtolower( $key ) );
+}
+
+/**
+ * Retrieve posts.
+ *
+ * Test double that filters the `$GLOBALS['jmc_test_posts']` fixtures by
+ * `post_type`, `name` and `post_status`, and records each query's arguments
+ * in `$GLOBALS['jmc_test_get_posts_queries']`.
+ *
+ * @param array<string,mixed> $args Query arguments.
+ *
+ * @return object[] Matching fixture posts.
+ */
+function get_posts( array $args = [] ): array {
+	$GLOBALS['jmc_test_get_posts_queries'][] = $args;
+
+	$statuses = (array) ( $args['post_status'] ?? [ 'publish' ] );
+
+	$posts = array_filter(
+		$GLOBALS['jmc_test_posts'] ?? [],
+		static fn ( mixed $post ): bool => is_object( $post )
+			&& ( $post->post_type ?? '' ) === ( $args['post_type'] ?? 'post' )
+			&& ( ! isset( $args['name'] ) || ( $post->post_name ?? '' ) === $args['name'] )
+			&& in_array( $post->post_status ?? 'publish', $statuses, true )
+	);
+
+	return array_slice( array_values( $posts ), 0, (int) ( $args['posts_per_page'] ?? 5 ) );
+}
+
+/**
+ * Retrieve information about the site.
+ *
+ * Test double that reads `$GLOBALS['jmc_test_bloginfo']`, keyed by `$show`.
+ *
+ * @param string $show Site information to retrieve.
+ *
+ * @return string The value, or an empty string.
+ */
+function get_bloginfo( string $show = '' ): string {
+	return (string) ( $GLOBALS['jmc_test_bloginfo'][ $show ] ?? '' );
+}
+
+/**
+ * Format a date in the site's timezone.
+ *
+ * Test double that formats a fixed time (1 January 2030, UTC) so output is
+ * stable regardless of when the tests run.
+ *
+ * @param string $format PHP date format.
+ *
+ * @return string Formatted date.
+ */
+function wp_date( string $format ): string {
+	return gmdate( $format, 1893456000 );
+}
+
+/**
+ * Retrieve translated, escaped text.
+ *
+ * Test double that skips translation.
+ *
+ * @param string $text   Text to translate.
+ * @param string $domain Text domain.
+ *
+ * @return string The escaped, untranslated text.
+ */
+function esc_html__( string $text, string $domain = 'default' ): string {
+	unset( $domain );
+
+	return esc_html( $text );
+}
+
+/**
+ * Retrieve an option.
+ *
+ * Test double that reads `$GLOBALS['jmc_test_options']`.
+ *
+ * @param string $option         Option name.
+ * @param mixed  $default_value Value returned when the option is not set.
+ *
+ * @return mixed The option value.
+ */
+function get_option( string $option, mixed $default_value = false ): mixed {
+	return $GLOBALS['jmc_test_options'][ $option ] ?? $default_value;
+}
+
+/**
+ * Update an option.
+ *
+ * Test double that writes `$GLOBALS['jmc_test_options']`.
+ *
+ * @param string    $option   Option name.
+ * @param mixed     $value    Option value.
+ * @param bool|null $autoload Whether to autoload the option (ignored).
+ *
+ * @return bool Always true.
+ */
+function update_option( string $option, mixed $value, ?bool $autoload = null ): bool {
+	unset( $autoload );
+
+	$GLOBALS['jmc_test_options'][ $option ] = $value;
+
+	return true;
+}
+
+/**
+ * Insert a post.
+ *
+ * Test double that records the post data in
+ * `$GLOBALS['jmc_test_inserted_posts']`.
+ *
+ * @param array<string,mixed> $postarr Post data.
+ *
+ * @return int The new post's (fake) ID.
+ */
+function wp_insert_post( array $postarr ): int {
+	$GLOBALS['jmc_test_inserted_posts'][] = $postarr;
+
+	return 1000 + count( $GLOBALS['jmc_test_inserted_posts'] );
+}
+
+/**
+ * Hook a callback onto an action.
+ *
+ * Test double that records the hook in `$GLOBALS['jmc_test_actions']`.
+ *
+ * @param string   $hook_name Action name.
+ * @param callable $callback  Callback.
+ * @param int      $priority  Priority.
+ *
+ * @return true Always true.
+ */
+function add_action( string $hook_name, callable $callback, int $priority = 10 ): bool {
+	$GLOBALS['jmc_test_actions'][ $hook_name ][] = [ $callback, $priority ];
+
+	return true;
+}
+
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
