@@ -3,13 +3,29 @@ import { useEntityRecords } from '@wordpress/core-data';
 import { Spinner } from '@wordpress/components';
 import { ServerSideRender } from '@wordpress/server-side-render';
 import { useEffect, useMemo } from '@wordpress/element';
+import { useInnerBlocksProps } from '@wordpress/block-editor';
 
 import bindFields from '../../../utils/bindFields';
 import Sidebar from '../../../components/Sidebar';
 import SelectInput from '../../../components/SelectInput';
 
+// The call to action renders as the last menu item, so it sits in the mobile
+// dropdown and at the end of the desktop menu.
+const ALLOWED_BLOCKS = [ 'jmc/header-cta' ];
+
+const TEMPLATE = [ [ 'jmc/header-cta', { lock: { remove: true } } ] ];
+
 export default function Edit( { attributes, setAttributes } ) {
 	const bind = bindFields( attributes, setAttributes );
+
+	const innerBlocksProps = useInnerBlocksProps(
+		{ className: 'jmc-navigation__inner-blocks' },
+		{
+			allowedBlocks: ALLOWED_BLOCKS,
+			template: TEMPLATE,
+			renderAppender: false,
+		}
+	);
 
 	const { navigationId } = attributes;
 
@@ -66,6 +82,8 @@ export default function Edit( { attributes, setAttributes } ) {
 				block="jmc/navigation"
 				attributes={ attributes }
 			/>
+
+			<div { ...innerBlocksProps } />
 		</>
 	);
 }

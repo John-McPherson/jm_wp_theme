@@ -13,6 +13,7 @@
       "default": 0
     }
   },
+  "allowedBlocks": ["jmc/header-cta"],
   "example": {},
   "supports": {
     "inserter": false,

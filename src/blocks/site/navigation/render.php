@@ -12,6 +12,7 @@ declare(strict_types=1);
  *
  * @var array{
  * } $attributes
+ * @var string   $content Rendered inner blocks (the call to action).
  * @var WP_Block $block
  */
 
@@ -87,5 +88,14 @@ $navigation_list_attributes = [
 				</a>
 			</li>
 		<?php endforeach; ?>
+
+		<?php if ( '' !== trim( $content ) ) : ?>
+			<li class="jmc-navigation__item jmc-navigation__item--cta">
+				<?php
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered and filtered inner-block markup supplied by WordPress.
+				echo $content;
+				?>
+			</li>
+		<?php endif; ?>
 	</ul>
 </nav>

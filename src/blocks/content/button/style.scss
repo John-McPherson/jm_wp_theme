@@ -40,6 +40,16 @@
 		&:not(:last-child) {
 			margin-bottom: var(--jmc-section-padding-sm);
 		}
+
+		// Compact size for dense UI such as the site header. Declared last so
+		// it overrides the default size; only sizing changes, not colours.
+		&--small {
+			padding: var(--jmc-padding-2xs) var(--jmc-padding-s);
+			font-size: var(--jmc-h6);
+			line-height: 1.35;
+			letter-spacing: var(--jmc-letter-spacing-h6);
+			border-width: 1px;
+		}
 	}
 
 	.jmc-button:hover {

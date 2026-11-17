@@ -10,50 +10,25 @@
 
 declare(strict_types=1);
 
-/**
- * Return an allowed string value or a fallback value.
- *
- * Test double for the production allowed-value helper.
- *
- * @param mixed         $value          Candidate value to validate.
- * @param array<string> $allowed        List of permitted string values.
- * @param string        $fallback_value Value returned when the candidate is invalid.
- *
- * @return string The validated value or the supplied fallback.
- */
-function jmc_html_allowed_value(
-	mixed $value,
-	array $allowed,
-	string $fallback_value
-): string {
-	return is_string( $value ) && in_array( $value, $allowed, true )
-		? $value
-		: $fallback_value;
-}
+// Load the real, WordPress-independent theme helpers so render tests exercise
+// production attribute handling, argument parsing and link validation.
+require_once dirname( __DIR__, 2 ) . '/inc/helpers/component-args.php';
+require_once dirname( __DIR__, 2 ) . '/inc/helpers/html/attributes.php';
+require_once dirname( __DIR__, 2 ) . '/inc/helpers/link.php';
 
 /**
- * Retrieve and validate an integer argument.
+ * Render a theme component.
  *
- * Test double for the production integer-argument helper.
+ * Test double that includes the component template directly, with `$args`
+ * in scope as `get_template_part()` would provide.
  *
- * @param array<string, mixed> $args           Arguments containing the candidate value.
- * @param string               $key            Key used to retrieve the candidate value.
- * @param int                  $fallback_value Value returned when the candidate is invalid.
- * @param int                  $min            Minimum permitted integer value.
+ * @param string              $name Component name relative to the components directory.
+ * @param array<string,mixed> $args Arguments passed into the component.
  *
- * @return int The validated integer or the supplied fallback.
+ * @return void
  */
-function jmc_args_int(
-	array $args,
-	string $key,
-	int $fallback_value,
-	int $min
-): int {
-	$value = $args[ $key ] ?? $fallback_value;
-
-	return is_int( $value ) && $value >= $min
-		? $value
-		: $fallback_value;
+function jmc_component( string $name, array $args = [] ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- $args is read by the required component template.
+	require dirname( __DIR__, 2 ) . "/components/{$name}.php";
 }
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- WordPress test doubles must retain their core function names.
@@ -115,49 +90,58 @@ function absint( mixed $maybeint ): int {
 /**
  * Escape an HTML attribute value.
  *
- * Test double that returns the supplied value unchanged because escaping
- * behaviour is outside the scope of the isolated render tests.
+ * Test double that HTML-encodes the value so tests can assert escaping.
  *
  * @param string $value Attribute value to escape.
  *
- * @return string The supplied attribute value without modification.
+ * @return string The escaped attribute value.
  */
 function esc_attr( string $value ): string {
-	return $value;
+	return htmlspecialchars( $value, ENT_QUOTES, 'UTF-8' );
 }
 
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
+/**
+ * Escape a value for HTML output.
+ *
+ * Test double that HTML-encodes the value so tests can assert escaping.
+ *
+ * @param string $text Text to escape.
+ *
+ * @return string The escaped text.
+ */
+function esc_html( string $text ): string {
+	return htmlspecialchars( $text, ENT_QUOTES, 'UTF-8' );
+}
 
 /**
- * Render an HTML attribute collection.
+ * Output translated, escaped text.
  *
- * The test double supports only the class and ID attributes required by the
- * isolated block-render tests.
+ * Test double that skips translation.
  *
- * @param array<string, mixed> $attributes Attribute definitions to render.
+ * @param string $text   Text to output.
+ * @param string $domain Text domain.
  *
  * @return void
  */
-function jmc_the_attributes( array $attributes ): void {
-	$classes = array_filter(
-		$attributes['classes'] ?? [],
-		'is_string'
-	);
+function esc_html_e( string $text, string $domain = 'default' ): void {
+	unset( $domain );
 
-	if ( [] !== $classes ) {
-		printf(
-			'class="%s"',
-			esc_attr( implode( ' ', $classes ) )
-		);
-	}
-
-	if (
-		isset( $attributes['id'] )
-		&& is_string( $attributes['id'] )
-	) {
-		printf(
-			' id="%s"',
-			esc_attr( $attributes['id'] )
-		);
-	}
+	echo esc_html( $text );
 }
+
+/**
+ * Sanitize a CSS class name.
+ *
+ * Test double matching core's behaviour for ASCII class names.
+ *
+ * @param string $classname Class name to sanitize.
+ *
+ * @return string The sanitized class name.
+ */
+function sanitize_html_class( string $classname ): string {
+	$classname = (string) preg_replace( '|%[a-fA-F0-9][a-fA-F0-9]|', '', $classname );
+
+	return (string) preg_replace( '/[^A-Za-z0-9_-]/', '', $classname );
+}
+
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
