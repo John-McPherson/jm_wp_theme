@@ -36,17 +36,19 @@ Feature logic should not accumulate in the bootstrap.
 
 Source metadata and editor code live in `src/blocks/content/`, `src/blocks/layouts/`, and `src/blocks/site/`; production compilation writes to `build/js/blocks/`. Registration scans each compiled directory containing `block.json`.
 
-The current library contains fourteen dynamic blocks:
+The current library contains fifteen dynamic blocks:
 
 - Four insertable sections: `cta-banner`, `hero`, `service-grid`, and `text-with-image`.
 - Five composition blocks: `button`, `column`, `heading`, `paragraph`, and `service-card`.
-- Five site-chrome blocks used in template parts: `navigation` and `header-cta` in the header; `footer`, `footer-business`, and `footer-navigation` in the footer.
+- Six site-chrome blocks used in template parts: `navigation` and `header-cta` in the header; `footer`, `footer-business`, `footer-navigation`, and `footer-legal` in the footer.
 
 Attributes crossing from the editor into PHP are untrusted. Render code must validate allowlisted values, escape at the final boundary, and avoid meaningless empty markup.
 
 ### Components and helpers
 
-`jmc_component()` resolves names beneath `components/` and delegates to WordPress template-part loading. Components own reusable markup; blocks own Gutenberg attributes, context, and composition.
+`jmc_component()` resolves names beneath `components/` and delegates to WordPress template-part loading. Components own reusable markup; blocks own Gutenberg attributes, context, and composition. For example, `components/link-list.php` renders the link list, with `aria-current` on the current page, for both `footer-navigation` and `footer-legal`, each passing its own BEM block class.
+
+`inc/navigation.php` registers the theme's navigation menus by slug and creates any that are missing; see [Navigation menus](blocks.md#navigation-menus).
 
 Use the typed argument helpers in `inc/helpers/component-args.php` and escaped HTML-attribute helpers in `inc/helpers/html/attributes.php`. Do not concatenate raw attributes into markup.
 
