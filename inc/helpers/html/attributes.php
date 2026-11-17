@@ -119,7 +119,7 @@ function jmc_the_attributes( array $attributes ): void {
 function jmc_html_classes( mixed $value ): string {
 	if ( is_array( $value ) ) {
 		$classes = array_filter(
-			array_map( jmc_html_classes( ... ), $value )
+			array_map( 'jmc_html_classes', $value )
 		);
 
 		return implode( ' ', array_unique( $classes ) );
