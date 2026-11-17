@@ -6,6 +6,10 @@
  * `wp_get_icon( 'jmc/<name>' )` like core icons and appear in the core Icon
  * block's picker.
  *
+ * Most theme icons are Lucide SVGs (ISC licence) generated into
+ * build/assets/icons/lucide by scripts/icons/build.js from the list in
+ * src/icons/lucide.json.
+ *
  * @package JMC_Theme
  */
 
@@ -34,5 +38,33 @@ add_action(
 				'content' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-3 -3 26 26"><path d="M12.06 6l-.21-.2c-.52-.54-.43-.79.08-1.3l2.72-2.75c.81-.82.96-1.21 1.73-.48l.21.2zm.53.45l4.4-4.4c.7.94 2.34 3.47 1.53 5.34-.73 1.67-1.09 1.75-2 3-1.85 2.11-4.18 4.37-6 6.07-1.26.91-1.31 1.33-3 2-1.8.71-4.4-.89-5.38-1.56l4.4-4.4 1.18 1.62c.34.46 1.2-.06 1.8-.66 1.04-1.05 3.18-3.18 4-4.07.59-.59 1.12-1.45.66-1.8zM1.57 16.5l-.21-.21c-.68-.74-.29-.9.52-1.7l2.74-2.72c.51-.49.75-.6 1.27-.11l.2.21z"/></svg>',
 			]
 		);
+
+		$lucide_directory = get_theme_file_path( 'build/assets/icons/lucide' );
+		$lucide_manifest  = $lucide_directory . '/manifest.json';
+
+		if ( ! is_readable( $lucide_manifest ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local build file.
+		$lucide_icons = json_decode( (string) file_get_contents( $lucide_manifest ), true );
+
+		if ( ! is_array( $lucide_icons ) ) {
+			return;
+		}
+
+		foreach ( $lucide_icons as $name => $label ) {
+			if ( ! is_string( $name ) || ! is_string( $label ) ) {
+				continue;
+			}
+
+			wp_register_icon(
+				"jmc/{$name}",
+				[
+					'label'     => $label,
+					'file_path' => "{$lucide_directory}/{$name}.svg",
+				]
+			);
+		}
 	}
 );
