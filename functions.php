@@ -11,11 +11,13 @@
 require_once get_theme_file_path( '/inc/enqueue.php' );
 require_once get_theme_file_path( '/inc/setup.php' );
 require_once get_theme_file_path( '/inc/blocks.php' );
+require_once get_theme_file_path( '/inc/icons.php' );
 
 // helpers.
 require_once get_theme_file_path( '/inc/helpers/components.php' );
 require_once get_theme_file_path( '/inc/helpers/component-args.php' );
 require_once get_theme_file_path( '/inc/helpers/navigation.php' );
 require_once get_theme_file_path( '/inc/helpers/link.php' );
+require_once get_theme_file_path( '/inc/helpers/text.php' );
 
 require_once get_theme_file_path( '/inc/helpers/html/attributes.php' );

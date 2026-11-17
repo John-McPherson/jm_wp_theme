@@ -6,6 +6,11 @@
       "name": "header",
       "title": "Site header",
       "area": "header"
+    },
+    {
+      "name": "footer",
+      "title": "Site footer",
+      "area": "footer"
     }
   ],
   "settings": {

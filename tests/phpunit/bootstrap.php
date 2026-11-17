@@ -15,6 +15,8 @@ declare(strict_types=1);
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/component-args.php';
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/html/attributes.php';
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/link.php';
+require_once dirname( __DIR__, 2 ) . '/inc/helpers/navigation.php';
+require_once dirname( __DIR__, 2 ) . '/inc/helpers/text.php';
 
 /**
  * Render a theme component.
@@ -142,6 +144,106 @@ function sanitize_html_class( string $classname ): string {
 	$classname = (string) preg_replace( '|%[a-fA-F0-9][a-fA-F0-9]|', '', $classname );
 
 	return (string) preg_replace( '/[^A-Za-z0-9_-]/', '', $classname );
+}
+
+/**
+ * Retrieve a post.
+ *
+ * Test double that reads fixtures from `$GLOBALS['jmc_test_posts']`, keyed by
+ * post ID, so render tests control which posts exist.
+ *
+ * @param mixed $post Post ID.
+ *
+ * @return object|null The fixture post, or null when none is registered.
+ */
+function get_post( mixed $post = null ): ?object {
+	$posts = $GLOBALS['jmc_test_posts'] ?? [];
+
+	return is_int( $post ) && is_object( $posts[ $post ] ?? null )
+		? $posts[ $post ]
+		: null;
+}
+
+/**
+ * Parse serialized block content.
+ *
+ * Test double: fixtures store `post_content` as JSON-encoded parsed blocks
+ * rather than block markup, so tests avoid depending on core's parser.
+ *
+ * @param string $content JSON-encoded parsed blocks.
+ *
+ * @return array<int,array<string,mixed>> Parsed blocks.
+ */
+function parse_blocks( string $content ): array {
+	$blocks = json_decode( $content, true );
+
+	return is_array( $blocks ) ? $blocks : [];
+}
+
+/**
+ * Determine whether the current request is for the given page.
+ *
+ * Test double that compares against `$GLOBALS['jmc_test_current_page']`.
+ *
+ * @param mixed $page Page ID.
+ *
+ * @return bool Whether the page is the current page.
+ */
+function is_page( mixed $page = '' ): bool {
+	return ( $GLOBALS['jmc_test_current_page'] ?? null ) === $page;
+}
+
+/**
+ * Retrieve translated text.
+ *
+ * Test double that skips translation.
+ *
+ * @param string $text   Text to translate.
+ * @param string $domain Text domain.
+ *
+ * @return string The untranslated text.
+ */
+function __( string $text, string $domain = 'default' ): string {
+	unset( $domain );
+
+	return $text;
+}
+
+/**
+ * Return the SVG markup for a registered icon.
+ *
+ * Test double for the core icon registry: renders a placeholder SVG that
+ * records the icon name and classes for the icons the theme uses, and an
+ * empty string for anything else, as core does for unregistered icons.
+ *
+ * @param string              $name Namespaced icon name.
+ * @param array<string,mixed> $args Icon arguments; only `class` is used.
+ *
+ * @return string Placeholder SVG markup, or an empty string.
+ */
+function wp_get_icon( string $name, array $args = [] ): string {
+	if ( ! in_array( $name, [ 'core/envelope', 'core/home', 'core/map-marker', 'jmc/phone' ], true ) ) {
+		return '';
+	}
+
+	return sprintf(
+		'<svg class="%s" data-icon="%s" aria-hidden="true" focusable="false"></svg>',
+		esc_attr( (string) ( $args['class'] ?? '' ) ),
+		esc_attr( $name )
+	);
+}
+
+/**
+ * Retrieve the URL for the site's front end.
+ *
+ * Test double using a fixed example host.
+ *
+ * @param string $path Path relative to the home URL.
+ *
+ * @return string The home URL with the path appended.
+ */
+function home_url( string $path = '' ): string {
+	return 'https://example.com/' . ltrim( $path, '/' );
 }
 
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
