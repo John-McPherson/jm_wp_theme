@@ -2,11 +2,14 @@
 
 ## Current state
 
-GitHub Actions installs locked Node and Composer dependencies, audits production npm dependencies, runs focused PHPUnit and Jest regression tests, type-checks, runs PHP syntax checks, lints JavaScript/TypeScript and SCSS, runs PHPCS, builds the theme, creates `dist/`, and verifies required package paths.
+GitHub Actions runs the quality workflow once per pull request, and on pushes to `dev` and `main`, as two parallel jobs:
+
+- **PHP** — on the minimum supported PHP version (8.0) and a current one (8.3): installs locked Composer dependencies, runs PHP syntax checks, PHPCS, and the focused PHPUnit regression tests.
+- **Node** — on the version in `.nvmrc`: installs locked npm dependencies, runs the Jest unit tests, type-checks, lints JavaScript/TypeScript and SCSS, builds the theme and creates `dist/` in one step, and verifies required package paths.
 
 The repository contains focused PHPUnit coverage for the Hero block’s server-side palette rendering, header template contracts, and Navigation-block normalisation. Navigation coverage verifies supported links and submenu descendants are flattened in menu order, while incomplete and unsupported entries are skipped safely.\n\nJest unit tests cover the Navigation controller’s initial mobile state, toggle behaviour, Escape handling with focus return, and safe initialisation when required markup is absent.
 
-Playwright browser tests run against an isolated `wp-env` site in Chromium, Firefox, and WebKit. They cover header rendering, sticky and short-viewport behaviour, the authenticated admin-toolbar offset, narrow-viewport overflow, configured and missing-logo states, deterministic title fallback, the logo homepage link, Site Editor block-recovery regressions, and navigation enhancement. Navigation tests create and remove isolated `wp_navigation` records and pages, verify mobile toggle/Escape/focus behaviour, and verify the no-JavaScript fallback.
+Playwright browser tests run against an isolated `wp-env` site pinned to the WordPress release in `.wp-env.json`. Pull requests run Chromium only for fast feedback; pushes to `dev` and `main` run Chromium, Firefox, and WebKit as parallel jobs. A nightly scheduled run tests every browser against WordPress `master` to catch upstream breakage. Playwright browsers are cached between runs. The tests cover header rendering, sticky and short-viewport behaviour, the authenticated admin-toolbar offset, narrow-viewport overflow, configured and missing-logo states, deterministic title fallback, the logo homepage link, Site Editor block-recovery regressions, and navigation enhancement. Navigation tests create and remove isolated `wp_navigation` records and pages, verify mobile toggle/Escape/focus behaviour, and verify the no-JavaScript fallback.
 
 Broader WordPress integration coverage, visual-regression tests, and automated accessibility tests are not yet configured. Static quality gates and focused regression tests do not replace full behavioural verification.
 
