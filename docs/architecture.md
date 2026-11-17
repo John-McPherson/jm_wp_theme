@@ -25,7 +25,7 @@ flowchart TD
 `functions.php` wires together focused modules and helpers:
 
 - `inc/setup.php` declares theme support and editor styles.
-- `inc/enqueue.php` loads the compiled shared stylesheet when it exists and uses its modification time for cache busting.
+- `inc/enqueue.php` loads the compiled shared stylesheet when it exists and uses its modification time for cache busting. It also prints the cascade-layer order (see Styling and tokens) at the top of the frontend `<head>` and as a dependency of the shared stylesheet in the editor.
 - `inc/blocks.php` recursively registers compiled block metadata, registers the section category, and applies the current editor allowlist.
 - `inc/helpers/` contains reusable framework-level PHP helpers.
 
@@ -51,6 +51,8 @@ Use the typed argument helpers in `inc/helpers/component-args.php` and escaped H
 ### Styling and tokens
 
 `theme.json` exposes WordPress-facing colour, typography, spacing, radius, and layout primitives. SCSS maps them into semantic roles, palettes, layouts, components, and block rules. Frontend and editor entry points share the same foundations.
+
+All theme CSS lives in cascade layers. Their order has one source of truth, `src/scss/layers/index.scss`, which is compiled to `build/css/layers.css` and printed inline as `jmc-layers` before any other stylesheet. Layer priority is fixed by the first stylesheet that mentions each layer, and WordPress prints block styles before the shared stylesheet, so this keeps the order independent of which blocks are on a page. Block stylesheets therefore do not declare the order themselves.
 
 ### Build and package
 
