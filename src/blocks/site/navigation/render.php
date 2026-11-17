@@ -42,7 +42,7 @@ $navigation_attributes = [
 	'aria-label' => esc_attr( $navigation->post_title ),
 ];
 
-$naivigation_button_attributes = [
+$navigation_button_attributes = [
 	'classes'       => [
 		'jmc-navigation__toggle',
 	],
@@ -61,7 +61,7 @@ $navigation_list_attributes = [
 ?>
 
 <nav <?php jmc_the_attributes( $navigation_attributes ); ?>>
-	<button <?php jmc_the_attributes( $naivigation_button_attributes ); ?>>
+	<button <?php jmc_the_attributes( $navigation_button_attributes ); ?>>
 		<span class="jmc-navigation__toggle-open" aria-hidden="true">menu</span>
 		<span class="jmc-navigation__toggle-close" aria-hidden="true">close</span>
 		<span class="sro"><?php esc_html_e( 'Toggle navigation menu', 'jmc-theme' ); ?></span>
