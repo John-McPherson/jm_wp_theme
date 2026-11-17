@@ -16,16 +16,7 @@ const TEMPLATE = [
 			[ 'jmc/heading', { level: '2' } ],
 		],
 	],
-	[
-		'jmc/column',
-		{},
-		[
-			[ 'jmc/service-card' ],
-			[ 'jmc/service-card' ],
-			[ 'jmc/service-card' ],
-			[ 'jmc/service-card' ],
-		],
-	],
+	[ 'jmc/column', {}, [ [ 'jmc/service-list' ] ] ],
 ];
 
 const VARIANT_CLASSES = {

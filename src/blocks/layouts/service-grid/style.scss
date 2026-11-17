@@ -2,31 +2,42 @@
 
 @layer blocks {
 
-	.jmc-cta {
-		--jmc-cols: 1;
-		--grid-template-areas: "a" "b";
-
-		.jmc-section__column {
-			grid-area: a;
-			justify-content: flex-start;
-
-			&:nth-of-type(2) {
-				grid-area: b;
-			}
-		}
+	.jmc-service-grid {
+		--jmc-service-grid-cols: 1;
 
 		.jmc-section__container {
-			grid-template-columns: repeat(var(--jmc-cols), 1fr);
-			grid-template-areas: var(--grid-template-areas);
+			grid-template-columns: repeat(var(--jmc-service-grid-cols), minmax(0, 1fr));
+			gap: var(--jmc-padding-l);
+			align-items: stretch;
+		}
+
+		// The intro column takes the first cell and the service cards flow
+		// after it in the same grid. Every wrapper between the container and
+		// the cards (the column, the list and, in the editor, the block and
+		// server-render wrappers) is removed from layout. The list keeps
+		// role="list", so its semantics survive `display: contents`.
+		.jmc-section__container :has(.jmc-service-list),
+		.jmc-service-list {
+			display: contents;
+		}
+
+		// While the grid is one column the intro stacks above the cards; extra
+		// vertical padding stops it feeling cramped. It is removed once the
+		// intro sits beside cards and stretches to the row height.
+		.jmc-section__column:not(:has(.jmc-service-list)) {
+			padding-block: var(--jmc-padding-m);
+
+			@include min($tablet) {
+				padding-block: 0;
+			}
 		}
 
 		@include min($tablet) {
-			--jmc-cols: 2;
-			--grid-template-areas: "a b";
+			--jmc-service-grid-cols: 2;
+		}
 
-			.jmc-column-left {
-				--grid-template-areas: "b a";
-			}
+		@include min($laptop) {
+			--jmc-service-grid-cols: 3;
 		}
 	}
 }

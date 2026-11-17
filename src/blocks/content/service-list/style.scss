@@ -1,0 +1,137 @@
+@use "../../../scss/abstracts/index" as *;
+
+@layer blocks {
+
+	.jmc-service-list {
+		--jmc-service-cols: 1;
+
+		display: grid;
+		grid-template-columns: repeat(var(--jmc-service-cols), minmax(0, 1fr));
+		gap: var(--jmc-padding-l);
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+
+		@include min($mobile) {
+			--jmc-service-cols: 2;
+		}
+
+		@include min($laptop) {
+			--jmc-service-cols: 3;
+		}
+	}
+
+	.jmc-service-card {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: var(--jmc-padding-xs);
+		padding: var(--jmc-padding-m);
+		border: 1px solid var(--jmc-border-color);
+		background-color: var(--jmc-card-background);
+		transition: box-shadow 0.2s ease;
+
+		// Roomier padding once cards have space; on phones it crowds the text.
+		@include min($tablet) {
+			padding: var(--jmc-padding-l);
+		}
+
+		&:hover {
+			box-shadow: 0 0.5rem 1.5rem var(--jmc-shadow-color);
+		}
+
+		// The stretched link takes focus; outline the whole card instead.
+		&:has(.jmc-service-card__link:focus-visible) {
+			outline: 2px solid var(--jmc-text-highlight);
+			outline-offset: 2px;
+		}
+
+		&__icon {
+			width: 3rem;
+			height: 3rem;
+			margin-bottom: var(--jmc-padding-xs);
+			color: var(--jmc-text-highlight);
+
+			.wp-block-icon {
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
+		}
+
+		&__title {
+			margin: 0;
+		}
+
+		&__link {
+			color: inherit;
+			text-decoration: none;
+
+			// Make the whole card clickable while keeping one link per card.
+			&::after {
+				content: "";
+				position: absolute;
+				inset: 0;
+			}
+
+			&:focus-visible {
+				outline: none;
+			}
+		}
+
+		&:hover &__link {
+			text-decoration: underline;
+		}
+
+		&__summary {
+			margin: 0;
+		}
+
+		// Pinned bottom-right so arrows line up across cards of a row.
+		&__arrow {
+			width: 1.5rem;
+			height: 1.5rem;
+			align-self: flex-end;
+			margin-top: auto;
+			padding-top: var(--jmc-padding-xs);
+			box-sizing: content-box;
+			color: var(--jmc-text-highlight);
+			transition: transform 0.2s ease;
+
+			.wp-block-icon {
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
+		}
+
+		&:hover &__arrow,
+		&:has(.jmc-service-card__link:focus-visible) &__arrow {
+			transform: translateX(0.25rem);
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			transition: none;
+
+			&__arrow {
+				transition: none;
+			}
+		}
+	}
+
+	.jmc-service-list__notice {
+		padding: var(--jmc-padding-m);
+		border: 1px dashed var(--jmc-border-color);
+	}
+}
+
+// WordPress global styles size Icon block SVGs to 24px outside any cascade
+// layer (`:root :where(.wp-block-icon svg)`), which beats every layered rule.
+// Size the card icons' SVGs unlayered so they fill their containers.
+.jmc-service-card__icon svg,
+.jmc-service-card__arrow svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+}

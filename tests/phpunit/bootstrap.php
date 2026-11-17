@@ -263,8 +263,9 @@ function sanitize_key( string $key ): string {
  * Retrieve posts.
  *
  * Test double that filters the `$GLOBALS['jmc_test_posts']` fixtures by
- * `post_type`, `name` and `post_status`, and records each query's arguments
- * in `$GLOBALS['jmc_test_get_posts_queries']`.
+ * `post_type`, `name`, `post_parent` and `post_status`, and records each
+ * query's arguments in `$GLOBALS['jmc_test_get_posts_queries']`. A
+ * `posts_per_page` of -1 returns every match, as in core.
  *
  * @param array<string,mixed> $args Query arguments.
  *
@@ -280,10 +281,15 @@ function get_posts( array $args = [] ): array {
 		static fn ( mixed $post ): bool => is_object( $post )
 			&& ( $post->post_type ?? '' ) === ( $args['post_type'] ?? 'post' )
 			&& ( ! isset( $args['name'] ) || ( $post->post_name ?? '' ) === $args['name'] )
+			&& ( ! isset( $args['post_parent'] ) || ( $post->post_parent ?? 0 ) === $args['post_parent'] )
 			&& in_array( $post->post_status ?? 'publish', $statuses, true )
 	);
 
-	return array_slice( array_values( $posts ), 0, (int) ( $args['posts_per_page'] ?? 5 ) );
+	$limit = (int) ( $args['posts_per_page'] ?? 5 );
+
+	return -1 === $limit
+		? array_values( $posts )
+		: array_slice( array_values( $posts ), 0, $limit );
 }
 
 /**
