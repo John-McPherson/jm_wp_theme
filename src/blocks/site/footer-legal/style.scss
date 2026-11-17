@@ -1,0 +1,54 @@
+@use "../../../scss/abstracts/index" as *;
+
+@layer blocks {
+
+	// The footer's bottom row, separated by a rule; jmc/footer gives it the
+	// full width and sets the link treatment. The fine print is a step
+	// smaller than the footer's p4 text, the smallest type token.
+	.jmc-footer-legal {
+		display: flex;
+		flex-direction: column;
+		gap: var(--jmc-padding-2xs) var(--jmc-padding-l);
+		font-size: 0.875em;
+
+		padding-block-start: var(--jmc-padding-m);
+		border-block-start: 1px solid currentcolor;
+
+		@include min($mobile) {
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: space-between;
+			// Line the links up with the copyright, the last line of the notices.
+			align-items: last baseline;
+		}
+
+		// The credit sits directly above the copyright notice.
+		&__notices {
+			display: flex;
+			flex-direction: column;
+			gap: var(--jmc-padding-3xs);
+		}
+
+		&__copyright,
+		&__credit {
+			margin: 0;
+		}
+
+		&__list {
+			display: flex;
+			flex-wrap: wrap;
+			gap: var(--jmc-padding-3xs) var(--jmc-padding-s);
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+
+		&__link {
+			color: inherit;
+
+			&[aria-current="page"] {
+				font-weight: 700;
+			}
+		}
+	}
+}
