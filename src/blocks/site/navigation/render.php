@@ -81,7 +81,7 @@ $navigation_list_attributes = [
 			?>
 			
 			<li class="jmc-navigation__item">
-				<a <?php jmc_the_attributes( $link_attributes ); ?>>>
+				<a <?php jmc_the_attributes( $link_attributes ); ?>>
 					<?php echo esc_html( $link_item['title'] ); ?> 
 				</a>
 			</li>
