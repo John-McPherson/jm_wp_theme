@@ -24,6 +24,9 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | --------------------- | ---------------------------------------------------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | `jmc/button`          | Linked call-to-action                                                              | Dynamic PHP               | Internal composition block; primary button by default; direct inserter disabled                                        |
 | `jmc/column`          | Groups related inner content within a section                                      | Dynamic PHP               | Structural composition block; direct inserter disabled                                                                 |
+| `jmc/footer`          | Site footer container with a selectable palette                                    | Dynamic PHP               | Site chrome; direct inserter disabled; single instance; allows only footer blocks, each rendered as a column; inverse and locked in the footer part |
+| `jmc/footer-business` | Business name, address, telephone, email, and service area                          | Dynamic PHP               | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
+| `jmc/footer-navigation` | A column of links from a selected `wp_navigation` menu                          | Dynamic PHP               | Restricted to `jmc/footer`; insertable there, multiple allowed (one column each); no toggle or view script            |
 | `jmc/header-cta`      | Optional header call-to-action linking to a page, URL, or telephone number         | Dynamic PHP               | Restricted to `jmc/navigation`; direct inserter disabled; single instance; locked against removal in the header part   |
 | `jmc/navigation`      | Primary navigation rendered from a selected `wp_navigation` menu                    | Dynamic PHP + view script | Site chrome; direct inserter disabled; allows only `jmc/header-cta`, rendered as the last menu item                     |
 | `jmc/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jmc/variant` context; level defaults to `2`; direct inserter disabled                                            |
@@ -91,6 +94,57 @@ The link is validated by `jmc_safe_link_url()` (`inc/helpers/link.php`):
 The block renders nothing when the label is empty or the link is missing, malformed, or rejected. Telephone links never open in a new tab. Output uses the `button-link` component with the `jmc-button--small` size modifier.
 
 The block is not insertable, so a site whose header template part has been customised in the Site Editor does not pick it up from `parts/header.html`. Either reset the header template part, or add `<!-- wp:jmc/header-cta {"lock":{"remove":true}} /-->` inside the `jmc/navigation` block of the saved part.
+
+## Footer
+
+`parts/footer.html` is the `footer` template part, registered in `theme.json` and placed at the end of every template as a `<footer class="jmc-footer">` landmark. It contains:
+
+```html
+<!-- wp:jmc/footer {"palette":"inverse","lock":{"remove":true}} -->
+  <!-- wp:jmc/footer-business {"lock":{"remove":true}} /-->
+  <!-- wp:jmc/footer-navigation /-->
+<!-- /wp:jmc/footer -->
+```
+
+### Footer container
+
+`jmc/footer` paints its palette across the full width and centres its content in a `--jmc-container-xl` container. Each child block is one grid column: stacked on narrow screens, then side by side from the `$mobile` container width, at least `12rem` wide and wrapping as space runs out. The footer sets the smaller `p4` type style, and every footer link shares one hover and keyboard-focus treatment (highlight colour and underline). It renders nothing when its inner blocks produce no markup.
+
+Its palette follows the Hero contract: `default` (no class), `secondary` (`jmc-palette--secondary`), and `inverse` (`jmc-palette--inverse`). The attribute default is `default`; the footer part sets `inverse`. Unknown or malformed values fall back to `default`.
+
+### Business details
+
+`jmc/footer-business` is the source of truth for the business details shown in the footer. Edit them in the Site Editor (**Appearance → Editor → Patterns → Template parts → Site footer**), directly on the block. Each field is optional and stored as a string attribute:
+
+| Attribute | Output | Icon | Validation |
+| --- | --- | --- | --- |
+| `companyName` | Bold name linking to `home_url( '/' )` | None | — |
+| `address` | Inside `<address>`; Shift+Enter line breaks become `<br>` | `core/map-marker` | — |
+| `phone` | Inside `<address>`; a `tel:` link when valid | `jmc/phone` | `jmc_safe_link_url( 'tel:' … )`; an unusable number is shown without a link |
+| `email` | Inside `<address>`; a `mailto:` link | `core/envelope` | `FILTER_VALIDATE_EMAIL`; an invalid address is hidden |
+| `serviceArea` | Introduced by a bold, translatable "Areas covered:" label | `core/home` | — |
+
+Values are saved by formatless `RichText`, so render code converts them with `jmc_plain_text()` (`inc/helpers/text.php`): line breaks become newlines, other markup is removed, entities are decoded once, and blank lines are dropped. Output is escaped afterwards. Empty fields are omitted, `<address>` is omitted when there is no address, phone, or email, and the block renders nothing when every field is empty.
+
+### Icons
+
+Icons come from the core icon registry, the one behind the core Icon block, through `wp_get_icon()`. They are decorative (`aria-hidden`), because each line's text already says what it is. Core's library has no telephone handset, so `inc/icons.php` registers a `jmc` icon collection containing `jmc/phone`, the WordPress Dashicons handset. Theme icons also appear in the core Icon block's picker. To add one, register it in `inc/icons.php` and mirror it in the editor component.
+
+The registry strips the `fill` attribute from icon SVGs, so styles must set `fill: currentcolor` for an icon to follow `color`. Footer icons use `--jmc-text-highlight`.
+
+### Footer navigation
+
+Each `jmc/footer-navigation` block renders a flat list of links from the published `wp_navigation` menu chosen in its sidebar. Unlike `jmc/navigation`, it does not pick a menu automatically, has no mobile toggle, and loads no script. Submenu links are flattened into the list. The `<nav>` is labelled with the menu title, or "Footer" when the menu has none, so give each menu a meaningful title. The current page's link gets `aria-current="page"`; custom links never do. The block renders nothing when no menu is selected, the post is not a menu, or the menu has no links.
+
+Add a column by inserting another Footer Navigation block inside the footer; remove one with the block toolbar. Create menus in **Appearance → Editor → Navigation**, or with WP-CLI:
+
+```bash
+wp post create --post_type=wp_navigation --post_status=publish --post_title="Services"
+```
+
+### Customised footer parts
+
+Once the footer part has been saved in the Site Editor, the saved copy overrides `parts/footer.html`, so later changes to the theme file do not appear. Reset the **Site footer** template part to pick them up, or add the missing blocks to the saved part by hand.
 
 ## Button sizes
 
