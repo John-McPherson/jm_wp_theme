@@ -22,6 +22,7 @@ html {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		gap: var(--jmc-padding-s);
 
 		width: 100%;
 		max-width: var(--jmc-container-xl);
@@ -42,6 +43,8 @@ html {
 	.jmc-logo {
 		display: flex;
 		align-items: center;
+		// Push the navigation and call to action to the end of the header.
+		margin-inline-end: auto;
 
 		/*
 		 * Keep the site title as a fallback until an actual logo image
