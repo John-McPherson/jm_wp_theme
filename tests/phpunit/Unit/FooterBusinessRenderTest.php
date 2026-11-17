@@ -30,7 +30,7 @@ final class FooterBusinessRenderTest extends TestCase {
 		);
 
 		self::assertStringContainsString( 'class="jmc-footer-business is-custom"', $html );
-		self::assertStringContainsString( '<p class="jmc-footer-business__name">Example Electrical Ltd</p>', $html );
+		self::assertStringContainsString( '<p class="jmc-footer-business__name"><a href="https://example.com/">Example Electrical Ltd</a></p>', $html );
 		self::assertStringContainsString( '<address class="jmc-footer-business__contact">', $html );
 		self::assertStringContainsString( '1 High Street<br>Example Town', $html );
 		self::assertStringContainsString( '<a href="tel:01234567890">01234 567 890</a>', $html );
@@ -41,6 +41,62 @@ final class FooterBusinessRenderTest extends TestCase {
 			'/__name.*__address.*__phone.*__email.*__service-area/s',
 			$html
 		);
+	}
+
+	/**
+	 * Each contact and service-area line leads with its decorative registered icon;
+	 * the business name has none.
+	 */
+	public function test_lines_use_core_icons(): void {
+		$html = $this->render_business(
+			[
+				'companyName' => 'Example Electrical Ltd',
+				'address'     => '1 High Street',
+				'phone'       => '01234567890',
+				'email'       => 'hello@example.com',
+				'serviceArea' => 'Serving Example Town.',
+			]
+		);
+
+		foreach (
+			[
+				'address'      => 'core/map-marker',
+				'phone'        => 'jmc/phone',
+				'email'        => 'core/envelope',
+				'service-area' => 'core/home',
+			] as $line => $icon
+		) {
+			self::assertMatchesRegularExpression(
+				'/<p class="jmc-footer-business__line jmc-footer-business__' . $line . '">\s*'
+				. '<svg class="jmc-footer-business__icon" data-icon="' . preg_quote( $icon, '/' ) . '" aria-hidden="true"/',
+				$html,
+				sprintf( 'The %s line should start with %s.', $line, $icon )
+			);
+		}
+
+		self::assertSame( 4, substr_count( $html, '<svg' ) );
+	}
+
+	/**
+	 * The service area is introduced by a visible label, read as one phrase.
+	 */
+	public function test_service_area_has_label(): void {
+		$html = $this->render_business( [ 'serviceArea' => 'Pudsey & Leeds' ] );
+
+		self::assertStringContainsString(
+			'<span><span class="jmc-footer-business__label">Areas covered:</span> Pudsey &amp; Leeds</span>',
+			$html
+		);
+	}
+
+	/**
+	 * Icons are only rendered for lines that are present.
+	 */
+	public function test_omitted_lines_have_no_icon(): void {
+		$html = $this->render_business( [ 'phone' => '01234567890' ] );
+
+		self::assertSame( 1, substr_count( $html, '<svg' ) );
+		self::assertStringContainsString( 'data-icon="jmc/phone"', $html );
 	}
 
 	/**

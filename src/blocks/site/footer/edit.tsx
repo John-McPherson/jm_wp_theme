@@ -17,10 +17,11 @@ type EditProps = {
 	setAttributes: ( attributes: Partial< FooterAttributes > ) => void;
 };
 
-const ALLOWED_BLOCKS = [ 'jmc/footer-business' ];
+const ALLOWED_BLOCKS = [ 'jmc/footer-business', 'jmc/footer-navigation' ];
 
 const TEMPLATE: [ string, Record< string, unknown > ][] = [
 	[ 'jmc/footer-business', { lock: { remove: true } } ],
+	[ 'jmc/footer-navigation', {} ],
 ];
 
 const PALETTE_CLASSES: Record< Palette, string > = {

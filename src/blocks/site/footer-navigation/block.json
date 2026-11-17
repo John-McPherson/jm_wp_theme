@@ -1,0 +1,26 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/footer-navigation",
+  "version": "0.1.0",
+  "title": "Footer Navigation",
+  "category": "jmc-site",
+  "icon": "menu",
+  "parent": ["jmc/footer"],
+  "description": "A column of links from a selected navigation menu, shown in the site footer.",
+  "attributes": {
+    "navigationId": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "example": {},
+  "supports": {
+    "className": true,
+    "html": false
+  },
+  "textdomain": "jmc-theme",
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

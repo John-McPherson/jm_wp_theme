@@ -43,6 +43,16 @@ if ( '' === $company_name && ! $has_contact && '' === $service_area ) {
 	return;
 }
 
+/*
+ * Output a registered icon (the registry behind the core Icon block). Icons are
+ * decorative, so wp_get_icon() marks them aria-hidden: each line's text
+ * already says what it is.
+ */
+$the_icon = static function ( string $name ): void {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Core-registered SVG markup built by WP_HTML_Tag_Processor.
+	echo wp_get_icon( $name, [ 'class' => 'jmc-footer-business__icon' ] );
+};
+
 $wrapper_attributes = [
 	'classes' => [
 		'jmc-footer-business',
@@ -52,27 +62,32 @@ $wrapper_attributes = [
 ?>
 <div<?php jmc_the_attributes( $wrapper_attributes ); ?>>
 	<?php if ( '' !== $company_name ) : ?>
-		<p class="jmc-footer-business__name"><?php echo esc_html( $company_name ); ?></p>
+		<p class="jmc-footer-business__name"><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( $company_name ); ?></a></p>
 	<?php endif; ?>
 
 	<?php if ( $has_contact ) : ?>
 		<address class="jmc-footer-business__contact">
 			<?php if ( '' !== $address ) : ?>
-				<p class="jmc-footer-business__address"><?php echo implode( '<br>', array_map( 'esc_html', explode( "\n", $address ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Each line is escaped; only the joining <br> is markup. ?></p>
+				<p class="jmc-footer-business__line jmc-footer-business__address">
+					<?php $the_icon( 'core/map-marker' ); ?>
+					<span><?php echo implode( '<br>', array_map( 'esc_html', explode( "\n", $address ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Each line is escaped; only the joining <br> is markup. ?></span>
+				</p>
 			<?php endif; ?>
 
 			<?php if ( '' !== $phone ) : ?>
-				<p class="jmc-footer-business__phone">
+				<p class="jmc-footer-business__line jmc-footer-business__phone">
+					<?php $the_icon( 'jmc/phone' ); ?>
 					<?php if ( '' !== $phone_url ) : ?>
 						<a href="<?php echo esc_url( $phone_url ); ?>"><?php echo esc_html( $phone ); ?></a>
 					<?php else : ?>
-						<?php echo esc_html( $phone ); ?>
+						<span><?php echo esc_html( $phone ); ?></span>
 					<?php endif; ?>
 				</p>
 			<?php endif; ?>
 
 			<?php if ( '' !== $email ) : ?>
-				<p class="jmc-footer-business__email">
+				<p class="jmc-footer-business__line jmc-footer-business__email">
+					<?php $the_icon( 'core/envelope' ); ?>
 					<a href="<?php echo esc_url( 'mailto:' . $email ); ?>"><?php echo esc_html( $email ); ?></a>
 				</p>
 			<?php endif; ?>
@@ -80,6 +95,9 @@ $wrapper_attributes = [
 	<?php endif; ?>
 
 	<?php if ( '' !== $service_area ) : ?>
-		<p class="jmc-footer-business__service-area"><?php echo esc_html( $service_area ); ?></p>
+		<p class="jmc-footer-business__line jmc-footer-business__service-area">
+			<?php $the_icon( 'core/home' ); ?>
+			<span><span class="jmc-footer-business__label"><?php esc_html_e( 'Areas covered:', 'jmc-theme' ); ?></span> <?php echo esc_html( $service_area ); ?></span>
+		</p>
 	<?php endif; ?>
 </div>

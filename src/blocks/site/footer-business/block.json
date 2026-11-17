@@ -36,7 +36,7 @@
 			"address": "1 High Street<br>Example Town<br>AB1 2CD",
 			"phone": "01234 567890",
 			"email": "hello@example.com",
-			"serviceArea": "Serving Example Town and the surrounding area."
+			"serviceArea": "Example Town and the surrounding area"
 		}
 	},
 	"supports": {

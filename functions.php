@@ -11,6 +11,7 @@
 require_once get_theme_file_path( '/inc/enqueue.php' );
 require_once get_theme_file_path( '/inc/setup.php' );
 require_once get_theme_file_path( '/inc/blocks.php' );
+require_once get_theme_file_path( '/inc/icons.php' );
 
 // helpers.
 require_once get_theme_file_path( '/inc/helpers/components.php' );
