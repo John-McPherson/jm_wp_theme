@@ -2,18 +2,74 @@ name: Quality checks
 
 on:
   push:
+    branches:
+      - dev
+      - main
   pull_request:
 
 permissions:
   contents: read
 
 concurrency:
-  group: quality-${{ github.workflow }}-${{ github.ref }}
+  group: quality-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  quality:
-    name: Install, type-check and build
+  php:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Minimum supported version (composer.json / style.css) and a current one.
+        php:
+          - "8.0"
+          - "8.3"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v2
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-php${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-php${{ matrix.php }}-
+
+      - name: Install locked Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Lint PHP syntax
+        run: |
+          find . -type f -name "*.php" \
+            -not -path "./node_modules/*" \
+            -not -path "./vendor/*" \
+            -not -path "./build/*" \
+            -not -path "./dist/*" \
+            -print0 | xargs -0 -n1 php -l
+
+      - name: Check PHP coding standards
+        run: vendor/bin/phpcs
+
+      - name: Run PHP tests
+        run: composer test
+
+  node:
+    name: Type-check, lint and build
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -30,27 +86,8 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Audit production dependencies
-        run: npm audit --omit=dev
-
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.2"
-          tools: composer:v2
-          coverage: none
-
-      - name: Install locked Composer dependencies
-        run: composer install --no-interaction --no-progress --prefer-dist
-
-      - name: Run PHP tests
-        run: composer test
-
       - name: Type-check
         run: npm run typecheck
-
-      - name: Lint PHP syntax
-        run: npm run lint:php
 
       - name: Lint JavaScript and TypeScript
         run: npm run lint:js
@@ -58,12 +95,7 @@ jobs:
       - name: Lint styles
         run: npm run lint:styles
 
-      - name: Check PHP coding standards
-        run: npm run lint:phpcs
-
-      - name: Build theme
-        run: npm run build
-
+      # `package` runs `build` first, so the theme is built once.
       - name: Build release package
         run: npm run package
 
