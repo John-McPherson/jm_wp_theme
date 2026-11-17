@@ -37,6 +37,7 @@
     "url": "https://github.com/John-McPherson/jm_wp_theme/issues"
   },
   "homepage": "https://github.com/John-McPherson/jm_wp_theme#readme",
+  "prettier": "@wordpress/prettier-config",
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "@types/jest": "^30.0.0",
