@@ -4,6 +4,7 @@ module.exports = {
 	testMatch: [
 		'<rootDir>/src/**/*.test.[jt]s?(x)',
 		'<rootDir>/tests/unit/**/*.test.[jt]s?(x)',
+		'<rootDir>/scripts/**/*.test.[jt]s?(x)',
 	],
 	transform: {
 		'^.+\\.[jt]sx?$': [

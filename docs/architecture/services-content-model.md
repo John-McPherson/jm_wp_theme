@@ -4,6 +4,7 @@
 - Decision date: 2026-08-11
 - Applies to: Service landing page, individual service pages, service cards, navigation, search, breadcrumbs, and structured data
 - Related issue: [#43](https://github.com/John-McPherson/jm_wp_theme/issues/43)
+- Amended: 2026-11-17 by [#6](https://github.com/John-McPherson/jm_wp_theme/issues/6): service cards use a service icon instead of the featured image (see [Amendment: service icons](#amendment-service-icons))
 
 ## Context
 
@@ -48,13 +49,13 @@ Each service page uses native WordPress fields wherever possible:
 | Service name | `post_title` | Required |
 | Canonical URL | `post_name` plus parent hierarchy | Required and stable after publication |
 | Card summary | `post_excerpt` | Required; plain, concise copy |
-| Card image | Featured image | Required; meaningful alternative text |
+| Card icon | `jmc_service_icon` page meta | Required; a registered icon chosen in the Service icon panel |
 | Main content | `post_content` | Required |
 | Service membership | `post_parent` | Must reference the canonical Services page |
 | Display order | `menu_order` | Required; lower values appear first |
 | Publication state | `post_status` | Only published pages appear publicly |
 
-Custom post meta may be added only for a value that is structured, validated, and cannot be represented reliably by a native field or the page body. Presentation-only values must remain in templates and styles, not content metadata.
+Custom post meta may be added only for a value that is structured, validated, and cannot be represented reliably by a native field or the page body. Presentation-only values must remain in templates and styles, not content metadata. The service icon meets this rule: it is a single registered icon name, validated against the icon registry on save and on render, and no native page field can hold it.
 
 ## Retrieval contract
 
@@ -72,6 +73,14 @@ The query must:
 
 A server-rendered block or an appropriately constrained core Query Loop may implement the grid. Whichever mechanism is selected becomes the shared implementation for every service listing.
 
+### Implementation
+
+The grid is the server-rendered `jmc/service-grid` block, whose cards come from `jmc/service-list`; see [Services grid](../blocks.md#services-grid). A core Query Loop was not used because it cannot take its parent from a site-wide setting resolved at render time, so it could not enforce "direct children of the configured Services page" without per-instance configuration.
+
+- The parent is the page chosen under **Settings → Reading → Services page** (the `jmc_services_page_id` option, stored by ID), or, when nothing is chosen, the published page with the slug `services`. A chosen page that is no longer a published page resolves to nothing rather than falling back, so the misconfiguration stays visible.
+- The query also excludes password-protected pages, whose excerpts are hidden.
+- `jmc_get_services()` in `inc/helpers/services.php` is the one retrieval function; any future service listing must use it.
+
 ## Templates and presentation
 
 The theme provides:
@@ -80,7 +89,7 @@ The theme provides:
 - a governed service-page template, template part, or locked pattern for children;
 - a reusable service-card presentation driven by queried page data.
 
-Templates own layout and visual presentation. Page records own editorial content. Editors must not copy card markup, service titles, excerpts, image URLs, or canonical links into templates.
+Templates own layout and visual presentation. Page records own editorial content. Editors must not copy card markup, service titles, excerpts, icons, image URLs, or canonical links into templates.
 
 The service-page structure should consistently support:
 
@@ -120,14 +129,16 @@ Before publication, a service page must have:
 - the governed service template or pattern;
 - a unique title and slug;
 - a concise excerpt suitable for a card and search preview;
-- a featured image with useful alternative text;
+- a service icon;
 - complete page content and a clear call to action;
 - an intentional `menu_order`;
 - reviewed metadata and rendered structured data.
 
 Editorial documentation should identify who may create, publish, rename, move, or retire service pages. Slug or hierarchy changes require a redirect from every previous public URL.
 
-Automated validation should be preferred for enforceable invariants, particularly parent assignment, required excerpt, featured image, and valid ordering.
+Automated validation should be preferred for enforceable invariants, particularly parent assignment, required excerpt, service icon, and valid ordering.
+
+The step-by-step publishing workflow is in [Publishing a service](../blocks.md#publishing-a-service).
 
 ## Migration
 
@@ -179,9 +190,20 @@ Rejected because menus are presentation and wayfinding structures. They may inte
 The decision is implemented correctly when:
 
 - publishing a valid child service causes it to appear once in the Services grid without editing the grid;
-- changing a service title, excerpt, featured image, order, or URL is reflected everywhere that consumes it;
+- changing a service title, excerpt, icon, order, or URL is reflected everywhere that consumes it;
 - unrelated pages never appear in the service catalogue;
 - drafts and private pages never appear publicly;
 - breadcrumbs and canonical URLs follow the page hierarchy;
 - structured data matches the visible canonical page content;
 - editors can identify and follow the creation, update, and retirement rules.
+
+## Amendment: service icons
+
+- Date: 2026-11-17
+- Issue: [#6](https://github.com/John-McPherson/jm_wp_theme/issues/6)
+
+Service cards show an icon rather than the featured image. Photographs at card size added little to identify a trade service, depended on every page having suitable imagery with good alternative text, and made the grid visually heavy; a consistent outline icon set reads faster and needs no alternative text, because the icon is decorative and the card's link text names the service.
+
+- The icon is stored in the `jmc_service_icon` page meta and chosen in the page's **Service icon** panel, from the theme's `jmc` icon collection (Lucide icons generated at build time; see [Icons](../blocks.md#icons)).
+- Featured images are no longer part of the service card contract. Pages may still have one, for example for social sharing, but the grid does not use it.
+- A page without an icon still renders a card without one; the editorial requirement to choose an icon stands.

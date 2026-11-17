@@ -32,10 +32,10 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/navigation`      | Primary navigation rendered from a selected `wp_navigation` menu                    | Dynamic PHP + view script | Site chrome; direct inserter disabled; allows only `jmc/header-cta`, rendered as the last menu item                     |
 | `jmc/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jmc/variant` context; level defaults to `2`; direct inserter disabled                                            |
 | `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; direct inserter disabled                                         |
-| `jmc/service-card`    | Linked service summary with a predefined icon                                      | Dynamic PHP               | Restricted to `jmc/service-grid`; allows Heading and Paragraph children                                                |
+| `jmc/service-list`    | Linked cards for the published child pages of the Services page                    | Dynamic PHP               | Restricted to `jmc/service-grid`; direct inserter disabled; card heading level `2`–`6`, default `3`; previewed in the editor with `ServerSideRender`; see [Services grid](#services-grid) |
 | `jmc/cta-banner`      | Two-column call-to-action section                                                  | Dynamic PHP               | Palettes: default, secondary, inverse; left/right order; defaults to inverse/right                                     |
 | `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default |
-| `jmc/service-grid`    | Introductory content beside a responsive service-card grid                         | Dynamic PHP               | Allows Column children; palettes and left/right order; defaults to default/left                                        |
+| `jmc/service-grid`    | Introductory content and the published services in one responsive grid              | Dynamic PHP               | Two locked Column children: the intro and `jmc/service-list`; palettes; defaults to default; the `order` attribute is currently unused |
 | `jmc/text-with-image` | Composable text content paired with an image                                       | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; contains legacy-looking attributes that need contract review |
 
 This table should be updated whenever a block is added, renamed, deprecated, or removed.
@@ -96,6 +96,83 @@ The block renders nothing when the label is empty or the link is missing, malfor
 
 The block is not insertable, so a site whose header template part has been customised in the Site Editor does not pick it up from `parts/header.html`. Either reset the header template part, or add `<!-- wp:jmc/header-cta {"lock":{"remove":true}} /-->` inside the `jmc/navigation` block of the saved part.
 
+## Services grid
+
+`jmc/service-grid` lists the site's services without anyone maintaining a list. Services are published pages directly beneath the Services page, and every card is built from those page records; see the [services content model](architecture/services-content-model.md) for the decision behind this.
+
+The block holds two locked `jmc/column` blocks: an editable intro (a label paragraph and an H2) and a column containing `jmc/service-list`. `jmc/service-list` renders the cards on the server from page data, so there is no card content to edit inside the block. It replaces the hand-authored `jmc/service-card` block, which has been removed (see [Migrating from `jmc/service-card`](#migrating-from-jmcservice-card)).
+
+### Choosing the Services page
+
+`jmc_get_services_page()` (`inc/helpers/services.php`) resolves the parent page:
+
+| Situation | Status | Result |
+| --- | --- | --- |
+| A published page is chosen under **Settings → Reading → Services page** | `configured` | That page's children are listed |
+| Nothing is chosen, and a published page has the slug `services` | `resolved` | That page's children are listed |
+| The chosen page is deleted, unpublished, trashed, or not a page | `invalid` | Nothing is listed. The slug is deliberately **not** used as a fallback, so the misconfiguration stays visible |
+| Nothing is chosen, and there is no published `services` page | `missing` | Nothing is listed |
+
+The choice is stored by page ID in the `jmc_services_page_id` option (also exposed through the REST settings endpoint), so renaming the Services page does not break the grid. Leaving the setting on its default (use the page with the `services` slug) is fine for a site whose Services page keeps that slug.
+
+### Which pages appear
+
+`jmc_services_query_args()` asks for pages that are direct children of the Services page, published, and not password-protected, ordered by `menu_order` then title, with no item limit. Drafts, private, scheduled, and password-protected pages, deeper descendants, and unrelated pages never appear. An unresolved parent runs no query at all, so top-level pages can never leak into the grid. Because cards are read from the pages on every render, changes to a service's title, excerpt, icon, slug, status, or order show up without editing the grid.
+
+### Cards
+
+Each card (`components/service-card.php`) is a list item containing:
+
+- the service icon, rendered through the core Icon block and marked decorative;
+- the page title as a heading, holding the card's only link, to the page's permalink. The level comes from the Service List block's **Card Settings** (`2`–`6`, default `3`; H1 is reserved for the page title);
+- the page excerpt (`post_excerpt`) as the summary;
+- a decorative arrow in the bottom-right corner.
+
+The link is stretched over the whole card, so each card is one click or tap target with a single link and a single tab stop. Keyboard focus outlines the whole card, hover adds a shadow, and the arrow slides right on hover and focus (not with reduced motion). Titles and excerpts are escaped. A page with no title or URL produces no card; a missing excerpt or icon only omits that part, so older pages still render, but the publishing requirements below still apply.
+
+### Layout
+
+The intro and the cards share one grid on the section container: one column below `$tablet` (768px), two from `$tablet`, and three from `$laptop` (1024px), so the intro takes the first cell and the cards flow after it. To achieve this, every wrapper between the container and the cards (the column, the list, and the editor's block wrappers) uses `display: contents`. The list keeps `role="list"`, so its semantics survive. One side effect: in the editor the Service List block cannot be selected by clicking the canvas; select it in List View.
+
+While the grid is one column, the intro gets extra vertical padding so it does not feel cramped above the cards. Cards use the `--jmc-card-background` surface token, with `--jmc-padding-m` inside below `$tablet` and `--jmc-padding-l` above.
+
+### Empty states
+
+When nothing can be listed, visitors see the intro and no list. Editors previewing the block (a REST request by a user who can edit posts) see a notice explaining why instead:
+
+| Cause | Notice |
+| --- | --- |
+| No services published yet | Publish a page directly beneath the Services page, with an excerpt and icon |
+| No Services page found | Choose one under **Settings → Reading**, or publish a page with the `services` slug |
+| The chosen Services page is missing or unpublished | Choose a published page |
+
+### Service icons
+
+When a page's parent is the Services page, the page sidebar shows a **Service icon** panel. It offers the theme's `jmc` icons (see [Icons](#icons)) as a searchable grid, and shows the current choice with a **Remove** link. Interface icons that are not service icons, `jmc/arrow-right` and `jmc/phone`, are hidden from the picker by `INTERFACE_ICONS` in `src/editor/service-icon/utils.ts`.
+
+The choice is stored in the `jmc_service_icon` page meta, which only users who can edit the page may change. `jmc_sanitize_service_icon()` saves the value only when it is a registered icon name, and the card checks it again when rendering, so an icon that is later unregistered simply disappears from the card. Saving accepts any registered icon, including core ones; only the picker is limited to theme icons.
+
+The panel's script is `src/editor/service-icon/`, built to `build/js/editor/service-icon.js` by an extra entry in `webpack.config.js` and enqueued by `inc/services.php` on page editor screens only. Page excerpts are enabled by the same file.
+
+### Publishing a service
+
+1. Create a page and set its **Parent** to the Services page (**Page → Parent**).
+2. Give it a unique, specific title. It becomes the card heading and link text.
+3. Write an **Excerpt** in the page sidebar: one or two plain sentences for the card.
+4. Choose a **Service icon**.
+5. Set **Order** (**Page → Order**): lower numbers come first; equal numbers sort by title.
+6. Publish. The service appears in every Service Grid immediately.
+
+To retire a service, unpublish the page or move it from beneath the Services page, then review redirects and any menus that link to it.
+
+### Migrating from `jmc/service-card`
+
+Earlier versions stored service cards as `jmc/service-card` blocks inside the grid. That block no longer exists, so any saved content still containing it shows an unsupported-block warning in the editor. Recreate each service as a page (above), then remove the old block. To find affected content:
+
+```bash
+wp eval 'global $wpdb; print_r( $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} WHERE post_content LIKE \"%wp:jmc/service-card%\" AND post_type <> \"revision\"" ) );'
+```
+
 ## Footer
 
 `parts/footer.html` is the `footer` template part, registered in `theme.json` and placed at the end of every template as a `<footer class="jmc-footer">` landmark. It contains:
@@ -128,11 +205,9 @@ Its palette follows the Hero contract: `default` (no class), `secondary` (`jmc-p
 
 Values are saved by formatless `RichText`, so render code converts them with `jmc_plain_text()` (`inc/helpers/text.php`): line breaks become newlines, other markup is removed, entities are decoded once, and blank lines are dropped. Output is escaped afterwards. Empty fields are omitted, `<address>` is omitted when there is no address, phone, or email, and the block renders nothing when every field is empty.
 
-### Icons
+### Footer icons
 
-Icons come from the core icon registry, the one behind the core Icon block, through `wp_get_icon()`. They are decorative (`aria-hidden`), because each line's text already says what it is. Core's library has no telephone handset, so `inc/icons.php` registers a `jmc` icon collection containing `jmc/phone`, the WordPress Dashicons handset. Theme icons also appear in the core Icon block's picker. To add one, register it in `inc/icons.php` and mirror it in the editor component.
-
-The registry strips the `fill` attribute from icon SVGs, so styles must set `fill: currentcolor` for an icon to follow `color`. Footer icons use `--jmc-text-highlight`.
+Footer icons come from the core icon registry through `wp_get_icon()`; see [Icons](#icons). They are decorative (`aria-hidden`), because each line's text already says what it is. Core's library has no telephone handset, so the theme registers `jmc/phone`, the WordPress Dashicons handset. Footer icons are filled, so their styles set `fill: currentcolor`, and they use `--jmc-text-highlight`.
 
 ### Footer navigation
 
@@ -176,6 +251,38 @@ Look a menu up with `jmc_get_navigation_by_slug( slug: 'legal' )` (`inc/helpers/
 
 To add a menu, add its slug and title to `jmc_navigation_menus()`; the changed slug list makes the next request create it.
 
+## Icons
+
+Theme icons are registered with the core Icons API in the `jmc` collection (`inc/icons.php`), so they render through `wp_get_icon( 'jmc/<name>' )` or the core Icon block exactly like core icons, and appear in the Icon block's picker.
+
+| Source | Icons | Used by |
+| --- | --- | --- |
+| [Lucide](https://lucide.dev) | Listed in `src/icons/lucide.json` | Service icons, the service card arrow |
+| WordPress Dashicons | `jmc/phone` | Footer business details (#106 tracks moving the footer to Lucide) |
+
+Icons are decorative (`aria-hidden`) unless they carry meaning that the surrounding text does not.
+
+### Lucide icons
+
+Lucide is free to use under the ISC licence (some icons, derived from Feather, under MIT). It is a development dependency, `lucide-static`, and only the icons listed in `src/icons/lucide.json` ship with the theme. `npm run build:icons`, which runs as part of `npm run build`, executes `scripts/icons/build.js`. For each listed icon it:
+
+1. reads the icon's shapes from `lucide-static/icon-nodes.json`;
+2. converts `rect`, `circle`, `ellipse`, `line`, `polyline`, and `polygon` to equivalent paths (`scripts/icons/shapes.js`), because the registry's sanitiser keeps only `svg`, `path`, and `polygon` and drops stroke attributes;
+3. writes `build/assets/icons/lucide/<name>.svg`.
+
+It also writes `manifest.json` and copies Lucide's `LICENSE` into that directory, so the licence ships with the packaged theme. `inc/icons.php` registers each manifest entry as `jmc/<name>`. The build fails if a listed name does not exist in Lucide or uses a shape the converter does not support.
+
+To add an icon, find its name on lucide.dev, add `"<name>": "<Label>"` to `src/icons/lucide.json`, and run `npm run build`. It then appears in the Service icon picker. If it is an interface icon rather than a service icon, also add it to `INTERFACE_ICONS` in `src/editor/service-icon/utils.ts`. To update Lucide, bump `lucide-static`, rebuild, and check the icons in use.
+
+### Styling icons
+
+Lucide icons are outlines: `svg.lucide` in `src/scss/components/_icons.scss` sets `fill: none` and a `currentcolor` stroke (width 2, round caps and joins), so they follow `color`. Filled icons (core icons and `jmc/phone`) lose their `fill` attribute in the registry, so their styles must set `fill: currentcolor`.
+
+Two WordPress styles sit outside the theme's cascade layers and therefore beat any layered rule, whatever its specificity:
+
+- The core Icon block sets `.wp-block-icon svg { fill: currentColor }`. An unlayered `.wp-block-icon svg.lucide { fill: none }` keeps Lucide icons as outlines.
+- Global styles set `:root :where(.wp-block-icon svg) { width: 24px }`. To size an icon rendered through the Icon block, target its SVG with an unlayered rule that is more specific, as `.jmc-service-card__icon svg` does.
+
 ## Button sizes
 
 `.jmc-button` is the default size. Add `.jmc-button--small` for dense UI such as the header; it changes only padding, type size, and border width, never colours, so it combines with `.jmc-button__secondary` and every palette.
@@ -203,3 +310,4 @@ Changes confined to a dynamic block's PHP frontend markup normally do not need a
 - Revisit the `jmc/`-only global allowlist before FSE templates require core blocks.
 - Change the `style.css` text-domain header from `jmc-custom-theme` to the canonical `jmc-theme` used by translations and block metadata.
 - Review and remove or formally support the older top-level content attributes still declared by `jmc/text-with-image`.
+- Remove or implement the `order` attribute declared by `jmc/service-grid`; it has no effect, and the editor looks it up in the palette class map.
