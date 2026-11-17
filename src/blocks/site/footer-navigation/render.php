@@ -53,22 +53,13 @@ $navigation_attributes = [
 ];
 ?>
 <nav<?php jmc_the_attributes( $navigation_attributes ); ?>>
-	<ul class="jmc-footer-navigation__list">
-		<?php
-		foreach ( $links as $link_item ) :
-			$link_attributes = [
-				'href'  => $link_item['url'],
-				'class' => 'jmc-footer-navigation__link',
-			];
-
-			// is_page( 0 ) matches every page, so custom links (no ID) must be skipped.
-			if ( 0 < $link_item['id'] && is_page( $link_item['id'] ) ) {
-				$link_attributes['aria-current'] = 'page';
-			}
-			?>
-			<li class="jmc-footer-navigation__item">
-				<a<?php jmc_the_attributes( $link_attributes ); ?>><?php echo esc_html( $link_item['title'] ); ?></a>
-			</li>
-		<?php endforeach; ?>
-	</ul>
+	<?php
+	jmc_component(
+		name: 'link-list',
+		args: [
+			'links'       => $links,
+			'block_class' => 'jmc-footer-navigation',
+		]
+	);
+	?>
 </nav>

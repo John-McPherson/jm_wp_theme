@@ -108,9 +108,9 @@ final class FooterTemplateTest extends TestCase {
 
 	/**
 	 * The footer must wrap its content in the palette-aware footer container,
-	 * with the business details then a first menu column inside it. The
-	 * container and business details are locked against removal because
-	 * neither block is insertable; menu columns can be added and removed.
+	 * with the business details, a first menu column, then the legal row inside
+	 * it. The container, business details and legal row are locked against
+	 * removal because none is insertable; menu columns can be added and removed.
 	 */
 	public function test_footer_container_contains_locked_footer_blocks(): void {
 		$footer = $this->read_theme_file( 'parts/footer.html' );
@@ -119,6 +119,7 @@ final class FooterTemplateTest extends TestCase {
 			'/^\s*<!--\s+wp:jmc\/footer\s+\{"palette":"inverse","lock":\{"remove":true\}\}\s+-->'
 			. '\s*<!--\s+wp:jmc\/footer-business\s+\{"lock":\{"remove":true\}\}\s+\/-->'
 			. '\s*<!--\s+wp:jmc\/footer-navigation\s+\/-->'
+			. '\s*<!--\s+wp:jmc\/footer-legal\s+\{"lock":\{"remove":true\}\}\s+\/-->'
 			. '\s*<!--\s+\/wp:jmc\/footer\s+-->\s*$/',
 			$footer
 		);
