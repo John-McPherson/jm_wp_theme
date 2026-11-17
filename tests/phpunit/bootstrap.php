@@ -93,6 +93,26 @@ function esc_url( string $url ): string {
 }
 
 /**
+ * Sanitize a URL for storage.
+ *
+ * @param string $url URL to sanitize.
+ * @return string The supplied URL.
+ */
+function esc_url_raw( string $url ): string {
+	return $url;
+}
+
+/**
+ * Convert a value to a non-negative integer.
+ *
+ * @param mixed $maybeint Value to normalize.
+ * @return int Normalized integer.
+ */
+function absint( mixed $maybeint ): int {
+	return abs( (int) $maybeint );
+}
+
+/**
  * Escape an HTML attribute value.
  *
  * Test double that returns the supplied value unchanged because escaping
