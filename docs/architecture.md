@@ -27,7 +27,8 @@ flowchart TD
 - `inc/setup.php` declares theme support and editor styles.
 - `inc/enqueue.php` loads the compiled shared stylesheet when it exists and uses its modification time for cache busting. It also prints the cascade-layer order (see Styling and tokens) at the top of the frontend `<head>` and as a dependency of the shared stylesheet in the editor.
 - `inc/blocks.php` recursively registers compiled block metadata, registers the section category, and applies the current editor allowlist.
-- `inc/icons.php` registers the theme's `jmc` icon collection and icons with the core icon registry.
+- `inc/icons.php` registers the theme's `jmc` icon collection with the core icon registry: the Dashicons phone and the Lucide icons generated at build time (see [Icons](blocks.md#icons)).
+- `inc/services.php` enables page excerpts, registers the Services page setting and the `jmc_service_icon` page meta, and loads the service icon editor panel (see [Services grid](blocks.md#services-grid)).
 - `inc/helpers/` contains reusable framework-level PHP helpers.
 
 Feature logic should not accumulate in the bootstrap.
@@ -39,8 +40,10 @@ Source metadata and editor code live in `src/blocks/content/`, `src/blocks/layou
 The current library contains fifteen dynamic blocks:
 
 - Four insertable sections: `cta-banner`, `hero`, `service-grid`, and `text-with-image`.
-- Five composition blocks: `button`, `column`, `heading`, `paragraph`, and `service-card`.
+- Five composition blocks: `button`, `column`, `heading`, `paragraph`, and `service-list`.
 - Six site-chrome blocks used in template parts: `navigation` and `header-cta` in the header; `footer`, `footer-business`, `footer-navigation`, and `footer-legal` in the footer.
+
+Editor code that is not tied to one block lives in `src/editor/`, with its own entry in `webpack.config.js`; it currently holds the service icon panel.
 
 Attributes crossing from the editor into PHP are untrusted. Render code must validate allowlisted values, escape at the final boundary, and avoid meaningless empty markup.
 
