@@ -12,8 +12,11 @@ declare(strict_types=1);
  *
  * @var array{
  *     text?: string,
+ *     buttonType?: string,
+ *     linkType?: string,
  *     link?: array{
  *         url?: string,
+ *         opensInNewTab?: bool,
  *         target?: string,
  *         rel?: string
  *     },
@@ -22,6 +25,40 @@ declare(strict_types=1);
  * } $attributes
  * @var WP_Block $block
  */
+
+$button_link = is_array( $attributes['link'] ?? null )
+	? $attributes['link']
+	: [];
+
+$link_type = jmc_html_allowed_value(
+	value: $attributes['linkType'] ?? null,
+	allowed: [
+		'link',
+		'phone',
+		'email',
+	],
+	fallback_value: 'link'
+);
+
+// Phone and email buttons use the site-wide business details, not their own link.
+$url = 'link' === $link_type
+	? jmc_safe_link_url(
+		url: $button_link['url'] ?? null,
+		allow_mailto: true
+	)
+	: jmc_business_contact_url( $link_type );
+
+if ( '' === $url ) {
+	return;
+}
+
+// `opensInNewTab` is saved by the editor; `target` is kept for content saved before it.
+// Telephone and email links hand off to the dialler or mail app, so never open them in a new tab.
+$opens_in_new_tab = (
+	true === ( $button_link['opensInNewTab'] ?? false )
+	|| '_blank' === ( $button_link['target'] ?? '' )
+) && ! str_starts_with( $url, 'tel:' )
+	&& ! str_starts_with( $url, 'mailto:' );
 
 $variant = jmc_html_allowed_value(
 	value: $attributes['buttonType'] ?? null,
@@ -41,7 +78,10 @@ jmc_component(
 	name: 'button-link',
 	args: [
 		'text'    => $attributes['text'] ?? '',
-		'link'    => $attributes['link'] ?? [],
+		'link'    => [
+			'url'    => $url,
+			'target' => $opens_in_new_tab ? '_blank' : '',
+		],
 		'classes' => [
 			$attributes['className'] ?? null,
 			$variant_classes[ $variant ],
