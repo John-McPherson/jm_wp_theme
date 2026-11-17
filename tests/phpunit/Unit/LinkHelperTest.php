@@ -90,4 +90,60 @@ final class LinkHelperTest extends TestCase {
 			'telephone with injection'   => [ 'tel:123"onclick="alert(1)' ],
 		];
 	}
+
+	/**
+	 * Email links are accepted only when opted in.
+	 *
+	 * @dataProvider valid_mailto_provider
+	 *
+	 * @param string $url      Candidate destination.
+	 * @param string $expected Expected normalised destination.
+	 */
+	public function test_accepts_mailto_when_allowed( string $url, string $expected ): void {
+		self::assertSame( $expected, jmc_safe_link_url( url: $url, allow_mailto: true ) );
+		self::assertSame( '', jmc_safe_link_url( $url ) );
+	}
+
+	/**
+	 * Supported email links and their expected output.
+	 *
+	 * @return array<string, array{string, string}>
+	 */
+	public function valid_mailto_provider(): array {
+		return [
+			'address'                => [ 'mailto:hello@example.com', 'mailto:hello@example.com' ],
+			'uppercase scheme'       => [ 'MAILTO:hello@example.com', 'mailto:hello@example.com' ],
+			'surrounding space'      => [ '  mailto:hello@example.com ', 'mailto:hello@example.com' ],
+			'subject query'          => [ 'mailto:hello@example.com?subject=Quote%20request', 'mailto:hello@example.com?subject=Quote%20request' ],
+			'plus-addressed mailbox' => [ 'mailto:hello+quotes@example.co.uk', 'mailto:hello+quotes@example.co.uk' ],
+		];
+	}
+
+	/**
+	 * Malformed email links are rejected even when opted in.
+	 *
+	 * @dataProvider invalid_mailto_provider
+	 *
+	 * @param string $url Candidate destination.
+	 */
+	public function test_rejects_invalid_mailto( string $url ): void {
+		self::assertSame( '', jmc_safe_link_url( url: $url, allow_mailto: true ) );
+	}
+
+	/**
+	 * Malformed email links.
+	 *
+	 * @return array<string, array{string}>
+	 */
+	public function invalid_mailto_provider(): array {
+		return [
+			'no address'          => [ 'mailto:' ],
+			'only query'          => [ 'mailto:?subject=Hi' ],
+			'missing domain'      => [ 'mailto:hello@' ],
+			'missing at sign'     => [ 'mailto:hello.example.com' ],
+			'multiple recipients' => [ 'mailto:a@example.com,b@example.com' ],
+			'space in query'      => [ 'mailto:hello@example.com?subject=Quote request' ],
+			'injection'           => [ 'mailto:hello@example.com"onclick="alert(1)' ],
+		];
+	}
 }

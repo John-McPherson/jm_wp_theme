@@ -1,0 +1,21 @@
+@use "../../../scss/abstracts/index" as *;
+
+@layer blocks {
+
+	// Full-width and stacked on small screens, then a wrapping row.
+	.jmc-buttons {
+		display: flex;
+		flex-direction: column;
+		gap: var(--jmc-padding-s);
+		width: 100%;
+
+		.jmc-button:not(:last-child) {
+			margin-bottom: 0;
+		}
+
+		@include min($compact) {
+			flex-flow: row wrap;
+			align-items: center;
+		}
+	}
+}

@@ -13,6 +13,12 @@
 			&:nth-of-type(2) {
 				grid-area: b;
 			}
+
+			// A lone column (the other was empty) spans the full width.
+			&:only-of-type {
+				grid-area: auto;
+				grid-column: 1 / -1;
+			}
 		}
 
 		.jmc-section__container {
@@ -26,6 +32,29 @@
 
 			.jmc-column-left {
 				--grid-template-areas: "b a";
+			}
+		}
+
+		// Stacked variation: one centred column at every width.
+		&.jmc-cta--stacked {
+
+			.jmc-section__container {
+				max-width: var(--jmc-container-sm);
+				gap: var(--jmc-section-padding-sm);
+				text-align: center;
+			}
+
+			.jmc-section__column {
+				align-items: center;
+			}
+
+			.jmc-buttons {
+				justify-content: center;
+			}
+
+			@include min($tablet) {
+				--jmc-cols: 1;
+				--grid-template-areas: "a" "b";
 			}
 		}
 	}

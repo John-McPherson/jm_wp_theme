@@ -15,6 +15,9 @@ All notable changes will be documented here. The project follows semantic versio
 - GitHub Actions quality checks for TypeScript, PHP, JavaScript, SCSS, PHPCS, and production builds.
 - Consistent `jmc/` block namespaces and `jmc_` PHP global prefixes.
 - A valid `jmc-section` block category and corrected category-filter shape.
+- CTA Banner: a Stacked variation, one or more buttons through the new Buttons block, and omission of empty columns and empty banners.
+- Phone and Email button variations that link to new site-wide business contact settings (Settings → General).
+- Buttons validate their destinations, accept `mailto:` links and bare phone numbers or email addresses, and honour the editor's open-in-new-tab setting.
 
 ### Known issues
 
