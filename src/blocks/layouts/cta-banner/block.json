@@ -18,8 +18,36 @@
       "type": "string",
       "enum": ["left", "right"],
       "default": "right"
+    },
+    "layout": {
+      "type": "string",
+      "enum": ["columns", "stacked"],
+      "default": "columns"
     }
   },
+  "variations": [
+    {
+      "name": "columns",
+      "title": "CTA Banner",
+      "description": "Heading beside the supporting text and call-to-action button.",
+      "attributes": {
+        "layout": "columns"
+      },
+      "isDefault": true,
+      "scope": ["inserter", "block", "transform"],
+      "isActive": ["layout"]
+    },
+    {
+      "name": "stacked",
+      "title": "CTA Banner (Stacked)",
+      "description": "Heading, supporting text, and call-to-action button stacked and centred.",
+      "attributes": {
+        "layout": "stacked"
+      },
+      "scope": ["inserter", "block", "transform"],
+      "isActive": ["layout"]
+    }
+  ],
   "example": {
     "attributes": {
       "palette": "inverse",
@@ -48,10 +76,22 @@
             }
           },
           {
-            "name": "jmc/button",
-            "attributes": {
-              "text": "Get in touch"
-            }
+            "name": "jmc/buttons",
+            "innerBlocks": [
+              {
+                "name": "jmc/button",
+                "attributes": {
+                  "text": "Get a quote"
+                }
+              },
+              {
+                "name": "jmc/button",
+                "attributes": {
+                  "text": "Call us",
+                  "buttonType": "secondary"
+                }
+              }
+            ]
           }
         ]
       }
