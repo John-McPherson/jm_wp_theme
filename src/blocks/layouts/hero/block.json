@@ -1,0 +1,81 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/hero",
+  "version": "0.1.0",
+  "title": "Hero",
+  "category": "jmc-section",
+  "icon": "cover-image",
+  "description": "A hero section with composable content and a background image.",
+  "textdomain": "jmc-theme",
+
+  "attributes": {
+    "imageId": {
+      "type": "number",
+      "default": 0
+    },
+    "imageUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "variant": {
+      "type": "string",
+      "default": "hero"
+    },
+    "palette": {
+      "type": "string",
+      "enum": ["default", "secondary", "inverse"],
+      "default": "default"
+    }
+  },
+  "providesContext": {
+    "jmc/variant": "variant"
+  },
+
+  "example": {
+    "attributes": {
+      "imageUrl": "https://images.pexels.com/photos/9810766/pexels-photo-9810766.jpeg"
+    },
+    "innerBlocks": [
+      {
+        "name": "jmc/paragraph",
+        "attributes": {
+          "text": "Label",
+          "variant": "label"
+        }
+      },
+      {
+        "name": "jmc/heading",
+        "attributes": {
+          "text": "Lorem ipsum dolor",
+          "level": "1"
+        }
+      },
+      {
+        "name": "jmc/paragraph",
+        "attributes": {
+          "text": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem distinctio quas beatae nisi numquam consectetur incidunt delectus soluta facere cupiditate magnam laudantium, quasi quo."
+        }
+      },
+      {
+        "name": "jmc/button",
+        "attributes": {
+          "text": "Lorem ipsum"
+        }
+      }
+    ],
+    "viewportWidth": 1200
+  },
+
+  "supports": {
+    "multiple": false,
+    "html": false,
+    "anchor": true,
+    "className": true
+  },
+
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

@@ -1,0 +1,150 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/service-grid",
+  "version": "0.1.0",
+  "title": "Service Grid",
+  "category": "jmc-section",
+  "icon": "screenoptions",
+  "description": "Display introductory content alongside a responsive grid of services.",
+  "keywords": ["services", "grid", "cards"],
+  "attributes": {
+    "palette": {
+      "type": "string",
+      "enum": ["default", "secondary", "inverse"],
+      "default": "default"
+    },
+    "order": {
+      "type": "string",
+      "enum": ["left", "right"],
+      "default": "left"
+    }
+  },
+  "allowedBlocks": ["jmc/column"],
+  "example": {
+    "attributes": {
+      "palette": "default",
+      "order": "left"
+    },
+    "innerBlocks": [
+      {
+        "name": "jmc/column",
+        "innerBlocks": [
+          {
+            "name": "jmc/heading",
+            "attributes": {
+              "text": "Solutions built around you",
+              "level": "2"
+            }
+          },
+          {
+            "name": "jmc/paragraph",
+            "attributes": {
+              "text": "Reliable electrical services for commercial and industrial projects."
+            }
+          }
+        ]
+      },
+      {
+        "name": "jmc/column",
+        "innerBlocks": [
+          {
+            "name": "jmc/service-card",
+            "attributes": {
+              "icon": "electrical-installation"
+            },
+            "innerBlocks": [
+              {
+                "name": "jmc/heading",
+                "attributes": {
+                  "text": "Electrical Installations",
+                  "level": "3"
+                }
+              },
+              {
+                "name": "jmc/paragraph",
+                "attributes": {
+                  "text": "Complete design and installation for commercial projects."
+                }
+              }
+            ]
+          },
+          {
+            "name": "jmc/service-card",
+            "attributes": {
+              "icon": "maintenance"
+            },
+            "innerBlocks": [
+              {
+                "name": "jmc/heading",
+                "attributes": {
+                  "text": "Maintenance & Support",
+                  "level": "3"
+                }
+              },
+              {
+                "name": "jmc/paragraph",
+                "attributes": {
+                  "text": "Keep your systems running safely and efficiently."
+                }
+              }
+            ]
+          },
+          {
+            "name": "jmc/service-card",
+            "attributes": {
+              "icon": "inspection"
+            },
+            "innerBlocks": [
+              {
+                "name": "jmc/heading",
+                "attributes": {
+                  "text": "Testing & Inspection",
+                  "level": "3"
+                }
+              },
+              {
+                "name": "jmc/paragraph",
+                "attributes": {
+                  "text": "EICR, testing and certification to the highest standards."
+                }
+              }
+            ]
+          },
+          {
+            "name": "jmc/service-card",
+            "attributes": {
+              "icon": "emergency"
+            },
+            "innerBlocks": [
+              {
+                "name": "jmc/heading",
+                "attributes": {
+                  "text": "Emergency Callouts",
+                  "level": "3"
+                }
+              },
+              {
+                "name": "jmc/paragraph",
+                "attributes": {
+                  "text": "24/7 response for urgent electrical issues."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "viewportWidth": 1440
+  },
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false
+  },
+  "textdomain": "jmc-theme",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

@@ -1,0 +1,28 @@
+<?php
+/**
+ * Enqueue theme styles for blocks and editor.
+ *
+ * @package JMC_Theme
+ */
+
+declare(strict_types=1);
+
+add_action(
+	'enqueue_block_assets',
+	function (): void {
+		$relative_path = 'build/css/style.css';
+		$absolute_path = get_theme_file_path( $relative_path );
+
+		if ( ! file_exists( $absolute_path ) ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'jmc-theme',
+			get_theme_file_uri( $relative_path ),
+			[],
+			(string) filemtime( $absolute_path )
+		);
+	},
+	5
+);

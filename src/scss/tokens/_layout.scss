@@ -1,0 +1,20 @@
+@layer base {
+
+	:root {
+		--jmc-container-sm: 640px;
+		--jmc-container-md: var(--wp--style--global--content-size);
+		--jmc-container-l: 960px;
+		--jmc-container-xl: var(--wp--style--global--wide-size);
+		--jmc-container-2xl: 1440px;
+
+		--jmc-section-padding: var(--jmc-padding-xl);
+		--jmc-section-padding-sm: var(--jmc-padding-m);
+		--jmc-section-spacing: var(--jmc-padding-xl);
+
+		--jmc-page-margin: clamp(var(--jmc-padding-m), 6vw, var(--jmc-padding-2xl));
+
+		//header
+		--jmc-header-height: 5rem;
+
+	}
+}

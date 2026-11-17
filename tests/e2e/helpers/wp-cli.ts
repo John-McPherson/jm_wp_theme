@@ -1,0 +1,177 @@
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execFileAsync = promisify( execFile );
+
+type CliResult = {
+	stdout: string;
+	stderr: string;
+};
+
+export async function runWpCli( args: string[] ): Promise< CliResult > {
+	const { stdout, stderr } = await execFileAsync(
+		'npx',
+		[ 'wp-env', 'run', 'cli', 'wp', ...args ],
+		{
+			env: process.env,
+			maxBuffer: 1024 * 1024,
+		}
+	);
+
+	return {
+		stdout: stdout.trim(),
+		stderr: stderr.trim(),
+	};
+}
+
+export async function getThemeMod( name: string ): Promise< string | null > {
+	const code = [
+		`$value = get_theme_mod(${ JSON.stringify( name ) }, null);`,
+		'if ($value !== null && $value !== false && $value !== "") {',
+		'echo (string) $value;',
+		'}',
+	].join( ' ' );
+
+	const { stdout } = await runWpCli( [ 'eval', code ] );
+
+	return stdout === '' ? null : stdout;
+}
+
+export async function setThemeMod(
+	name: string,
+	value: string | number
+): Promise< void > {
+	const encodedName = JSON.stringify( name );
+	const encodedValue = JSON.stringify( value );
+
+	await runWpCli( [
+		'eval',
+		`set_theme_mod(${ encodedName }, ${ encodedValue });`,
+	] );
+}
+
+export async function removeThemeMod( name: string ): Promise< void > {
+	await runWpCli( [
+		'eval',
+		`remove_theme_mod(${ JSON.stringify( name ) });`,
+	] );
+}
+
+export async function importTestLogo(): Promise< number > {
+	const { stdout: fixturePath } = await runWpCli( [
+		'eval',
+		'echo get_theme_file_path("tests/e2e/fixtures/logo.png");',
+	] );
+
+	if ( ! fixturePath ) {
+		throw new Error( 'Could not resolve the logo fixture path.' );
+	}
+
+	const { stdout } = await runWpCli( [
+		'media',
+		'import',
+		fixturePath,
+		'--porcelain',
+	] );
+
+	const attachmentId = Number(
+		stdout
+			.split( '\n' )
+			.map( ( line ) => line.trim() )
+			.filter( Boolean )
+			.at( -1 )
+	);
+
+	if ( ! Number.isInteger( attachmentId ) || attachmentId <= 0 ) {
+		throw new Error( `Could not determine imported logo ID: ${ stdout }` );
+	}
+
+	return attachmentId;
+}
+
+export async function deleteAttachment(
+	attachmentId: number
+): Promise< void > {
+	await runWpCli( [ 'post', 'delete', String( attachmentId ), '--force' ] );
+}
+
+export async function getOption( name: string ): Promise< string > {
+	const { stdout } = await runWpCli( [ 'option', 'get', name ] );
+
+	return stdout;
+}
+
+export async function updateOption(
+	name: string,
+	value: string
+): Promise< void > {
+	await runWpCli( [ 'option', 'update', name, value ] );
+}
+
+type NavigationLink = {
+	label: string;
+	url: string;
+	id?: number;
+};
+
+function buildNavigationContent( links: NavigationLink[] ): string {
+	return links
+		.map( ( link ) => {
+			return `<!-- wp:navigation-link ${ JSON.stringify( link ) } /-->`;
+		} )
+		.join( '' );
+}
+
+export async function createNavigationRecord(
+	links: NavigationLink[]
+): Promise< number > {
+	const content = buildNavigationContent( links );
+
+	const { stdout } = await runWpCli( [
+		'post',
+		'create',
+		'--post_type=wp_navigation',
+		'--post_status=publish',
+		'--post_title=Navigation E2E',
+		`--post_content=${ content }`,
+		'--porcelain',
+	] );
+
+	return Number( stdout );
+}
+
+export async function updateNavigationRecord(
+	navigationId: number,
+	links: NavigationLink[]
+): Promise< void > {
+	await runWpCli( [
+		'post',
+		'update',
+		String( navigationId ),
+		`--post_content=${ buildNavigationContent( links ) }`,
+	] );
+}
+
+export async function createNavigationTestPage(
+	navigationId: number
+): Promise< number > {
+	const content = `<!-- wp:jmc/navigation ${ JSON.stringify( {
+		navigationId,
+	} ) } /-->`;
+
+	const { stdout } = await runWpCli( [
+		'post',
+		'create',
+		'--post_type=page',
+		'--post_status=publish',
+		'--post_title=Navigation E2E page',
+		`--post_content=${ content }`,
+		'--porcelain',
+	] );
+
+	return Number( stdout );
+}
+
+export async function deletePost( postId: number ): Promise< void > {
+	await runWpCli( [ 'post', 'delete', String( postId ), '--force' ] );
+}

@@ -1,9 +1,5 @@
-@use "reset";
-@use "root";
-
-.site-main,
-.wp-site-blocks,
-.wp-block-group.is-layout-constrained,
-.wp-block-group.is-layout-flow {
-  container-type: inline-size;
-}
+@use "layers";
+@use "base";
+@use "./tokens/index.scss" as *;
+@use "./palettes/index.scss" as *;
+@use "./layout/index.scss" as *;

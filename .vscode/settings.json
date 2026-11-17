@@ -1,0 +1,55 @@
+{
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  "stylelint.validate": ["css", "scss"],
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always",
+    "source.fixAll.stylelint": "explicit"
+  },
+
+  "phpsab.executablePathCS": "vendor/bin/phpcs",
+  "phpsab.executablePathCBF": "vendor/bin/phpcbf",
+  "phpsab.composerJsonPath": "composer.json",
+  "phpsab.autoRulesetSearch": true,
+  "phpsab.snifferEnable": true,
+  "phpsab.fixerEnable": true,
+  "phpsab.snifferMode": "onSave",
+  "phpsab.snifferShowSources": true,
+  "phpsab.snifferShowFixabilityIcons": true,
+  "prettier.prettierPath": "./node_modules/prettier",
+
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": false
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": false
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": false
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": false
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "stylelint.vscode-stylelint",
+    "editor.formatOnSave": false
+  },
+  "[css]": {
+    "editor.defaultFormatter": "stylelint.vscode-stylelint",
+    "editor.formatOnSave": false
+  },
+  "[php]": {
+    "editor.defaultFormatter": "valeryanm.vscode-phpsab",
+    "editor.formatOnSave": true
+  }
+}

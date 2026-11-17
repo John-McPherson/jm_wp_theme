@@ -1,0 +1,11 @@
+@layer base {
+
+	:root {
+		--jmc-z-index-raised: 10;
+		--jmc-z-index-sticky: 100;
+		--jmc-z-index-dropdown: 200;
+		--jmc-z-index-overlay: 300;
+		--jmc-z-index-modal: 400;
+		--jmc-z-index-notification: 500;
+	}
+}

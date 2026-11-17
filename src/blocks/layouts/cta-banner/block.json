@@ -1,0 +1,71 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/cta-banner",
+  "version": "0.1.0",
+  "title": "CTA Banner",
+  "category": "jmc-section",
+  "icon": "megaphone",
+  "description": "Promote an important message with a heading, supporting text, and call-to-action button.",
+  "keywords": ["cta", "banner", "call to action"],
+  "attributes": {
+    "palette": {
+      "type": "string",
+      "enum": ["default", "secondary", "inverse"],
+      "default": "inverse"
+    },
+    "order": {
+      "type": "string",
+      "enum": ["left", "right"],
+      "default": "right"
+    }
+  },
+  "example": {
+    "attributes": {
+      "palette": "inverse",
+      "order": "right"
+    },
+    "innerBlocks": [
+      {
+        "name": "jmc/column",
+        "innerBlocks": [
+          {
+            "name": "jmc/heading",
+            "attributes": {
+              "text": "Have a project in mind?",
+              "level": "2"
+            }
+          }
+        ]
+      },
+      {
+        "name": "jmc/column",
+        "innerBlocks": [
+          {
+            "name": "jmc/paragraph",
+            "attributes": {
+              "text": "Let’s talk about how we can help."
+            }
+          },
+          {
+            "name": "jmc/button",
+            "attributes": {
+              "text": "Get in touch"
+            }
+          }
+        ]
+      }
+    ],
+    "viewportWidth": 1200
+  },
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false
+  },
+  "textdomain": "jmc-theme",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

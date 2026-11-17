@@ -1,0 +1,156 @@
+name: Playwright E2E
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+  pull_request:
+    branches:
+      - dev
+      - main
+  schedule:
+    # Nightly run against WordPress master to catch upstream breakage early.
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: playwright-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: WordPress E2E (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Pull requests run Chromium only for fast feedback; dev/main pushes and
+        # the nightly run cover every browser, in parallel jobs.
+        browser: ${{ fromJSON(github.event_name == 'pull_request' && '["chromium"]' || '["chromium","firefox","webkit"]') }}
+
+    env:
+      CI: true
+      WP_BASE_URL: http://localhost:8888
+      WP_USERNAME: admin
+      WP_PASSWORD: password
+      THEME_SLUG: jm_wp_theme
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use WordPress master for the nightly run
+        if: ${{ github.event_name == 'schedule' }}
+        run: echo "WP_ENV_CORE=WordPress/WordPress#master" >> "$GITHUB_ENV"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get Playwright version
+        id: playwright
+        run: echo "version=$(npx playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-${{ matrix.browser }}
+
+      - name: Install Playwright browser
+        if: ${{ steps.playwright-cache.outputs.cache-hit != 'true' }}
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Install Playwright system dependencies
+        if: ${{ steps.playwright-cache.outputs.cache-hit == 'true' }}
+        run: npx playwright install-deps ${{ matrix.browser }}
+
+      - name: Build theme
+        run: npm run build
+
+      # `wp-env start` waits until WordPress responds before returning.
+      - name: Start WordPress
+        run: npm run env:start
+
+      - name: Verify WordPress environment
+        run: |
+          echo "Node: $(node --version)"
+          echo "npm: $(npm --version)"
+          npx wp-env run cli wp core version
+          npx wp-env run cli wp theme list
+
+      - name: Activate theme
+        shell: bash
+        run: |
+          npx wp-env run cli wp theme activate "${THEME_SLUG}"
+
+          ACTIVE_THEME="$(
+            npx wp-env run cli wp option get stylesheet |
+            tail -n 1 |
+            tr -d '\r'
+          )"
+
+          echo "Expected theme: ${THEME_SLUG}"
+          echo "Active theme: ${ACTIVE_THEME}"
+
+          if [ "${ACTIVE_THEME}" != "${THEME_SLUG}" ]; then
+            echo "Expected theme was not activated."
+            npx wp-env run cli wp theme list
+            exit 1
+          fi
+
+      - name: Verify test fixture
+        run: |
+          npx wp-env run cli wp eval '
+            $path = get_theme_file_path(
+              "tests/e2e/fixtures/logo.png"
+            );
+
+            echo $path . PHP_EOL;
+
+            if (! file_exists($path)) {
+              fwrite(STDERR, "Logo fixture is missing." . PHP_EOL);
+              exit(1);
+            }
+          '
+
+      - name: Run Playwright tests
+        run: npm run test:e2e -- --project=${{ matrix.browser }}
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}-${{ github.run_id }}
+          path: artifacts/e2e/report/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Upload failure evidence
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failures-${{ matrix.browser }}-${{ github.run_id }}
+          path: artifacts/e2e/test-results/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Show WordPress logs
+        if: ${{ failure() }}
+        run: npx wp-env logs || true
+
+      - name: Stop WordPress
+        if: ${{ always() }}
+        run: npm run env:stop || true

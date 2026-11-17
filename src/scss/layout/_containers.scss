@@ -1,0 +1,42 @@
+@layer layout {
+
+	.site-main,
+	.wp-site-blocks,
+	.wp-block-group.is-layout-constrained,
+	.wp-block-group.is-layout-flow {
+		container-type: inline-size;
+	}
+
+	.jmc-section {
+
+		&:last-of-type {
+			padding-bottom: var(--jmc-padding-3xl);
+		}
+
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		background-color: var(--jmc-background-color);
+		color: var(--jmc-text-color);
+
+		padding: var(--jmc-page-margin);
+
+		&__container {
+			display: grid;
+			align-items: center;
+			width: 100%;
+			max-width: var(--jmc-container-l);
+			gap: var(--jmc-section-padding);
+		}
+
+		&__column {
+			container-type: inline-size;
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: center;
+			width: 100%;
+			height: 100%;
+		}
+	}
+}

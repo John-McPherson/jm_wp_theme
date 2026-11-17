@@ -1,0 +1,93 @@
+@use "../../../scss/abstracts/index" as *;
+@use "../../../scss/base/typography" as *;
+@use "../../../scss/tokens/layout" as *;
+
+@layer blocks {
+
+	.jmc-hero {
+		--jmc-hero-gradient-direction: 180deg;
+		--grid-span: 12;
+		padding: 0 0 var(--jmc-padding-xl);
+		--jmc-hero-overlay: linear-gradient(var(--jmc-hero-gradient-direction), var(--jmc-background-color), transparent 20%);
+
+		display: grid;
+
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+
+		&__text {
+			padding: var(--jmc-page-margin);
+			container-type: inline-size;
+			grid-column: span var(--grid-span);
+			margin-inline-start: auto;
+			margin-block: auto;
+
+			display: flex;
+
+			flex-direction: column;
+			justify-content: center;
+
+			width: 100%;
+			min-height: 300px;
+
+			&-heading {
+
+				@include d1;
+
+				font-weight: 400;
+				max-width: 12ch;
+				overflow-wrap: break-word;
+				text-wrap: balance;
+			}
+
+			&-para {
+
+				@include p2;
+				max-width: 34ch;
+				text-wrap: pretty;
+			}
+		}
+
+		&__img {
+			grid-column: span var(--grid-span);
+			position: relative;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			aspect-ratio: 1 / 1;
+
+			background: var(--background-image) center / cover no-repeat;
+
+			pointer-events: none;
+
+			&::after {
+				content: "";
+				position: absolute;
+				inset: 0;
+				pointer-events: none;
+
+				background: var(--jmc-hero-overlay);
+			}
+		}
+
+		@include min($tablet) {
+			--jmc-hero-gradient-direction: 90deg;
+			--grid-span: 6;
+
+			--jmc-section-padding:
+				var(--jmc-padding-3xl) var(--jmc-padding-xl)
+				var(--jmc-padding-2xl);
+
+			&__text {
+				max-width: calc((var(--jmc-container-xl) * 0.5));
+			}
+
+			&__img {
+				aspect-ratio: auto;
+			}
+		}
+
+		@include min($desktop) {
+			--grid-span: 6;
+		}
+	}
+}

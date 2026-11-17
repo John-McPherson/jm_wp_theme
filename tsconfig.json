@@ -6,10 +6,10 @@
     "jsx": "react-jsx",
     "allowJs": true,
     "checkJs": false,
-
+    "skipLibCheck": true,
     "strict": false,
     "noEmit": true,
-    "resolveJsonModule": true
-  },
-  "include": ["src/**/*"]
+    "resolveJsonModule": true,
+    "types": ["node", "@playwright/test", "jest"]  },
+  "include": ["src/**/*", "playwright.config.ts", "tests/e2e/**/*.ts"]
 }
