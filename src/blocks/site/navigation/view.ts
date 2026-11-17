@@ -1,4 +1,4 @@
-class MainNavigation {
+export class MainNavigation {
 	private readonly menuButton: HTMLButtonElement | null;
 	private readonly menuList: HTMLUListElement | null;
 	private readonly navigation: HTMLElement | null;

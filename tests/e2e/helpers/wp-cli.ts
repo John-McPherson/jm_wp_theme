@@ -108,57 +108,68 @@ export async function updateOption(
 	await runWpCli( [ 'option', 'update', name, value ] );
 }
 
-type CreatePostArgs = {
-	type: string;
-	title: string;
-	content?: string;
+type NavigationLink = {
+	label: string;
+	url: string;
+	id?: number;
 };
 
-export async function createPost( {
-	type,
-	title,
-	content = '',
-}: CreatePostArgs ): Promise< number > {
+function buildNavigationContent( links: NavigationLink[] ): string {
+	return links
+		.map( ( link ) => {
+			return `<!-- wp:navigation-link ${ JSON.stringify( link ) } /-->`;
+		} )
+		.join( '' );
+}
+
+export async function createNavigationRecord(
+	links: NavigationLink[]
+): Promise< number > {
+	const content = buildNavigationContent( links );
+
 	const { stdout } = await runWpCli( [
 		'post',
 		'create',
-		`--post_type=${ type }`,
-		`--post_title=${ title }`,
-		`--post_content=${ content }`,
+		'--post_type=wp_navigation',
 		'--post_status=publish',
-		'--user=admin',
+		'--post_title=Navigation E2E',
+		`--post_content=${ content }`,
 		'--porcelain',
 	] );
 
-	const postId = Number( stdout.split( '\n' ).at( -1 )?.trim() );
-
-	if ( ! Number.isInteger( postId ) || postId <= 0 ) {
-		throw new Error( `Could not determine created post ID: ${ stdout }` );
-	}
-
-	return postId;
+	return Number( stdout );
 }
 
-export async function updatePostContent(
-	postId: number,
-	content: string
+export async function updateNavigationRecord(
+	navigationId: number,
+	links: NavigationLink[]
 ): Promise< void > {
 	await runWpCli( [
 		'post',
 		'update',
-		String( postId ),
-		`--post_content=${ content }`,
-		'--user=admin',
+		String( navigationId ),
+		`--post_content=${ buildNavigationContent( links ) }`,
 	] );
 }
 
-export async function getPermalink( postId: number ): Promise< string > {
+export async function createNavigationTestPage(
+	navigationId: number
+): Promise< number > {
+	const content = `<!-- wp:jmc/navigation ${ JSON.stringify( {
+		navigationId,
+	} ) } /-->`;
+
 	const { stdout } = await runWpCli( [
-		'eval',
-		`echo get_permalink(${ postId });`,
+		'post',
+		'create',
+		'--post_type=page',
+		'--post_status=publish',
+		'--post_title=Navigation E2E page',
+		`--post_content=${ content }`,
+		'--porcelain',
 	] );
 
-	return stdout;
+	return Number( stdout );
 }
 
 export async function deletePost( postId: number ): Promise< void > {
