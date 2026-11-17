@@ -9,6 +9,7 @@ import {
 	importTestLogo,
 	removeThemeMod,
 	setThemeMod,
+	updateNavigationRecord,
 	updateOption,
 } from './helpers/wp-cli';
 import { loginToWordPress } from './helpers/login';
@@ -230,6 +231,60 @@ test.describe( 'theme navigation', () => {
 		} finally {
 			await context.close();
 		}
+	} );
+
+	test( 'renders each link with only its label as text', async ( {
+		page,
+	} ) => {
+		await page.goto( `/?page_id=${ pageId }` );
+
+		const navigation = page.locator( '.jmc-navigation' );
+
+		await expect(
+			navigation.locator( '.jmc-navigation__link' )
+		).toHaveText( [ 'Home', 'Services' ] );
+
+		const itemText = await navigation
+			.locator( '.jmc-navigation__item' )
+			.allTextContents();
+
+		expect( itemText.map( ( text ) => text.trim() ) ).toEqual( [
+			'Home',
+			'Services',
+		] );
+	} );
+
+	test( 'points each link at its configured URL', async ( { page } ) => {
+		await page.goto( `/?page_id=${ pageId }` );
+
+		const links = page.locator( '.jmc-navigation .jmc-navigation__link' );
+
+		await expect( links.nth( 0 ) ).toHaveAttribute( 'href', '/' );
+		await expect( links.nth( 1 ) ).toHaveAttribute( 'href', '/services/' );
+	} );
+
+	test( 'marks only the current page link with aria-current', async ( {
+		page,
+	} ) => {
+		await updateNavigationRecord( navigationId, [
+			{ label: 'Home', url: '/' },
+			{
+				label: 'This page',
+				url: `/?page_id=${ pageId }`,
+				id: pageId,
+			},
+		] );
+
+		await page.goto( `/?page_id=${ pageId }` );
+
+		const navigation = page.locator( '.jmc-navigation' );
+
+		await expect(
+			navigation.getByRole( 'link', { name: 'This page', exact: true } )
+		).toHaveAttribute( 'aria-current', 'page' );
+		await expect(
+			navigation.getByRole( 'link', { name: 'Home', exact: true } )
+		).not.toHaveAttribute( 'aria-current' );
 	} );
 } );
 

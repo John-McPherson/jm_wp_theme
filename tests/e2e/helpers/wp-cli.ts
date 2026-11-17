@@ -111,16 +111,21 @@ export async function updateOption(
 type NavigationLink = {
 	label: string;
 	url: string;
+	id?: number;
 };
 
-export async function createNavigationRecord(
-	links: NavigationLink[]
-): Promise< number > {
-	const content = links
+function buildNavigationContent( links: NavigationLink[] ): string {
+	return links
 		.map( ( link ) => {
 			return `<!-- wp:navigation-link ${ JSON.stringify( link ) } /-->`;
 		} )
 		.join( '' );
+}
+
+export async function createNavigationRecord(
+	links: NavigationLink[]
+): Promise< number > {
+	const content = buildNavigationContent( links );
 
 	const { stdout } = await runWpCli( [
 		'post',
@@ -133,6 +138,18 @@ export async function createNavigationRecord(
 	] );
 
 	return Number( stdout );
+}
+
+export async function updateNavigationRecord(
+	navigationId: number,
+	links: NavigationLink[]
+): Promise< void > {
+	await runWpCli( [
+		'post',
+		'update',
+		String( navigationId ),
+		`--post_content=${ buildNavigationContent( links ) }`,
+	] );
 }
 
 export async function createNavigationTestPage(
