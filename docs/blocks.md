@@ -29,7 +29,7 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/credential`      | One accreditation, guarantee or review logo with an optional link                  | Dynamic PHP               | Restricted to `jmc/credential-list`; informative logo whose alt text names the credential; renders nothing without an image; see [Credentials](#credentials) |
 | `jmc/credential-list` | Centred, wrapping list of `jmc/credential` logos                                   | Dynamic PHP               | Restricted to `jmc/trust-credentials`; direct inserter disabled; starts with one credential; credentials can be added, removed and reordered; renders nothing when empty |
 | `jmc/footer`          | Site footer container with a selectable palette                                    | Dynamic PHP               | Site chrome; direct inserter disabled; single instance; allows only footer blocks and `jmc/trust-credentials`, each rendered as a column, with the credential logos spanning the top and the legal row the bottom; inverse and locked in the footer part |
-| `jmc/footer-business` | Business name, address, telephone, email, and service area                          | Dynamic PHP               | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
+| `jmc/footer-business` | Business name and address, with the shared phone, WhatsApp, email, and service area | Dynamic PHP               | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
 | `jmc/footer-navigation` | A column of links from a selected `wp_navigation` menu                          | Dynamic PHP               | Restricted to `jmc/footer`; insertable there, multiple allowed (one column each); no toggle or view script            |
 | `jmc/footer-legal`    | Site credit, copyright notice with the current year, and links from the `legal` menu | Dynamic PHP              | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
 | `jmc/header-cta`      | Optional header call-to-action linking to a page, URL, or telephone number         | Dynamic PHP               | Restricted to `jmc/navigation`; direct inserter disabled; single instance; locked against removal in the header part   |
@@ -208,23 +208,23 @@ The button renders nothing when its label is empty or its destination is missing
 
 ## Business contact settings
 
-The business contact details are site-wide options, registered in `inc/contact.php` with helpers in `inc/helpers/contact.php`. They are the single source of truth for Phone, Email and WhatsApp buttons and the Contact Details block:
+The business contact details are site-wide options, registered in `inc/contact.php` with helpers in `inc/helpers/contact.php`. They are the single source of truth for Phone, Email and WhatsApp buttons, the Contact Details block and the footer's business details:
 
 | Option | Edited in | Stored value |
 | --- | --- | --- |
-| `jmc_business_phone` | **Settings → General → Business phone number**, a Phone button's sidebar, or the Contact Details sidebar | The number as written, with whitespace collapsed, only when it is a valid `tel:` number; otherwise empty |
-| `jmc_business_whatsapp` | **Settings → General → WhatsApp number**, a WhatsApp button's sidebar, or the Contact Details sidebar | The number as written, only when it is in international format (optional `+`, 8–15 digits, no leading `0`); otherwise empty |
-| `jmc_business_email` | **Settings → General → Business email address**, an Email button's sidebar, or the Contact Details sidebar | One valid address; otherwise empty |
-| `jmc_business_hours` | **Settings → General → Opening hours**, or the Contact Details sidebar | `{ monday: { opens: "08:00", closes: "17:30" }, … }` in week order; a day is kept only with two valid 24-hour `HH:MM` times and a closing time after the opening time, otherwise it counts as closed |
-| `jmc_business_service_area` | **Settings → General → Service area** (one place per line), or the Contact Details sidebar | A list of place names: trimmed, whitespace collapsed, de-duplicated case-insensitively, and without blank entries, entries containing `<` or `>`, or entries over 100 characters |
+| `jmc_business_phone` | **Settings → General → Business phone number**, a Phone button's sidebar, or the Contact Details or Footer Business Details sidebar | The number as written, with whitespace collapsed, only when it is a valid `tel:` number; otherwise empty |
+| `jmc_business_whatsapp` | **Settings → General → WhatsApp number**, a WhatsApp button's sidebar, or the Contact Details or Footer Business Details sidebar | The number as written, only when it is in international format (optional `+`, 8–15 digits, no leading `0`); otherwise empty |
+| `jmc_business_email` | **Settings → General → Business email address**, an Email button's sidebar, or the Contact Details or Footer Business Details sidebar | One valid address; otherwise empty |
+| `jmc_business_hours` | **Settings → General → Opening hours**, or the Contact Details or Footer Business Details sidebar | `{ monday: { opens: "08:00", closes: "17:30" }, … }` in week order; a day is kept only with two valid 24-hour `HH:MM` times and a closing time after the opening time, otherwise it counts as closed |
+| `jmc_business_service_area` | **Settings → General → Service area** (one place per line), or the Contact Details or Footer Business Details sidebar | A list of place names: trimmed, whitespace collapsed, de-duplicated case-insensitively, and without blank entries, entries containing `<` or `>`, or entries over 100 characters |
 
-All are registered with `show_in_rest` and a REST schema, so the block editor edits them through the site entity (`src/components/SiteSetting.tsx`) and they are saved with the site settings when the post is saved: changing one updates every block that uses it. Users who cannot manage options cannot read them, so the sidebars show a notice instead of the fields. The editor removes a cleared time rather than storing an empty one, which the schema would reject, and warns when a day will be saved as closed.
+All are registered with `show_in_rest` and a REST schema, so the block editor edits them through the site entity (`src/components/SiteSetting.tsx`; the shared **Business details** sidebar panel is `src/components/ContactSettings.tsx`) and they are saved with the site settings when the post is saved: changing one updates every block that uses it. Users who cannot manage options cannot read them, so the sidebars show a notice instead of the fields. The editor removes a cleared time rather than storing an empty one, which the schema would reject, and warns when a day will be saved as closed.
 
-`jmc_business_contact_url( 'phone' | 'email' | 'whatsapp' )` re-validates the stored value and returns a `tel:`, `mailto:` or `https://wa.me/` URL, or an empty string. `jmc_business_contact_details()` returns every detail re-validated for display: a phone, email or WhatsApp value only with a working link, and opening hours for all seven days (`null` when closed) once any day is open. `jmc/footer-business` does not use these settings yet; see #115.
+`jmc_business_contact_url( 'phone' | 'email' | 'whatsapp' )` re-validates the stored value and returns a `tel:`, `mailto:` or `https://wa.me/` URL, or an empty string. `jmc_business_contact_details()` returns every detail re-validated for display: a phone, email or WhatsApp value only with a working link, and opening hours for all seven days (`null` when closed) once any day is open.
 
 ## Contact details
 
-`jmc/contact-details` shows the [business contact settings](#business-contact-settings) as a description list. It has no values of its own, so the details are the same everywhere; five `show*` toggles (`showPhone`, `showWhatsApp`, `showEmail`, `showHours`, `showServiceArea`, all on by default, malformed values counting as on) choose which fields to show. Its sidebar also edits the settings themselves.
+`jmc/contact-details` shows the [business contact settings](#business-contact-settings) as a description list. It has no values of its own, so the details are the same everywhere; five `show*` toggles (`showPhone`, `showWhatsApp`, `showEmail`, `showHours`, `showServiceArea`, all on by default, malformed values counting as on) choose which fields to show. Its sidebar also edits the settings themselves (`ContactSettings`).
 
 It is restricted to `jmc/column` (`parent`) and is placed by the [CTA Banner (Contact Details)](#call-to-action-banner) variation. The block has no heading; the banner's heading introduces it.
 
@@ -379,21 +379,26 @@ The section's `palette` attribute (`default`, `secondary`, `inverse`) follows th
 
 ### Business details
 
-`jmc/footer-business` is the source of truth for the business details shown in the footer. Phone and Email buttons use the separate [business contact settings](#business-contact-settings) instead; #115 tracks moving the footer onto them. Edit them in the Site Editor (**Appearance → Editor → Patterns → Template parts → Site footer**), directly on the block. Each field is optional and stored as a string attribute:
+`jmc/footer-business` shows the business name and address, stored on the block, followed by the phone, WhatsApp, email and service area from the [business contact settings](#business-contact-settings), so the footer always matches the contact buttons and Contact Details blocks. Edit the block in the Site Editor (**Appearance → Editor → Patterns → Template parts → Site footer**): the name and address directly on the block, the shared details in its **Business details** sidebar panel (or Settings → General). Every line is optional:
 
-| Attribute | Output | Icon | Validation |
-| --- | --- | --- | --- |
-| `companyName` | Bold name linking to `home_url( '/' )` | None | — |
-| `address` | Inside `<address>`; Shift+Enter line breaks become `<br>` | `core/map-marker` | — |
-| `phone` | Inside `<address>`; a `tel:` link when valid | `jmc/phone` | `jmc_safe_link_url( 'tel:' … )`; an unusable number is shown without a link |
-| `email` | Inside `<address>`; a `mailto:` link | `core/envelope` | `FILTER_VALIDATE_EMAIL`; an invalid address is hidden |
-| `serviceArea` | Introduced by a bold, translatable "Areas covered:" label | `core/home` | — |
+| Line | Source | Output | Icon | Validation |
+| --- | --- | --- | --- | --- |
+| Name | `companyName` attribute | Bold name linking to `home_url( '/' )` | None | — |
+| Address | `address` attribute | Inside `<address>`; Shift+Enter line breaks become `<br>` | `jmc/map-pin` | — |
+| Phone | `jmc_business_phone` | Inside `<address>`; a `tel:` link | `jmc/phone` | Omitted when missing or not diallable |
+| WhatsApp | `jmc_business_whatsapp` | Inside `<address>`; a `wa.me` link, with a visually hidden "WhatsApp:" label so screen readers don't hear a second phone number | `jmc/whatsapp` | Omitted when missing or not international |
+| Email | `jmc_business_email` | Inside `<address>`; a `mailto:` link | `jmc/mail` | Omitted when missing or invalid |
+| Service area | `jmc_business_service_area` | After `<address>`: a bold, translatable "Areas covered:" label and the places as one phrase, "Pudsey, Leeds and Bradford" (the "and" is translatable) | `jmc/house` | Omitted when the list is empty |
 
-Values are saved by formatless `RichText`, so render code converts them with `jmc_plain_text()` (`inc/helpers/text.php`): line breaks become newlines, other markup is removed, entities are decoded once, and blank lines are dropped. Output is escaped afterwards. Empty fields are omitted, `<address>` is omitted when there is no address, phone, or email, and the block renders nothing when every field is empty.
+The shared lines are read through `jmc_business_contact_details()`, so a value is only shown with a working link. Opening hours are not shown in the footer; use the Contact Details block for them. The name and address are saved by formatless `RichText`, so render code converts them with `jmc_plain_text()` (`inc/helpers/text.php`): line breaks become newlines, other markup is removed, entities are decoded once, and blank lines are dropped. Output is escaped afterwards. Empty lines are omitted, `<address>` is omitted when there is no address, phone, WhatsApp or email, and the block renders nothing when every line is empty.
+
+In the editor the shared lines are read-only and show the **saved** settings, which the REST API has already sanitised, so they match the frontend; sidebar edits appear once the template part is saved. Their links don't navigate in the editor. When no shared detail is set, the canvas shows an editor-only hint pointing to the sidebar.
+
+**Legacy attributes.** Before #115 the block stored its own `phone`, `email` and `serviceArea` string attributes. They are still declared in `block.json`, so saving the footer keeps them, but they are not rendered or editable. On the first request after upgrading, `jmc_migrate_footer_contact_details()` (`inc/contact.php`, on `init`) reads the active theme's customised `footer` template part and copies each value into its setting when that setting is empty or invalid, sanitised as if submitted. The free-text service area is split into places on new lines, commas, semicolons, `&` and the word "and". Settings that already hold a value are never overwritten, and a value the settings reject (such as an undiallable phone number) is not copied but stays in the block attributes. The run is recorded in the autoloaded `jmc_footer_contact_migrated` option; delete that option to run it again.
 
 ### Footer icons
 
-Footer icons come from the core icon registry through `wp_get_icon()`; see [Icons](#icons). They are decorative (`aria-hidden`), because each line's text already says what it is. They are Lucide outlines (`jmc/map-pin`, `jmc/phone`, `jmc/mail`, `jmc/house`) and use `--jmc-text-highlight`; the Contact Details block uses the same set.
+Footer icons come from the core icon registry through `wp_get_icon()`; see [Icons](#icons). They are decorative (`aria-hidden`), because each line's text already says what it is. They are Lucide outlines (`jmc/map-pin`, `jmc/phone`, `jmc/mail`, `jmc/house`) plus the filled WhatsApp logo (`jmc/whatsapp`), and use `--jmc-text-highlight`; the Contact Details block uses the same set.
 
 ### Footer navigation
 
