@@ -117,7 +117,7 @@ final class BusinessSettingsPageTest extends TestCase {
 			'<input name="jmc_business_email" id="jmc_business_email" type="email" value="a&quot;b@example.com" class="regular-text" aria-describedby="jmc_business_email-description" />',
 			$html
 		);
-		self::assertStringContainsString( '<p class="description" id="jmc_business_email-description">Used by Email buttons.</p>', $html );
+		self::assertStringContainsString( '<p class="description" id="jmc_business_email-description">Used by Email buttons, and where enquiries from the enquiry form are sent.</p>', $html );
 	}
 
 	/**
