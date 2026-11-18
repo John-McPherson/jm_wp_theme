@@ -40,6 +40,7 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; insertable only inside `jmc/text-with-image`, `jmc/hero` and `jmc/cta-banner` (`ancestor`) |
 | `jmc/service-list`    | Linked cards for the published child pages of the Services page                    | Dynamic PHP               | Restricted to `jmc/service-grid`; direct inserter disabled; card heading level `2`–`6`, default `3`; previewed in the editor with `ServerSideRender`; see [Services grid](#services-grid) |
 | `jmc/cta-banner`      | Call-to-action section with a heading, supporting copy, and one or more buttons     | Dynamic PHP               | Columns, Stacked and Contact Details variations (`layout`); palettes; left/right order (not stacked); defaults to inverse/right/columns; its two columns are fixed but their content is editable; see [Call-to-action banner](#call-to-action-banner) |
+| `jmc/enquiry-form`    | Enquiry form section with an optional introduction                                 | Dynamic PHP + view script | Palettes; single instance; submits without reloading the page and works without JavaScript; stores and emails each enquiry; see [Enquiry form](#enquiry-form) |
 | `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default |
 | `jmc/service-grid`    | Introductory content and the published services in one responsive grid              | Dynamic PHP               | Two locked Column children: the intro and `jmc/service-list`; palettes; defaults to default; the `order` attribute is currently unused |
 | `jmc/trust-credentials` | Strip of credential logos at the top of the site footer                        | Dynamic PHP               | Direct inserter disabled; allows only `jmc/credential-list`; placed and locked in the footer part; palettes, defaulting to the surrounding palette; renders nothing without logos |
@@ -262,6 +263,8 @@ The business contact details are site-wide options, registered in `inc/contact.p
 
 All are registered with `show_in_rest` and a REST schema, so the block editor edits them through the site entity (`src/components/SiteSetting.tsx`; the shared **Business details** sidebar panel is `src/components/ContactSettings.tsx`) and they are saved with the site settings when the post is saved: changing one updates every block that uses it. Users who cannot manage options cannot read them, so the sidebars show a notice instead of the fields. The editor removes a cleared time rather than storing an empty one, which the schema would reject, and warns when a day will be saved as closed.
 
+Enquiries from the [enquiry form](#enquiry-form) are sent to `jmc_business_email`, falling back to the site admin email.
+
 `jmc_business_contact_url( 'phone' | 'email' | 'whatsapp' )` re-validates the stored value and returns a `tel:`, `mailto:` or `https://wa.me/` URL, or an empty string. `jmc_business_contact_details()` returns every detail re-validated for display: a phone, email or WhatsApp value only with a working link, and opening hours for all seven days (`null` when closed) once any day is open.
 
 ## Contact details
@@ -297,6 +300,58 @@ The block outputs no schema.org data, and the theme adds none centrally. Yoast i
 ## Editor previews
 
 Blocks that preview their server render (`jmc/contact-details`, `jmc/service-list`, `jmc/navigation`, and `jmc/footer-navigation`) wrap `ServerSideRender` in `Disabled`. The preview is inert, so clicking a link, phone number or email address selects the block instead of leaving the editor or opening another app. Other blocks edit their text directly and render no live links in the editor.
+
+## Enquiry form
+
+`jmc/enquiry-form` is a section with an optional introduction (paragraphs only) above a single, centred form column. One is allowed per page. Its attributes are `palette` (`default`, `secondary`, `inverse`; default `default`) and `submitText` (the button label; default "Send enquiry"). Its anchor, or `enquiry-form`, names the section and prefixes every field ID.
+
+### Fields
+
+| Field | Required | Rules |
+| --- | --- | --- |
+| Name | Yes | Up to 100 characters |
+| Email address | Yes | A valid address; replies go to it |
+| Phone number | No | Digits, spaces, brackets, dashes and a leading `+` (3–15 digits) |
+| Postcode | No | A full UK postcode, stored as `LS1 4AP` |
+| Service | No | One of the [Services pages](#services-grid); the select is left out when there are none |
+| Message | Yes | Up to 5,000 characters; line breaks kept |
+| Consent | Yes | Agreeing to the business using the details to reply; links to the privacy policy page when one is set |
+
+`jmc_validate_enquiry()` (in `inc/helpers/enquiry.php`) is the single source of these rules. `jmc_enquiry_error_messages()` supplies the messages to both the server and the view script, so a visitor sees the same text either way.
+
+### Submitting
+
+With JavaScript, `view.ts` validates the form, posts it to `POST /wp-json/jmc/v1/enquiries` and updates the page in place:
+
+- **Sent** — the form is hidden and a confirmation is focused. A `jmc:enquiry-sent` event is dispatched on `document`, with no personal data, for analytics (#83).
+- **Invalid** — each field shows its error and `aria-invalid`, and a focused summary links to each field.
+- **Expired** — fresh tokens are fetched and the visitor is asked to send again.
+- **Rate limited, error or no connection** — a message offers the business phone number and email.
+
+While sending, the button is `aria-disabled` and further submissions are ignored. When the page loads, the script fetches a fresh nonce and timing token from `GET /wp-json/jmc/v1/enquiries/token`, so forms on cached pages still work.
+
+Without JavaScript, the form posts to `admin-post.php` (action `jmc_enquiry`) and native validation applies. The same handler runs, then redirects back with `?jmc_enquiry_result=<status>#<notice id>`, which the block shows as a notice.
+
+### Checks and outcomes
+
+`jmc_submit_enquiry()` checks the nonce, then `jmc_handle_enquiry()` applies the remaining checks in this order:
+
+1. **Rate limit** — 10 submissions an hour per visitor, counted in a transient keyed by a hash of the IP address.
+2. **Spam** — the hidden honeypot is filled, the signed timing token is missing or altered, the form was submitted within 3 seconds or more than 2 days after it was rendered, or the message has more than 2 links.
+3. **Validation.**
+4. **Duplicates** — the same email address and message within 24 hours.
+
+Spam and duplicates are reported to the visitor as sent, but nothing is stored or emailed. Every submission fires `jmc_enquiry_outcome` with one of `sent`, `delivery_failed`, `duplicate`, `spam`, `rate_limited`, `invalid`, `store_failed` or `expired`. The hook carries no personal data, for monitoring (#81). Behind a proxy or CDN, filter `jmc_enquiry_client_ip` with the visitor's real address, or every visitor shares one rate limit. The production setup is tracked in #125.
+
+### Storage and delivery
+
+Each accepted enquiry is saved as a private `jmc_enquiry` post before it is emailed (`inc/enquiries.php`), so a failed email is never lost:
+
+- **Delivery** — `jmc_send_enquiry()` emails the business, with `Reply-To` set to the enquirer, and records the status (`sent` or `failed`), the number of attempts and the last mail error. `sent` means the mail provider accepted the message; use an SMTP plugin for reliable delivery. A failure also writes a log line containing only the enquiry ID, and fires `jmc_enquiry_delivery`.
+- **Admin** — **Enquiries** lists name, email, postcode, service, delivery status and date, with a **Failed to send** filter. Each enquiry opens as a read-only view with **Reply by email**, **Resend** and **Move to bin**. Editors and administrators can see enquiries; nobody can create them by hand.
+- **Recovering a failed delivery** — a notice on the dashboard and the Enquiries screens counts failed enquiries. Fix the business email address (**Settings → General**) or the site's mail settings, then use **Resend**.
+- **Retention** — a daily cron job (`jmc_purge_enquiries`) deletes enquiries older than 365 days; filter `jmc_enquiry_retention_days` to change this. Switching theme unschedules it.
+- **Privacy** — suggested privacy-policy text is added under **Settings → Privacy**. Enquiries are included in **Tools → Export Personal Data** and **Erase Personal Data**, matched by email address.
 
 ## Services grid
 

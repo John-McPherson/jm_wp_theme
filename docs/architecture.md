@@ -30,6 +30,7 @@ flowchart TD
 - `inc/contact.php` registers the site-wide business contact settings (phone, WhatsApp, email, opening hours, service area) and their Settings → General fields, and copies the footer's pre-#115 contact attributes into them once (see [Business contact settings](blocks.md#business-contact-settings)).
 - `inc/icons.php` registers the theme's `jmc` icon collection with the core icon registry: the Lucide icons and Simple Icons brand logos generated at build time (see [Icons](blocks.md#icons)).
 - `inc/services.php` enables page excerpts, registers the Services page setting and the `jmc_service_icon` page meta, and loads the service icon editor panel (see [Services grid](blocks.md#services-grid)).
+- `inc/enquiries.php` registers the private `jmc_enquiry` post type and handles enquiry delivery, the admin list and resend action, failure notices, retention, and personal data export and erasure. `inc/enquiry-submission.php` registers the enquiry REST routes and the no-JavaScript `admin-post.php` handler (see [Enquiry form](blocks.md#enquiry-form)). Both are loaded after the helpers they use.
 - `inc/helpers/` contains reusable framework-level PHP helpers.
 
 Feature logic should not accumulate in the bootstrap.
