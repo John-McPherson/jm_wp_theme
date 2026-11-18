@@ -404,4 +404,96 @@ function add_action( string $hook_name, callable $callback, int $priority = 10 )
 	return true;
 }
 
+/**
+ * Determine whether an attachment is an image.
+ *
+ * Test double that reads fixtures from `$GLOBALS['jmc_test_attachments']`,
+ * keyed by attachment ID, each an array with optional `alt` and `title`.
+ *
+ * @param mixed $post Attachment ID.
+ *
+ * @return bool Whether an image fixture is registered for the ID.
+ */
+function wp_attachment_is_image( mixed $post = null ): bool {
+	return is_int( $post ) && isset( $GLOBALS['jmc_test_attachments'][ $post ] );
+}
+
+/**
+ * Retrieve a post meta field.
+ *
+ * Test double that returns an attachment fixture's `alt` for
+ * `_wp_attachment_image_alt`; other keys read the services fixture's meta
+ * (see `doubles/services.php`) when it is loaded.
+ *
+ * @param int    $post_id Post ID.
+ * @param string $key     Meta key.
+ * @param bool   $single  Whether to return a single value (ignored).
+ *
+ * @return mixed The meta value.
+ */
+function get_post_meta( int $post_id, string $key = '', bool $single = false ): mixed {
+	unset( $single );
+
+	if ( '_wp_attachment_image_alt' === $key ) {
+		return $GLOBALS['jmc_test_attachments'][ $post_id ]['alt'] ?? '';
+	}
+
+	return function_exists( 'jmc_test_wp' )
+		? ( jmc_test_wp( 'meta' )[ $post_id ][ $key ] ?? '' )
+		: '';
+}
+
+/**
+ * Retrieve a post title.
+ *
+ * Test double that returns an attachment fixture's `title`.
+ *
+ * @param mixed $post Post ID.
+ *
+ * @return string The title, or an empty string.
+ */
+function get_the_title( mixed $post = 0 ): string {
+	return is_int( $post )
+		? (string) ( $GLOBALS['jmc_test_attachments'][ $post ]['title'] ?? '' )
+		: '';
+}
+
+/**
+ * Render an attachment image.
+ *
+ * Test double for registered attachment fixtures. The size is written into
+ * the `src` so tests can assert it; `alt` comes from `$attr`, falling back to
+ * the fixture's Media Library alternative text as core does.
+ *
+ * @param int                 $attachment_id Attachment ID.
+ * @param string              $size          Image size.
+ * @param bool                $icon          Whether to use a media icon (ignored).
+ * @param array<string,mixed> $attr          Image attributes.
+ *
+ * @return string Image markup, or an empty string for unknown attachments.
+ */
+function wp_get_attachment_image( int $attachment_id, string $size = 'thumbnail', bool $icon = false, array $attr = [] ): string {
+	unset( $icon );
+
+	if ( ! wp_attachment_is_image( $attachment_id ) ) {
+		return '';
+	}
+
+	$attr = array_merge(
+		[
+			'src' => "https://example.test/uploads/{$attachment_id}-{$size}.png",
+			'alt' => trim( (string) get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ) ),
+		],
+		$attr
+	);
+
+	$html = '<img';
+
+	foreach ( $attr as $name => $value ) {
+		$html .= sprintf( ' %s="%s"', $name, esc_attr( (string) $value ) );
+	}
+
+	return $html . ' />';
+}
+
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
