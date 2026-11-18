@@ -299,4 +299,143 @@ final class ServicesHelperTest extends TestCase {
 			],
 		];
 	}
+
+	/**
+	 * Chosen page IDs keep positive integers once each, in the order given.
+	 *
+	 * @dataProvider chosen_page_ids
+	 *
+	 * @param mixed           $value    Stored page IDs.
+	 * @param array<int, int> $expected Normalised IDs.
+	 */
+	public function test_chosen_page_ids( mixed $value, array $expected ): void {
+		self::assertSame( $expected, jmc_service_page_ids( $value ) );
+	}
+
+	/**
+	 * Chosen page ID cases.
+	 *
+	 * @return array<string, array{0:mixed,1:array<int, int>}>
+	 */
+	public static function chosen_page_ids(): array {
+		return [
+			'omitted'         => [ null, [] ],
+			'not a list'      => [ '12,13', [] ],
+			'ordered'         => [ [ 13, 12, 14 ], [ 13, 12, 14 ] ],
+			'duplicates'      => [ [ 12, 13, 12 ], [ 12, 13 ] ],
+			'numeric strings' => [ [ '12', 13 ], [ 12, 13 ] ],
+			'whole floats'    => [ [ 12.0, 13.0 ], [ 12, 13 ] ],
+			'invalid dropped' => [ [ 0, -1, 1.5, '1e2', 'x', null, [ 12 ], 14 ], [ 14 ] ],
+		];
+	}
+
+	/**
+	 * Chosen pages query published, unprotected pages in the chosen order.
+	 */
+	public function test_chosen_query_args_enforce_retrieval_contract(): void {
+		self::assertSame(
+			[
+				'post_type'           => 'page',
+				'post_status'         => 'publish',
+				'post__in'            => [ 13, 12 ],
+				'has_password'        => false,
+				'orderby'             => 'post__in',
+				'posts_per_page'      => -1,
+				'no_found_rows'       => true,
+				'ignore_sticky_posts' => true,
+			],
+			jmc_chosen_services_query_args( [ 13, 12 ] )
+		);
+	}
+
+	/**
+	 * Nothing chosen never queries, so it never lists every page.
+	 */
+	public function test_chosen_query_args_empty_without_pages(): void {
+		self::assertSame( [], jmc_chosen_services_query_args( [] ) );
+		self::assertSame( [], jmc_get_chosen_services( [] ) );
+	}
+
+	/**
+	 * A list's parent is the chosen parent, else the current page, else the
+	 * Services page; an invalid chosen parent does not fall back.
+	 *
+	 * @dataProvider service_list_parents
+	 *
+	 * @param int                         $parent_id    Chosen parent ID.
+	 * @param object|null                 $parent_page  Chosen parent record.
+	 * @param object|null                 $current_page Current page record.
+	 * @param array{id:int,status:string} $expected Expected resolution.
+	 */
+	public function test_service_list_parent(
+		int $parent_id,
+		?object $parent_page,
+		?object $current_page,
+		array $expected
+	): void {
+		self::assertSame(
+			$expected,
+			jmc_resolve_service_list_parent(
+				parent_id: $parent_id,
+				parent_page: $parent_page,
+				current_page: $current_page,
+				services_page: [
+					'id'     => 10,
+					'status' => 'resolved',
+				]
+			)
+		);
+	}
+
+	/**
+	 * Service list parent cases.
+	 *
+	 * @return array<string, array{0:int,1:object|null,2:object|null,3:array{id:int,status:string}}>
+	 */
+	public static function service_list_parents(): array {
+		$services = [
+			'id'     => 10,
+			'status' => 'resolved',
+		];
+		$invalid  = [
+			'id'     => 0,
+			'status' => 'invalid-parent',
+		];
+
+		return [
+			'chosen parent wins'        => [
+				40,
+				self::page( 40 ),
+				self::page( 30 ),
+				[
+					'id'     => 40,
+					'status' => 'parent',
+				],
+			],
+			'chosen parent missing'     => [ 40, null, self::page( 30 ), $invalid ],
+			'chosen parent draft'       => [ 40, self::page( 40, 'draft' ), self::page( 30 ), $invalid ],
+			'chosen parent not a page'  => [ 40, self::page( 40, 'publish', 'post' ), null, $invalid ],
+			'chosen parent ID mismatch' => [ 40, self::page( 41 ), null, $invalid ],
+			'current page'              => [
+				0,
+				null,
+				self::page( 30 ),
+				[
+					'id'     => 30,
+					'status' => 'current',
+				],
+			],
+			'current draft page'        => [
+				0,
+				null,
+				self::page( 30, 'draft' ),
+				[
+					'id'     => 30,
+					'status' => 'current',
+				],
+			],
+			'current post falls back'   => [ 0, null, self::page( 30, 'publish', 'post' ), $services ],
+			'no context falls back'     => [ 0, null, null, $services ],
+		];
+	}
 }

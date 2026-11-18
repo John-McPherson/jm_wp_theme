@@ -1,6 +1,7 @@
 <?php
 /**
- * Render a linked service card with an optional icon and summary.
+ * Render a linked service card with an optional icon and summary, and a
+ * "Learn more" cue whose text can be changed.
  *
  * @package JMC_Theme
  */
@@ -16,6 +17,7 @@ declare(strict_types=1);
  *     summary?: string,
  *     icon?: string,
  *     heading_level?: int,
+ *     more_text?: string,
  *     classes?: string|string[]
  * } $args
  */
@@ -55,6 +57,15 @@ $heading_level = jmc_args_int(
 );
 
 $heading_tag = 'h' . min( $heading_level, 6 );
+
+$more_text = jmc_args_string(
+	args: $args,
+	key: 'more_text'
+);
+
+if ( '' === $more_text ) {
+	$more_text = __( 'Learn more', 'jmc-theme' );
+}
 
 // The core Icon block renders the registered SVG with aria-hidden and
 // returns nothing for unregistered names.
@@ -103,12 +114,19 @@ $attributes = [
 	<?php if ( '' !== $summary ) : ?>
 		<p class="jmc-service-card__summary"><?php echo esc_html( $summary ); ?></p>
 	<?php endif; ?>
-	<?php if ( '' !== $arrow_markup ) : ?>
-		<div class="jmc-service-card__arrow" aria-hidden="true">
-			<?php
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG markup rendered by the core Icon block from the icon registry.
-			echo $arrow_markup;
-			?>
-		</div>
-	<?php endif; ?>
+	<?php
+	// Hidden from assistive technology: the card's link already names the page,
+	// so "Learn more" would only repeat a vague cue.
+	?>
+	<div class="jmc-service-card__more" aria-hidden="true">
+		<span class="jmc-service-card__more-text"><?php echo esc_html( $more_text ); ?></span>
+		<?php if ( '' !== $arrow_markup ) : ?>
+			<span class="jmc-service-card__arrow">
+				<?php
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG markup rendered by the core Icon block from the icon registry.
+				echo $arrow_markup;
+				?>
+			</span>
+		<?php endif; ?>
+	</div>
 </li>

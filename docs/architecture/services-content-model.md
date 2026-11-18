@@ -5,6 +5,7 @@
 - Applies to: Service landing page, individual service pages, service cards, navigation, search, breadcrumbs, and structured data
 - Related issue: [#43](https://github.com/John-McPherson/jm_wp_theme/issues/43)
 - Amended: 2026-11-17 by [#6](https://github.com/John-McPherson/jm_wp_theme/issues/6): service cards use a service icon instead of the featured image (see [Amendment: service icons](#amendment-service-icons))
+- Amended: 2026-11-18 by [#141](https://github.com/John-McPherson/jm_wp_theme/issues/141): service grids list the children of their own page, or chosen pages (see [Amendment: service categories and grid sources](#amendment-service-categories-and-grid-sources))
 
 ## Context
 
@@ -218,3 +219,36 @@ Service cards show an icon rather than the featured image. Photographs at card s
 - The icon is stored in the `jmc_service_icon` page meta and chosen in the page's **Service icon** panel, from the theme's `jmc` icon collection (Lucide icons generated at build time; see [Icons](../blocks.md#icons)).
 - Featured images are no longer part of the service card contract. Pages may still have one, for example for social sharing, but the grid does not use it.
 - A page without an icon still renders a card without one; the editorial requirement to choose an icon stands.
+
+## Amendment: service categories and grid sources
+
+- Date: 2026-11-18
+- Issue: [#141](https://github.com/John-McPherson/jm_wp_theme/issues/141)
+
+Services are grouped under category landing pages, so the hierarchy has three levels:
+
+```text
+/services/                          Services: lists the categories
+/services/domestic/                 Domestic Services: lists domestic services
+/services/domestic/rewires/         a service
+/services/commercial/               Commercial Services: lists commercial services
+/services/commercial/fit-outs/      a service
+```
+
+### Grid sources
+
+A service grid lists the published, unprotected children of its parent page, which is the page it is on unless the block names another page. The Services page therefore lists the two categories as cards, and each category lists its own services. A grid with no page context (for example in a template) uses the Services page.
+
+A grid may instead list pages chosen in the block, stored as page IDs in the chosen order. This is how a page without children, such as the homepage, shows a selection of services. It does not reintroduce the rejected manually maintained grid: the block stores references only, and every card is still built from the page's own title, excerpt, icon and permalink, so nothing is duplicated and nothing can drift. Chosen pages that are unpublished, password-protected or deleted are skipped.
+
+When the parent has no children the grid is locked to chosen pages, and that choice is saved, so publishing children later does not silently replace the selection.
+
+### Implementation
+
+- `jmc_get_service_list_parent()` resolves a grid's parent, and `jmc_get_services()` and `jmc_get_chosen_services()` in `inc/helpers/services.php` are the retrieval functions; any service listing must use them.
+- Category pages are cards like any service, so they need an excerpt and an icon too.
+- The "Retrieval contract" above now applies to the grid's parent rather than only to the Services page.
+
+### Still to do under #141
+
+Template routing for category pages and their services, the Service icon panel on category pages and their services, a category landing starter pattern, and three-level breadcrumbs. Until then the "direct children of the Services page" rules for templates and the icon panel still apply.

@@ -283,9 +283,11 @@ function sanitize_key( string $key ): string {
  * Retrieve posts.
  *
  * Test double that filters the `$GLOBALS['jmc_test_posts']` fixtures by
- * `post_type`, `name`, `post_parent` and `post_status`, and records each
- * query's arguments in `$GLOBALS['jmc_test_get_posts_queries']`. A
- * `posts_per_page` of -1 returns every match, as in core.
+ * `post_type`, `name`, `post_parent`, `post_status`, `post__in` and
+ * `has_password`, and records each query's arguments in
+ * `$GLOBALS['jmc_test_get_posts_queries']`. An `orderby` of `post__in` keeps
+ * the given ID order, and a `posts_per_page` of -1 returns every match, as in
+ * core.
  *
  * @param array<string,mixed> $args Query arguments.
  *
@@ -303,7 +305,18 @@ function get_posts( array $args = [] ): array {
 			&& ( ! isset( $args['name'] ) || ( $post->post_name ?? '' ) === $args['name'] )
 			&& ( ! isset( $args['post_parent'] ) || ( $post->post_parent ?? 0 ) === $args['post_parent'] )
 			&& in_array( $post->post_status ?? 'publish', $statuses, true )
+			&& ( ! isset( $args['post__in'] ) || in_array( $post->ID ?? 0, (array) $args['post__in'], true ) )
+			&& ( ! isset( $args['has_password'] ) || ( '' !== ( $post->post_password ?? '' ) ) === $args['has_password'] )
 	);
+
+	if ( 'post__in' === ( $args['orderby'] ?? null ) ) {
+		$order = array_flip( array_values( (array) $args['post__in'] ) );
+
+		usort(
+			$posts,
+			static fn ( object $a, object $b ): int => $order[ $a->ID ] <=> $order[ $b->ID ]
+		);
+	}
 
 	$limit = (int) ( $args['posts_per_page'] ?? 5 );
 

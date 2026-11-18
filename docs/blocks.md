@@ -38,12 +38,12 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/list`            | Styled list of short points with icon, bullet or number markers                    | Dynamic PHP               | `listStyle` `icon` (default), `bullet` or `number`; `icon` from a fixed Lucide set; provides `jmc/listStyle` and `jmc/listIcon`; allows only `jmc/list-item`; insertable only inside `jmc/text-with-image` and `jmc/cta-banner` (`ancestor`); renders nothing when empty; see [Lists](#lists) |
 | `jmc/list-item`       | One point in a `jmc/list`                                                          | Dynamic PHP               | Restricted to `jmc/list`; bold, italic and links only; Enter starts the next item; renders nothing without visible text |
 | `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; insertable only inside `jmc/text-with-image`, `jmc/hero`, `jmc/cta-banner` and `jmc/service-grid` (`ancestor`) |
-| `jmc/service-list`    | Linked cards for the published child pages of the Services page                    | Dynamic PHP               | Restricted to `jmc/service-grid`; direct inserter disabled; card heading level `2`–`6`, default `3`; previewed in the editor with `ServerSideRender`; see [Services grid](#services-grid) |
+| `jmc/service-list`    | Linked cards for the published child pages of a parent page, or for chosen pages | Dynamic PHP               | Restricted to `jmc/service-grid`; direct inserter disabled; parent page, **Choose pages** toggle and ordered page picker; card heading level `2`–`6`, default `3`; editable link cue text, default “Learn more”; previewed in the editor with `ServerSideRender`; see [Services grid](#services-grid) |
 | `jmc/site-logo`       | The theme's inline SVG logo, linked to the homepage                                | Dynamic PHP               | Site chrome; direct inserter disabled; locked against removal in the header part; colour variants are block styles (Follow palette, Brand, Mono dark, Mono light); see [Site logo](#site-logo) |
 | `jmc/cta-banner`      | Call-to-action section with a heading, supporting copy, and one or more buttons     | Dynamic PHP               | Columns, Stacked and Contact Details variations (`layout`); palettes; left/right order (not stacked); defaults to inverse/right/columns; its two columns are fixed but their content is editable; see [Call-to-action banner](#call-to-action-banner) |
 | `jmc/enquiry-form`    | Enquiry form section                                                               | Dynamic PHP + view script | Palettes; single instance; submits without reloading the page and works without JavaScript; stores and emails each enquiry; see [Enquiry form](#enquiry-form) |
 | `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default; on child pages shows breadcrumbs in place of its label (`showBreadcrumbs`); see [Hero breadcrumbs](#hero-breadcrumbs) |
-| `jmc/service-grid`    | Introductory content and the published services in one responsive grid              | Dynamic PHP               | Two locked Column children: the intro and `jmc/service-list`; palettes; defaults to default; the `order` attribute is currently unused |
+| `jmc/service-grid`    | Introductory content and service cards in one responsive grid              | Dynamic PHP               | Two locked Column children: the intro and `jmc/service-list`; palettes; defaults to default; the `order` attribute is currently unused |
 | `jmc/trust-credentials` | Strip of credential logos at the top of the site footer                        | Dynamic PHP               | Direct inserter disabled; allows only `jmc/credential-list`; placed and locked in the footer part; palettes, defaulting to the surrounding palette; renders nothing without logos |
 | `jmc/text-with-image` | Composable text content paired with an image                                       | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; unlocked: allows `jmc/heading`, `jmc/paragraph`, `jmc/list` and `jmc/button`; contains legacy-looking attributes that need contract review |
 
@@ -488,13 +488,37 @@ Each accepted enquiry is saved as a private `jmc_enquiry` post before it is emai
 
 ## Services grid
 
-`jmc/service-grid` lists the site's services without anyone maintaining a list. Services are published pages directly beneath the Services page, and every card is built from those page records; see the [services content model](architecture/services-content-model.md) for the decision behind this.
+`jmc/service-grid` lists services without anyone maintaining a list. By default it lists the published child pages of the page it is on, so the Services page lists its categories and each category lists its services; a grid can also list the children of another page, or pages chosen in the block. Every card is built from the page records; see the [services content model](architecture/services-content-model.md) for the decision behind this.
 
 The block holds two locked `jmc/column` blocks: an editable intro (a label `jmc/paragraph` and an H2 `jmc/heading`, which list `jmc/service-grid` in their `ancestor`) and a column containing `jmc/service-list`. `jmc/service-list` renders the cards on the server from page data, so there is no card content to edit inside the block. It replaces the hand-authored `jmc/service-card` block, which has been removed (see [Migrating from `jmc/service-card`](#migrating-from-jmcservice-card)).
 
-### Choosing the Services page
+### Choosing what the grid lists
 
-`jmc_get_services_page()` (`inc/helpers/services.php`) resolves the parent page:
+The Service List block's **Pages** panel sets where its cards come from:
+
+- **Parent page** (`parentId`): list the children of this page. Leave it empty to use the page the grid is on.
+- **Choose pages** (`source`): when on, list the pages in the ordered picker below it (`pageIds`) instead of the children. Pages are added from a searchable list and can be moved up, moved down and removed.
+
+`jmc_get_service_list_parent()` (`inc/helpers/services.php`) resolves the parent, mirrored in the editor by `listParentId()` (`src/blocks/content/service-list/utils.ts`):
+
+| Situation | Status | Parent |
+| --- | --- | --- |
+| A published page is chosen as **Parent page** | `parent` | That page |
+| The chosen parent is deleted, unpublished or not a page | `invalid-parent` | None. The grid does **not** fall back, so the misconfiguration stays visible |
+| No parent is chosen, and the grid is on a page | `current` | The page the grid is on, from the block's `postId` and `postType` context |
+| No parent is chosen, and there is no page (for example a grid in a template) | as below | The Services page |
+
+Then:
+
+- With **Choose pages** off, the grid lists the parent's children. If it has none, the chosen pages are listed instead.
+- With **Choose pages** on, the grid lists the chosen pages, in the chosen order, skipping any that are unpublished, password-protected or deleted (`jmc_get_chosen_services()`). Their cards are built from the pages, exactly like children.
+- When the parent has no published children, the toggle is switched on and disabled, and the block saves `source: "chosen"`. That keeps the chosen pages listed if children are published later; switch the toggle off to list the children instead.
+
+The editor preview passes the edited page as `post_id`, so the preview lists the same pages as the site. The REST block renderer casts `number` attributes to floats, so `jmc_service_page_ids()` accepts whole-number floats as well as integers.
+
+#### The Services page
+
+`jmc_get_services_page()` resolves the Services page, used when a grid has no page context and by the services templates:
 
 | Situation | Status | Result |
 | --- | --- | --- |
@@ -507,7 +531,7 @@ The choice is stored by page ID in the `jmc_services_page_id` option (also expos
 
 ### Which pages appear
 
-`jmc_services_query_args()` asks for pages that are direct children of the Services page, published, and not password-protected, ordered by `menu_order` then title, with no item limit. Drafts, private, scheduled, and password-protected pages, deeper descendants, and unrelated pages never appear. An unresolved parent runs no query at all, so top-level pages can never leak into the grid. Because cards are read from the pages on every render, changes to a service's title, excerpt, icon, slug, status, or order show up without editing the grid.
+`jmc_services_query_args()` asks for pages that are direct children of the parent, published, and not password-protected, ordered by `menu_order` then title, with no item limit. Drafts, private, scheduled, and password-protected pages, deeper descendants, and unrelated pages never appear. An unresolved parent runs no query at all, so top-level pages can never leak into the grid. Because cards are read from the pages on every render, changes to a service's title, excerpt, icon, slug, status, or order show up without editing the grid.
 
 ### Cards
 
@@ -516,13 +540,15 @@ Each card (`components/service-card.php`) is a list item containing:
 - the service icon, rendered through the core Icon block and marked decorative;
 - the page title as a heading, holding the card's only link, to the page's permalink. The level comes from the Service List block's **Card Settings** (`2`–`6`, default `3`; H1 is reserved for the page title);
 - the page excerpt (`post_excerpt`) as the summary;
-- a decorative arrow in the bottom-right corner.
+- a decorative cue in the bottom-right corner: text beside an arrow. The text is the Service List block's **Link cue text** (`moreText`), or “Learn more” when that is empty. The cue is hidden from assistive technology, because the card's link already names the page.
 
 The link is stretched over the whole card, so each card is one click or tap target with a single link and a single tab stop. Keyboard focus outlines the whole card, hover adds a shadow, and the arrow slides right on hover and focus (not with reduced motion). Titles and excerpts are escaped. A page with no title or URL produces no card; a missing excerpt or icon only omits that part, so older pages still render, but the publishing requirements below still apply.
 
 ### Layout
 
 The intro and the cards share one grid on the section container: one column below `$tablet` (768px), two from `$tablet`, and three from `$laptop` (1024px), so the intro takes the first cell and the cards flow after it. To achieve this, every wrapper between the container and the cards (the column, the list, and the editor's block wrappers) uses `display: contents`. The list keeps `role="list"`, so its semantics survive. One side effect: in the editor the Service List block cannot be selected by clicking the canvas; select it in List View.
+
+In two columns the intro shares the first row with a card, so an even number of cards would leave the last one alone on its row. When the number of cards is even, the intro spans the whole first row from `$tablet` instead, so the cards pair up; from `$laptop` it rejoins the grid.
 
 While the grid is one column, the intro gets extra vertical padding so it does not feel cramped above the cards. Cards use the `--jmc-card-background` surface token, with `--jmc-padding-m` inside below `$tablet` and `--jmc-padding-l` above.
 
@@ -532,7 +558,8 @@ When nothing can be listed, visitors see the intro and no list. Editors previewi
 
 | Cause | Notice |
 | --- | --- |
-| No services published yet | Publish a page directly beneath the Services page, with an excerpt and icon |
+| Nothing to list | Publish pages beneath the parent page, with an excerpt and icon, or choose pages in the block settings |
+| The chosen parent page is missing or unpublished | Choose a published page, or clear it to list the page's children |
 | No Services page found | Choose one under **Settings → Reading**, or publish a page with the `services` slug |
 | The chosen Services page is missing or unpublished | Choose a published page |
 

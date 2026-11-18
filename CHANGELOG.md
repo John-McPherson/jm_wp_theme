@@ -33,8 +33,14 @@ All notable changes will be documented here. The project follows semantic versio
 - Home page starter pattern (`jmc/home-page`): the homepage's standard sections (hero, service introduction, Service Grid, why choose us and contact details), each locked, offered when a page is created.
 - Contact (`page-contact`) and 404 templates, with a `jmc/contact-page` starter pattern that seeds the Contact page's own content (hero, enquiry form, contact details and call to action): one main landmark, a single H1, and 404 recovery through a homepage link and a call to action.
 - Front-end site search is turned off: search requests get a 404 and the 404 template. Admin and editor searches still work.
+- Service List: a **Parent page** setting, and a **Choose pages** toggle with an ordered page picker. The toggle is locked on when the parent has no published children, and the choice is kept if children are published later (#141).
+- Service cards show a “Learn more” cue beside the arrow, with the text editable per grid (#141).
+- Reusable `PageSelect` and `PageListInput` editor controls (#141).
 
 ### Changed
+
+- Service grids list the published child pages of the page they are on (falling back to the Services page without a page), ready for Domestic and Commercial service categories. The editor preview shows the same pages as the site, including chosen pages (#141).
+- With an even number of service cards, the Service grid's intro spans the first row at two columns so the cards pair up (#141).
 
 - Buttons in a Buttons group stack in columns narrower than 30rem, with every button as wide as the widest, and sit side by side at their own width in wider columns.
 - The Heading and Paragraph blocks list `jmc/service-grid` as an allowed ancestor, matching the intro the Services grid seeds, and each layout block's editor template now lives in `template.ts` and is checked against every block's `parent` and `ancestor` rules (#136).
