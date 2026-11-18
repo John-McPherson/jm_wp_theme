@@ -31,6 +31,8 @@ All notable changes will be documented here. The project follows semantic versio
 
 ### Changed
 
+- The Heading and Paragraph blocks list `jmc/service-grid` as an allowed ancestor, matching the intro the Services grid seeds, and each layout block's editor template now lives in `template.ts` and is checked against every block's `parent` and `ancestor` rules (#136).
+- The Enquiry form no longer has an introduction paragraph; it is just the form. Introductions saved by older forms are no longer shown and are dropped the next time the page is saved.
 - Primary buttons on light and secondary sections hover to `brand-800` instead of `brand-900`, a slightly softer dark that each palette can tune.
 - The header uses the theme's inline SVG logo instead of the core Site Logo block's uploaded image.
 - The business settings moved from Settings → General to Settings → Business; stored values are unchanged.

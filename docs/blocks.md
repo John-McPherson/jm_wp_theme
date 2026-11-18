@@ -34,14 +34,14 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/footer-legal`    | Site credit, copyright notice with the current year, and links from the `legal` menu | Dynamic PHP              | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
 | `jmc/header-cta`      | Optional header call-to-action linking to a page, URL, or telephone number         | Dynamic PHP               | Restricted to `jmc/navigation`; direct inserter disabled; single instance; locked against removal in the header part   |
 | `jmc/navigation`      | Primary navigation rendered from a selected `wp_navigation` menu                    | Dynamic PHP + view script | Site chrome; direct inserter disabled; allows only `jmc/header-cta`, rendered as the last menu item                     |
-| `jmc/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jmc/variant` context; level defaults to `2`; insertable only inside `jmc/text-with-image`, `jmc/hero` and `jmc/cta-banner` (`ancestor`) |
+| `jmc/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jmc/variant` context; level defaults to `2`; insertable only inside `jmc/text-with-image`, `jmc/hero`, `jmc/cta-banner` and `jmc/service-grid` (`ancestor`) |
 | `jmc/list`            | Styled list of short points with icon, bullet or number markers                    | Dynamic PHP               | `listStyle` `icon` (default), `bullet` or `number`; `icon` from a fixed Lucide set; provides `jmc/listStyle` and `jmc/listIcon`; allows only `jmc/list-item`; insertable only inside `jmc/text-with-image` and `jmc/cta-banner` (`ancestor`); renders nothing when empty; see [Lists](#lists) |
 | `jmc/list-item`       | One point in a `jmc/list`                                                          | Dynamic PHP               | Restricted to `jmc/list`; bold, italic and links only; Enter starts the next item; renders nothing without visible text |
-| `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; insertable only inside `jmc/text-with-image`, `jmc/hero` and `jmc/cta-banner` (`ancestor`) |
+| `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; insertable only inside `jmc/text-with-image`, `jmc/hero`, `jmc/cta-banner` and `jmc/service-grid` (`ancestor`) |
 | `jmc/service-list`    | Linked cards for the published child pages of the Services page                    | Dynamic PHP               | Restricted to `jmc/service-grid`; direct inserter disabled; card heading level `2`–`6`, default `3`; previewed in the editor with `ServerSideRender`; see [Services grid](#services-grid) |
 | `jmc/site-logo`       | The theme's inline SVG logo, linked to the homepage                                | Dynamic PHP               | Site chrome; direct inserter disabled; locked against removal in the header part; colour variants are block styles (Follow palette, Brand, Mono dark, Mono light); see [Site logo](#site-logo) |
 | `jmc/cta-banner`      | Call-to-action section with a heading, supporting copy, and one or more buttons     | Dynamic PHP               | Columns, Stacked and Contact Details variations (`layout`); palettes; left/right order (not stacked); defaults to inverse/right/columns; its two columns are fixed but their content is editable; see [Call-to-action banner](#call-to-action-banner) |
-| `jmc/enquiry-form`    | Enquiry form section with an optional introduction                                 | Dynamic PHP + view script | Palettes; single instance; submits without reloading the page and works without JavaScript; stores and emails each enquiry; see [Enquiry form](#enquiry-form) |
+| `jmc/enquiry-form`    | Enquiry form section                                                               | Dynamic PHP + view script | Palettes; single instance; submits without reloading the page and works without JavaScript; stores and emails each enquiry; see [Enquiry form](#enquiry-form) |
 | `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default |
 | `jmc/service-grid`    | Introductory content and the published services in one responsive grid              | Dynamic PHP               | Two locked Column children: the intro and `jmc/service-list`; palettes; defaults to default; the `order` attribute is currently unused |
 | `jmc/trust-credentials` | Strip of credential logos at the top of the site footer                        | Dynamic PHP               | Direct inserter disabled; allows only `jmc/credential-list`; placed and locked in the footer part; palettes, defaulting to the surrounding palette; renders nothing without logos |
@@ -54,6 +54,7 @@ This table should be updated whenever a block is added, renamed, deprecated, or 
 - Section blocks are assigned to `jmc-section` and are intended for direct insertion.
 - Content blocks are used inside sections. Those authors add themselves (`jmc/heading`, `jmc/paragraph`, `jmc/button`, `jmc/buttons`, `jmc/list`) are in the inserter but declare an `ancestor` list, so they appear only inside the sections that use them and never at the top level of a page. Purely structural blocks such as `jmc/column` keep `supports.inserter: false`.
 - `allowedBlocks`, `ancestor`, and block locking should keep editor composition valid without relying only on author training.
+- A section's editor template must itself satisfy those rules: every block it seeds, at any depth, must be allowed there by its `parent` and `ancestor` lists. Templates bypass the check when they insert blocks, so nothing in the editor catches a mismatch. Each layout block keeps its templates in `template.ts` beside `edit.tsx`, and `src/blocks/layouts/templates.test.ts` checks them against every `block.json`.
 - Section blocks use the registered `jmc-section` category. Internal content-block metadata still contains legacy `jm` and `jmc-blocks` categories and should be normalised.
 
 ## Patterns
@@ -369,7 +370,7 @@ Blocks that preview their server render (`jmc/contact-details`, `jmc/service-lis
 
 ## Enquiry form
 
-`jmc/enquiry-form` is a section with an optional introduction (paragraphs only) above a single, centred form column. One is allowed per page. Its attributes are `palette` (`default`, `secondary`, `inverse`; default `default`) and `submitText` (the button label; default "Send enquiry"). Its anchor, or `enquiry-form`, names the section and prefixes every field ID.
+`jmc/enquiry-form` is a section with a single, centred form column and no inner blocks. One is allowed per page. Its attributes are `palette` (`default`, `secondary`, `inverse`; default `default`) and `submitText` (the button label; default "Send enquiry"). Its anchor, or `enquiry-form`, names the section and prefixes every field ID.
 
 ### Fields
 
@@ -423,7 +424,7 @@ Each accepted enquiry is saved as a private `jmc_enquiry` post before it is emai
 
 `jmc/service-grid` lists the site's services without anyone maintaining a list. Services are published pages directly beneath the Services page, and every card is built from those page records; see the [services content model](architecture/services-content-model.md) for the decision behind this.
 
-The block holds two locked `jmc/column` blocks: an editable intro (a label paragraph and an H2) and a column containing `jmc/service-list`. `jmc/service-list` renders the cards on the server from page data, so there is no card content to edit inside the block. It replaces the hand-authored `jmc/service-card` block, which has been removed (see [Migrating from `jmc/service-card`](#migrating-from-jmcservice-card)).
+The block holds two locked `jmc/column` blocks: an editable intro (a label `jmc/paragraph` and an H2 `jmc/heading`, which list `jmc/service-grid` in their `ancestor`) and a column containing `jmc/service-list`. `jmc/service-list` renders the cards on the server from page data, so there is no card content to edit inside the block. It replaces the hand-authored `jmc/service-card` block, which has been removed (see [Migrating from `jmc/service-card`](#migrating-from-jmcservice-card)).
 
 ### Choosing the Services page
 
