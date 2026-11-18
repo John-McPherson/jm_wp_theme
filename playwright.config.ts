@@ -20,7 +20,7 @@ export default defineConfig( {
 						open: 'never',
 					},
 				],
-		  ]
+			]
 		: [
 				[ 'list' ],
 				[
@@ -30,7 +30,7 @@ export default defineConfig( {
 						open: 'never',
 					},
 				],
-		  ],
+			],
 	use: {
 		baseURL: process.env.WP_BASE_URL ?? 'http://localhost:8888',
 		trace: 'on-first-retry',
