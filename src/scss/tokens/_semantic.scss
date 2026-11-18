@@ -4,15 +4,18 @@
 		--jmc-background-color: var(--jmc-color-base-100);
 		--jmc-heading-color: var(--jmc-color-brand-900);
 		--jmc-text-color: var(--jmc-color-base-700);
-		--jmc-text-highlight: var(--jmc-color-accent-500);
+		--jmc-text-highlight: var(--jmc-color-accent-600);
 
 		// Surfaces raised above the section background, such as cards.
 		--jmc-card-background: var(--jmc-color-base-50);
 
+		// Error messages and invalid-field borders.
+		--jmc-error-color: var(--jmc-color-error);
+
 		// Buttons
 		--jmc-button-background: var(--jmc-color-brand-700);
 		--jmc-button-color: var(--jmc-color-base-100);
-		--jmc-button-hover-background: var(--jmc-color-brand-900);
+		--jmc-button-hover-background: var(--jmc-color-brand-800);
 		--jmc-button-hover-color: var(--jmc-color-base-100);
 
 		// Boundaries and elevation
