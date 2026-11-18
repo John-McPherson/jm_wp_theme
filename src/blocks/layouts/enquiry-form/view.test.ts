@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { EnquiryForm, MIN_SUBMIT_DELAY, validateEnquiry } from './view';
 
 const ERRORS = {
@@ -130,7 +132,7 @@ const setup = async (
 		wait?: ( ms: number ) => Promise< void >;
 	} = {}
 ) => {
-	const fetchMock = jest
+	const fetchMock = vi
 		.fn()
 		.mockResolvedValueOnce(
 			jsonResponse( { nonce: 'fresh-nonce', started: 'fresh-started' } )
@@ -146,7 +148,7 @@ const setup = async (
 
 	global.fetch = fetchMock as unknown as typeof fetch;
 
-	const wait = options.wait ?? jest.fn( () => Promise.resolve() );
+	const wait = options.wait ?? vi.fn( () => Promise.resolve() );
 
 	new EnquiryForm( form(), { now: options.now, wait } ).init();
 	await flush();
@@ -217,7 +219,7 @@ describe( 'EnquiryForm', () => {
 
 	afterEach( () => {
 		document.body.innerHTML = '';
-		jest.restoreAllMocks();
+		vi.restoreAllMocks();
 	} );
 
 	it( 'takes over validation and refreshes the tokens on load', async () => {
@@ -233,7 +235,7 @@ describe( 'EnquiryForm', () => {
 	} );
 
 	it( 'keeps the page tokens when the refresh fails', async () => {
-		global.fetch = jest
+		global.fetch = vi
 			.fn()
 			.mockRejectedValue(
 				new Error( 'offline' )
@@ -247,7 +249,7 @@ describe( 'EnquiryForm', () => {
 
 	it( 'does nothing when the markup is incomplete', () => {
 		document.getElementById( 'enquiry-form-notice' )?.remove();
-		global.fetch = jest.fn() as unknown as typeof fetch;
+		global.fetch = vi.fn() as unknown as typeof fetch;
 
 		new EnquiryForm( form() ).init();
 
@@ -327,7 +329,7 @@ describe( 'EnquiryForm', () => {
 	} );
 
 	it( 'sends the form and confirms success', async () => {
-		const sent = jest.fn();
+		const sent = vi.fn();
 		document.addEventListener( 'jmc:enquiry-sent', sent );
 
 		const { fetchMock } = await setup( [
@@ -360,7 +362,7 @@ describe( 'EnquiryForm', () => {
 
 	it( 'waits out the minimum time before sending a quick submission', async () => {
 		let time = 10_000;
-		const wait = jest.fn( () => Promise.resolve() );
+		const wait = vi.fn( () => Promise.resolve() );
 
 		await setup( [ jsonResponse( { status: 'sent' } ) ], {
 			now: () => time,
@@ -376,7 +378,7 @@ describe( 'EnquiryForm', () => {
 
 	it( 'does not wait when the visitor took long enough', async () => {
 		let time = 10_000;
-		const wait = jest.fn( () => Promise.resolve() );
+		const wait = vi.fn( () => Promise.resolve() );
 
 		await setup( [ jsonResponse( { status: 'sent' } ) ], {
 			now: () => time,
@@ -392,7 +394,7 @@ describe( 'EnquiryForm', () => {
 
 	it( 'ignores a second submit while the first is sending', async () => {
 		let release: () => void = () => undefined;
-		const wait = jest.fn(
+		const wait = vi.fn(
 			() =>
 				new Promise< void >( ( resolve ) => {
 					release = resolve;
