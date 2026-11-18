@@ -1,0 +1,15 @@
+/**
+ * The following styles get applied inside the editor only.
+ *
+ */
+
+@layer site {
+
+	// The editor previews the menu and edits the call to action side by side,
+	// so lay them out in a row like the end of the frontend menu list.
+	.jmc-navigation-editor {
+		display: flex;
+		align-items: center;
+		gap: var(--jmc-section-padding-sm);
+	}
+}
