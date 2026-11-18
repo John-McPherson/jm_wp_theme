@@ -37,7 +37,9 @@ The installable theme must include:
 - `components/`
 - `inc/`
 - `templates/`
-- `parts/`, `patterns/`, and `languages/` when introduced
+- `parts/`
+- `patterns/`
+- `languages/` when introduced
 - `functions.php`
 - `style.css`
 - `theme.json`
