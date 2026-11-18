@@ -88,15 +88,22 @@
 			margin: 0;
 		}
 
-		// Pinned bottom-right so arrows line up across cards of a row.
-		&__arrow {
-			width: 1.5rem;
-			height: 1.5rem;
+		// Pinned bottom-right so the cues line up across cards of a row.
+		&__more {
+			display: flex;
+			gap: var(--jmc-padding-xs);
+			align-items: center;
 			align-self: flex-end;
 			margin-top: auto;
 			padding-top: var(--jmc-padding-xs);
-			box-sizing: content-box;
 			color: var(--jmc-text-highlight);
+			font-weight: 600;
+		}
+
+		&__arrow {
+			display: block;
+			width: 1.5rem;
+			height: 1.5rem;
 			transition: transform 0.2s ease;
 
 			.wp-block-icon {

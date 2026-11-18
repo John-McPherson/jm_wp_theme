@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 require_once dirname( __DIR__ ) . '/doubles/services.php';
 
 /**
- * Verify the service list renders cards from the Services child pages.
+ * Verify the service list renders cards from a parent's child pages or chosen pages.
  */
 final class ServiceListRenderTest extends TestCase {
 
@@ -87,12 +87,15 @@ final class ServiceListRenderTest extends TestCase {
 	 * Execute the real render callback, converting warnings into failures.
 	 *
 	 * @param array<string, mixed> $attributes Block attributes.
+	 * @param array<string, mixed> $context    Block context.
 	 *
 	 * @throws \Throwable If rendering fails.
 	 *
 	 * @return string Rendered markup.
 	 */
-	private function render( array $attributes = [] ): string {
+	private function render( array $attributes = [], array $context = [] ): string {
+		$block = (object) [ 'context' => $context ];
+
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- Converts PHP warnings into PHPUnit failures.
 		set_error_handler(
 			static function ( int $severity, string $message, string $file, int $line ): bool {
@@ -186,6 +189,39 @@ final class ServiceListRenderTest extends TestCase {
 	}
 
 	/**
+	 * The cue beside the arrow uses the block's text, falling back to "Learn more".
+	 *
+	 * @dataProvider more_texts
+	 *
+	 * @param array<string, mixed> $attributes Block attributes.
+	 * @param string               $expected   Expected cue markup.
+	 */
+	public function test_more_text( array $attributes, string $expected ): void {
+		self::site_with_services( [ self::service( 21, 'Rewiring' ) ] );
+
+		self::assertStringContainsString(
+			'<span class="jmc-service-card__more-text">' . $expected . '</span>',
+			$this->render( $attributes )
+		);
+	}
+
+	/**
+	 * Cue text cases.
+	 *
+	 * @return array<string, array{0:array<string, mixed>,1:string}>
+	 */
+	public static function more_texts(): array {
+		return [
+			'omitted'   => [ [], 'Learn more' ],
+			'empty'     => [ [ 'moreText' => '' ], 'Learn more' ],
+			'blank'     => [ [ 'moreText' => '   ' ], 'Learn more' ],
+			'custom'    => [ [ 'moreText' => ' View services ' ], 'View services' ],
+			'escaped'   => [ [ 'moreText' => '<b>See</b> & go' ], '&lt;b&gt;See&lt;/b&gt; &amp; go' ],
+			'malformed' => [ [ 'moreText' => [ 'View' ] ], 'Learn more' ],
+		];
+	}
+
+	/**
 	 * Card titles use the configured heading level, falling back to h3.
 	 *
 	 * @dataProvider heading_levels
@@ -237,8 +273,8 @@ final class ServiceListRenderTest extends TestCase {
 	}
 
 	/**
-	 * Each card shows a decorative arrow when the arrow icon is registered,
-	 * and omits it cleanly when it is not.
+	 * Each card shows a decorative "Learn more" cue, with an arrow when the
+	 * arrow icon is registered and without one when it is not.
 	 */
 	public function test_renders_decorative_arrow(): void {
 		self::site_with_services(
@@ -248,12 +284,17 @@ final class ServiceListRenderTest extends TestCase {
 
 		$html = $this->render();
 
-		self::assertSame( 2, substr_count( $html, '<div class="jmc-service-card__arrow" aria-hidden="true">' ) );
+		self::assertSame( 2, substr_count( $html, '<div class="jmc-service-card__more" aria-hidden="true">' ) );
+		self::assertSame( 2, substr_count( $html, '<span class="jmc-service-card__more-text">Learn more</span>' ) );
+		self::assertSame( 2, substr_count( $html, '<span class="jmc-service-card__arrow">' ) );
 		self::assertSame( 2, substr_count( $html, 'data-icon="jmc/arrow-right"' ) );
 
 		self::site_with_services( [ self::service( 21, 'Rewiring' ) ] );
 
-		self::assertStringNotContainsString( 'jmc-service-card__arrow', $this->render() );
+		$html = $this->render();
+
+		self::assertStringContainsString( 'Learn more', $html );
+		self::assertStringNotContainsString( 'jmc-service-card__arrow', $html );
 	}
 
 	/**
@@ -380,7 +421,7 @@ final class ServiceListRenderTest extends TestCase {
 		return [
 			'no services'        => [
 				[ 'pages' => [ $services_page ] ],
-				'No services are published yet.',
+				'No services to list.',
 			],
 			'no services page'   => [
 				[],
@@ -418,6 +459,367 @@ final class ServiceListRenderTest extends TestCase {
 				],
 				'No Services page found.',
 			],
+		];
+	}
+
+	/**
+	 * Build a hierarchy: Services (10) → Domestic (30) → Rewires (31), and
+	 * Services → Commercial (40) → Fit-outs (41), plus loose pages.
+	 *
+	 * @param array<int, object> $extra Extra pages.
+	 *
+	 * @return void
+	 */
+	private static function site_with_categories( array $extra = [] ): void {
+		jmc_test_wp_fixture(
+			[
+				'pages' => array_merge(
+					[
+						self::page( 10, [ 'post_name' => 'services' ] ),
+						self::page(
+							30,
+							[
+								'post_title'  => 'Domestic Services',
+								'post_parent' => 10,
+								'permalink'   => '/services/domestic/',
+							]
+						),
+						self::page(
+							31,
+							[
+								'post_title'  => 'Rewires',
+								'post_parent' => 30,
+								'permalink'   => '/services/domestic/rewires/',
+							]
+						),
+						self::page(
+							40,
+							[
+								'post_title'  => 'Commercial Services',
+								'post_parent' => 10,
+								'permalink'   => '/services/commercial/',
+							]
+						),
+						self::page(
+							41,
+							[
+								'post_title'  => 'Fit-outs',
+								'post_parent' => 40,
+								'permalink'   => '/services/commercial/fit-outs/',
+							]
+						),
+						self::page( 50, [ 'post_title' => 'About' ] ),
+					],
+					$extra
+				),
+			]
+		);
+	}
+
+	/**
+	 * Page context for a page ID.
+	 *
+	 * @param int $id Page ID.
+	 *
+	 * @return array{postId:int,postType:string} Block context.
+	 */
+	private static function on_page( int $id ): array {
+		return [
+			'postId'   => $id,
+			'postType' => 'page',
+		];
+	}
+
+	/**
+	 * A list lists the children of the page it is rendered on.
+	 *
+	 * @dataProvider category_pages
+	 *
+	 * @param int    $page_id  Current page.
+	 * @param string $expected Listed title.
+	 * @param string $absent   Title that must not be listed.
+	 */
+	public function test_lists_children_of_current_page( int $page_id, string $expected, string $absent ): void {
+		self::site_with_categories();
+
+		$html = $this->render( [], self::on_page( $page_id ) );
+
+		self::assertStringContainsString( $expected, $html );
+		self::assertStringNotContainsString( $absent, $html );
+		self::assertSame( $page_id, jmc_test_wp( 'last_query' )['post_parent'] ?? null );
+	}
+
+	/**
+	 * Category, landing and service pages.
+	 *
+	 * @return array<string, array{0:int,1:string,2:string}>
+	 */
+	public static function category_pages(): array {
+		return [
+			'domestic'   => [ 30, 'Rewires', 'Fit-outs' ],
+			'commercial' => [ 40, 'Fit-outs', 'Rewires' ],
+			'services'   => [ 10, 'Domestic Services', 'Rewires' ],
+		];
+	}
+
+	/**
+	 * Without page context the list falls back to the Services page.
+	 *
+	 * @dataProvider contexts_without_a_page
+	 *
+	 * @param array<string, mixed> $context Block context.
+	 */
+	public function test_falls_back_to_services_page_without_page_context( array $context ): void {
+		self::site_with_categories();
+
+		$html = $this->render( [], $context );
+
+		self::assertStringContainsString( 'Domestic Services', $html );
+		self::assertSame( 10, jmc_test_wp( 'last_query' )['post_parent'] ?? null );
+	}
+
+	/**
+	 * Contexts that do not identify a page.
+	 *
+	 * @return array<string, array{0:array<string, mixed>}>
+	 */
+	public static function contexts_without_a_page(): array {
+		return [
+			'none'           => [ [] ],
+			'post type post' => [
+				[
+					'postId'   => 30,
+					'postType' => 'post',
+				],
+			],
+			'string id'      => [
+				[
+					'postId'   => '30',
+					'postType' => 'page',
+				],
+			],
+			'missing page'   => [ self::on_page( 999 ) ],
+		];
+	}
+
+	/**
+	 * A chosen parent page wins over the current page.
+	 */
+	public function test_parent_setting_wins_over_current_page(): void {
+		self::site_with_categories();
+
+		$html = $this->render( [ 'parentId' => 40 ], self::on_page( 30 ) );
+
+		self::assertStringContainsString( 'Fit-outs', $html );
+		self::assertStringNotContainsString( 'Rewires', $html );
+	}
+
+	/**
+	 * An invalid chosen parent lists nothing rather than falling back.
+	 *
+	 * @dataProvider invalid_parents
+	 *
+	 * @param mixed $parent_id Stored parent ID.
+	 */
+	public function test_invalid_parent_does_not_fall_back( mixed $parent_id ): void {
+		self::site_with_categories(
+			[ self::page( 60, [ 'post_status' => 'draft' ] ) ]
+		);
+
+		self::assertSame( '', trim( $this->render( [ 'parentId' => $parent_id ], self::on_page( 30 ) ) ) );
+
+		jmc_test_wp_fixture(
+			array_merge(
+				$GLOBALS['jmc_test_wp'],
+				[
+					'rest'     => true,
+					'can_edit' => true,
+				]
+			)
+		);
+
+		self::assertStringContainsString(
+			'The parent page chosen for this list is missing or unpublished.',
+			$this->render( [ 'parentId' => $parent_id ], self::on_page( 30 ) )
+		);
+	}
+
+	/**
+	 * Parent IDs that do not resolve to a published page.
+	 *
+	 * @return array<string, array{0:mixed}>
+	 */
+	public static function invalid_parents(): array {
+		return [
+			'missing' => [ 999 ],
+			'draft'   => [ 60 ],
+		];
+	}
+
+	/**
+	 * Malformed parent IDs are ignored in favour of the current page.
+	 *
+	 * @dataProvider ignored_parents
+	 *
+	 * @param mixed $parent_id Stored parent ID.
+	 */
+	public function test_ignored_parent_uses_current_page( mixed $parent_id ): void {
+		self::site_with_categories();
+
+		self::assertStringContainsString(
+			'Rewires',
+			$this->render( [ 'parentId' => $parent_id ], self::on_page( 30 ) )
+		);
+	}
+
+	/**
+	 * Parent values treated as unset.
+	 *
+	 * @return array<string, array{0:mixed}>
+	 */
+	public static function ignored_parents(): array {
+		return [
+			'zero'     => [ 0 ],
+			'negative' => [ -5 ],
+			'array'    => [ [ 40 ] ],
+			'text'     => [ 'commercial' ],
+		];
+	}
+
+	/**
+	 * A page without children lists the chosen pages in the chosen order.
+	 */
+	public function test_page_without_children_lists_chosen_pages_in_order(): void {
+		self::site_with_categories(
+			[
+				self::page(
+					70,
+					[
+						'post_title'  => 'Draft service',
+						'post_status' => 'draft',
+						'permalink'   => '/draft/',
+					]
+				),
+				self::page(
+					71,
+					[
+						'post_title'    => 'Protected service',
+						'post_password' => 'secret',
+						'permalink'     => '/protected/',
+					]
+				),
+			]
+		);
+
+		$html = $this->render(
+			[ 'pageIds' => [ 41, 70, 999, 71, 31, 41 ] ],
+			self::on_page( 50 )
+		);
+
+		self::assertSame( 2, substr_count( $html, '<li' ) );
+		self::assertLessThan( strpos( $html, 'Rewires' ), strpos( $html, 'Fit-outs' ) );
+		self::assertStringNotContainsString( 'Draft service', $html );
+		self::assertStringNotContainsString( 'Protected service', $html );
+		self::assertSame( 'post__in', jmc_test_wp( 'last_query' )['orderby'] ?? null );
+	}
+
+	/**
+	 * Chosen pages render in the editor preview, where the REST block renderer
+	 * casts `number` attributes to floats.
+	 */
+	public function test_chosen_pages_render_from_rest_float_ids(): void {
+		self::site_with_categories();
+
+		$html = $this->render(
+			[
+				'source'  => 'chosen',
+				'pageIds' => [ 41.0, 31.0 ],
+			],
+			self::on_page( 50 )
+		);
+
+		self::assertSame( 2, substr_count( $html, '<li' ) );
+		self::assertLessThan( strpos( $html, 'Rewires' ), strpos( $html, 'Fit-outs' ) );
+	}
+
+	/**
+	 * Choosing pages replaces the children of a page that has them.
+	 */
+	public function test_chosen_source_lists_chosen_pages_over_children(): void {
+		self::site_with_categories();
+
+		$html = $this->render(
+			[
+				'source'  => 'chosen',
+				'pageIds' => [ 41 ],
+			],
+			self::on_page( 30 )
+		);
+
+		self::assertStringContainsString( 'Fit-outs', $html );
+		self::assertStringNotContainsString( 'Rewires', $html );
+	}
+
+	/**
+	 * Children win while the source is children, keeping chosen pages for later.
+	 *
+	 * @dataProvider children_sources
+	 *
+	 * @param mixed $source Stored source.
+	 */
+	public function test_children_source_ignores_chosen_pages( mixed $source ): void {
+		self::site_with_categories();
+
+		$html = $this->render(
+			[
+				'source'  => $source,
+				'pageIds' => [ 41 ],
+			],
+			self::on_page( 30 )
+		);
+
+		self::assertStringContainsString( 'Rewires', $html );
+		self::assertStringNotContainsString( 'Fit-outs', $html );
+	}
+
+	/**
+	 * Sources that resolve to children.
+	 *
+	 * @return array<string, array{0:mixed}>
+	 */
+	public static function children_sources(): array {
+		return [
+			'children'  => [ 'children' ],
+			'omitted'   => [ null ],
+			'malformed' => [ 'everything' ],
+		];
+	}
+
+	/**
+	 * Malformed or empty choices list nothing on a page without children.
+	 *
+	 * @dataProvider empty_choices
+	 *
+	 * @param mixed $page_ids Stored page IDs.
+	 */
+	public function test_empty_choices_render_nothing( mixed $page_ids ): void {
+		self::site_with_categories();
+
+		self::assertSame( '', trim( $this->render( [ 'pageIds' => $page_ids ], self::on_page( 50 ) ) ) );
+	}
+
+	/**
+	 * Choices that yield no pages.
+	 *
+	 * @return array<string, array{0:mixed}>
+	 */
+	public static function empty_choices(): array {
+		return [
+			'omitted' => [ null ],
+			'empty'   => [ [] ],
+			'string'  => [ '41' ],
+			'invalid' => [ [ 0, -1, 'x', 4.5 ] ],
+			'missing' => [ [ 999 ] ],
 		];
 	}
 
