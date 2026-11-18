@@ -30,6 +30,7 @@ All notable changes will be documented here. The project follows semantic versio
 - Call to action and Contact details patterns in new Calls to action and Contact pattern categories. Service listings use the Service Grid block rather than a pattern.
 - Front-page and page templates: the shared header and footer parts around one `<main>` landmark holding the page title (H1) and content. The title is omitted when the page contains a hero, whose heading is the H1.
 - Services landing page and Service page templates, applied automatically to the Services page and its direct children, with breadcrumbs (Home → Services → Service) and matching starter patterns. Structured data is left to Yoast SEO.
+- Home page starter pattern (`jmc/home-page`): the homepage's standard sections (hero, service introduction, Service Grid, why choose us and contact details), each locked, offered when a page is created.
 - Contact (`page-contact`) and 404 templates, with a `jmc/contact-page` starter pattern that seeds the Contact page's own content (hero, enquiry form, contact details and call to action): one main landmark, a single H1, and 404 recovery through a homepage link and a call to action.
 - Front-end site search is turned off: search requests get a 404 and the 404 template. Admin and editor searches still work.
 
