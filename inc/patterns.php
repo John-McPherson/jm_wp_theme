@@ -20,9 +20,11 @@ declare(strict_types=1);
  */
 function jmc_pattern_categories(): array {
 	return [
+		'jmc-cta'      => __( 'Calls to action', 'jmc-theme' ),
 		'jmc-hero'     => __( 'Heroes', 'jmc-theme' ),
 		'jmc-services' => __( 'Services', 'jmc-theme' ),
 		'jmc-trust'    => __( 'Trust', 'jmc-theme' ),
+		'jmc-contact'  => __( 'Contact', 'jmc-theme' ),
 	];
 }
 
