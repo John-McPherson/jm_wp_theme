@@ -18,6 +18,15 @@ All notable changes will be documented here. The project follows semantic versio
 - CTA Banner: a Stacked variation, one or more buttons through the new Buttons block, and omission of empty columns and empty banners.
 - Phone and Email button variations that link to new site-wide business contact settings (Settings → General).
 - Buttons validate their destinations, accept `mailto:` links and bare phone numbers or email addresses, and honour the editor's open-in-new-tab setting.
+- Contact Details block showing the business phone, WhatsApp, email, opening hours, and service area from site-wide settings, with field toggles, Lucide and brand icons, and in-editor editing of the settings.
+- WhatsApp number, opening hours, and service area business settings (Settings → General), alongside phone and email.
+- CTA Banner (Contact Details) variation: a heading and text beside the contact details.
+- WhatsApp Button variation with the WhatsApp logo, and optional pre-filled email subjects and bodies and WhatsApp messages, keeping line breaks.
+- Simple Icons brand logos in the theme's icon collection, starting with WhatsApp.
+
+### Changed
+
+- Server-rendered editor previews (contact details, services list, navigation, footer navigation) are inert, so links in them no longer leave the editor.
 
 ### Known issues
 

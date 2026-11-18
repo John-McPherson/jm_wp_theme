@@ -146,4 +146,39 @@ final class LinkHelperTest extends TestCase {
 			'injection'           => [ 'mailto:hello@example.com"onclick="alert(1)' ],
 		];
 	}
+
+	/**
+	 * Message links keep encoded line breaks; other links lose them, as with esc_url().
+	 *
+	 * @dataProvider esc_href_provider
+	 *
+	 * @param string $url      Validated link.
+	 * @param string $expected Escaped link.
+	 */
+	public function test_esc_href( string $url, string $expected ): void {
+		self::assertSame( $expected, jmc_esc_href( $url ) );
+	}
+
+	/**
+	 * Links and their escaped `href` values.
+	 *
+	 * @return array<string, array{string, string}>
+	 */
+	public function esc_href_provider(): array {
+		return [
+			'email body'                => [ 'mailto:a@example.com?body=Hi%0D%0AThanks', 'mailto:a@example.com?body=Hi%0D%0AThanks' ],
+			'email body, upper case'    => [ 'mailto:a@example.com?BODY=Hi%0D%0AThanks', 'mailto:a@example.com?BODY=Hi%0D%0AThanks' ],
+			'email subject and body'    => [ 'mailto:a@example.com?subject=Hi%0D%0ABcc:x@example.com&body=a%0D%0Ab', 'mailto:a@example.com?subject=HiBcc:x@example.com&body=a%0D%0Ab' ],
+			'email header field'        => [ 'mailto:a@example.com?cc=b@example.com%0D%0ABcc:x@example.com', 'mailto:a@example.com?cc=b@example.comBcc:x@example.com' ],
+			'email without query'       => [ 'mailto:a@example.com%0A', 'mailto:a@example.com' ],
+			'placeholder smuggling'     => [ 'mailto:a@example.com?subject=Hi!jmc-line-break!dX&body=a%0Ab', 'mailto:a@example.com?subject=Hi!jmc-line-break!dX&body=ab' ],
+			'whatsapp text'             => [ 'https://wa.me/447700900123?text=Hi%0aThanks', 'https://wa.me/447700900123?text=Hi%0aThanks' ],
+			'whatsapp other parameter'  => [ 'https://wa.me/447700900123?text=a%0Ab&x=c%0Ad', 'https://wa.me/447700900123?text=a%0Ab&x=cd' ],
+			'whatsapp body is not text' => [ 'https://wa.me/447700900123?body=a%0Ab', 'https://wa.me/447700900123?body=ab' ],
+			'other https link'          => [ 'https://example.com/?q=a%0Ab', 'https://example.com/?q=ab' ],
+			'look-alike host'           => [ 'https://wa.me.example.com/?text=a%0Ab', 'https://wa.me.example.com/?text=ab' ],
+			'no line breaks'            => [ 'mailto:a@example.com?subject=Hi', 'mailto:a@example.com?subject=Hi' ],
+			'site-relative path'        => [ '/contact/%0A', '/contact/' ],
+		];
+	}
 }

@@ -40,6 +40,21 @@ final class CtaBannerRenderTest extends TestCase {
 	}
 
 	/**
+	 * The contact layout adds its modifier, sits side by side and honours the selected column order.
+	 */
+	public function test_contact_layout_applies_order(): void {
+		$html = $this->render_banner(
+			[
+				'layout' => 'contact',
+				'order'  => 'left',
+			]
+		);
+
+		self::assertStringContainsString( 'class="jmc-section jmc-cta jmc-cta--contact jmc-palette--inverse"', $html );
+		self::assertStringContainsString( 'class="jmc-section__container jmc-column-left"', $html );
+	}
+
+	/**
 	 * The stacked layout adds its modifier and ignores column order.
 	 */
 	public function test_stacked_layout_ignores_order(): void {

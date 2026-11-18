@@ -1,0 +1,79 @@
+@use "../../../scss/abstracts/index" as *;
+
+@layer blocks {
+
+	.jmc-list {
+		--jmc-list-icon-size: 1.25em;
+		--jmc-list-gutter: calc(var(--jmc-list-icon-size) + var(--jmc-padding-2xs));
+		--jmc-list-gap: var(--jmc-padding-2xs);
+
+		// Set in slightly from the surrounding text, so the list reads as part of it.
+		--jmc-list-indent: var(--jmc-padding-xs);
+
+		display: grid;
+		gap: var(--jmc-list-gap);
+		max-width: 50ch;
+		margin: 0;
+		margin-inline-start: var(--jmc-list-indent);
+		padding: 0;
+
+		// Space before the next block, as paragraphs do.
+		&:not(:last-child) {
+			padding-bottom: var(--jmc-section-padding-sm);
+		}
+
+		// Bullets and numbers are the browser's own markers, restored after the
+		// reset and hung in the same gutter as the icons.
+		&--bullet,
+		&--number {
+			padding-inline-start: var(--jmc-list-gutter);
+		}
+
+		&--bullet {
+			list-style: disc;
+		}
+
+		&--number {
+			list-style: decimal;
+		}
+
+		&--icon {
+			list-style: none;
+		}
+	}
+
+	.jmc-list__item {
+		position: relative;
+
+		// Long words and URLs wrap rather than overflow a narrow column.
+		overflow-wrap: break-word;
+
+		&::marker {
+			color: var(--jmc-text-highlight);
+			font-weight: 700;
+		}
+
+		.jmc-list--icon & {
+			padding-inline-start: var(--jmc-list-gutter);
+		}
+	}
+
+	// Sized to the text and nudged onto the item's first line, so wrapped items
+	// keep the icon beside their opening words. Lucide outlines take their
+	// colour from `color` through the shared `svg.lucide` rule.
+	.jmc-list__icon {
+		position: absolute;
+		inset-inline-start: 0;
+		width: var(--jmc-list-icon-size);
+		height: var(--jmc-list-icon-size);
+		margin-block-start: calc((1lh - var(--jmc-list-icon-size)) / 2);
+		color: var(--jmc-text-highlight);
+
+		// The editor wraps the registered SVG in the icon element.
+		> svg {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+	}
+}

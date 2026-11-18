@@ -21,7 +21,7 @@
     },
     "layout": {
       "type": "string",
-      "enum": ["columns", "stacked"],
+      "enum": ["columns", "stacked", "contact"],
       "default": "columns"
     }
   },
@@ -43,6 +43,17 @@
       "description": "Heading, supporting text, and call-to-action button stacked and centred.",
       "attributes": {
         "layout": "stacked"
+      },
+      "scope": ["inserter", "block", "transform"],
+      "isActive": ["layout"]
+    },
+    {
+      "name": "contact",
+      "title": "CTA Banner (Contact Details)",
+      "description": "A heading and supporting text beside the business contact details.",
+      "keywords": ["contact", "phone", "email", "opening hours"],
+      "attributes": {
+        "layout": "contact"
       },
       "scope": ["inserter", "block", "transform"],
       "isActive": ["layout"]

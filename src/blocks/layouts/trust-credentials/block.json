@@ -1,0 +1,62 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/trust-credentials",
+  "version": "0.1.0",
+  "title": "Trust and Credentials",
+  "category": "jmc-section",
+  "icon": "awards",
+  "description": "Accreditations, guarantees, experience and review scores as a row of logos, shown at the top of the site footer.",
+  "keywords": [
+    "accreditation",
+    "credentials",
+    "trust",
+    "logos",
+    "reviews"
+  ],
+  "attributes": {
+    "palette": {
+      "type": "string",
+      "enum": [
+        "default",
+        "secondary",
+        "inverse"
+      ],
+      "default": "default"
+    }
+  },
+  "allowedBlocks": [
+    "jmc/credential-list"
+  ],
+  "example": {
+    "attributes": {
+      "palette": "default"
+    },
+    "innerBlocks": [
+      {
+        "name": "jmc/credential-list",
+        "innerBlocks": [
+          {
+            "name": "jmc/credential"
+          },
+          {
+            "name": "jmc/credential"
+          },
+          {
+            "name": "jmc/credential"
+          }
+        ]
+      }
+    ],
+    "viewportWidth": 1200
+  },
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false,
+    "inserter": false
+  },
+  "textdomain": "jmc-theme",
+  "editorScript": "file:./index.js",
+  "render": "file:./render.php"
+}

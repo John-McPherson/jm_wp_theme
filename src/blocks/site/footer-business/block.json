@@ -7,7 +7,7 @@
 	"category": "jmc-site",
 	"icon": "building",
 	"parent": ["jmc/footer"],
-	"description": "The business name, address, telephone number, email address and service area shown in the site footer.",
+	"description": "The business name and address, with the shared phone, WhatsApp, email and service area, shown in the site footer.",
 	"attributes": {
 		"companyName": {
 			"type": "string",
@@ -33,10 +33,7 @@
 	"example": {
 		"attributes": {
 			"companyName": "Example Electrical Ltd",
-			"address": "1 High Street<br>Example Town<br>AB1 2CD",
-			"phone": "01234 567890",
-			"email": "hello@example.com",
-			"serviceArea": "Example Town and the surrounding area"
+			"address": "1 High Street<br>Example Town<br>AB1 2CD"
 		}
 	},
 	"supports": {

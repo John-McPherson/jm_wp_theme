@@ -1,8 +1,10 @@
 /**
- * Copy the theme's chosen Lucide icons into build/assets/icons/lucide.
+ * Copy the theme's chosen icons into build/assets/icons.
  *
- * The icon list and labels live in src/icons/lucide.json; inc/icons.php
- * registers the generated files with the core Icons API.
+ * Lucide outline icons are listed in src/icons/lucide.json and written to
+ * build/assets/icons/lucide; Simple Icons brand logos are listed in
+ * src/icons/simple-icons.json and written to build/assets/icons/simple-icons.
+ * inc/icons.php registers the generated files with the core Icons API.
  */
 
 const fs = require( 'fs' );
@@ -45,3 +47,57 @@ fs.copyFileSync(
 
 // eslint-disable-next-line no-console
 console.log( `Built ${ Object.keys( manifest ).length } Lucide icons.` );
+
+/*
+ * Simple Icons: each brand SVG is a single filled path on a 24×24 grid. Only
+ * the path is kept, since the core Icons API strips everything but `svg`,
+ * `path` and `polygon` (including the <title>); the label comes from the
+ * manifest instead.
+ */
+// The package only exports its entry points, which sit at its root.
+const simpleIcons = path.dirname( require.resolve( 'simple-icons' ) );
+const brandManifest = JSON.parse(
+	fs.readFileSync( path.join( root, 'src/icons/simple-icons.json' ), 'utf8' )
+);
+const brandOutput = path.join( root, 'build/assets/icons/simple-icons' );
+
+fs.rmSync( brandOutput, { recursive: true, force: true } );
+fs.mkdirSync( brandOutput, { recursive: true } );
+
+Object.keys( brandManifest ).forEach( ( slug ) => {
+	const source = path.join( simpleIcons, 'icons', `${ slug }.svg` );
+
+	if ( ! fs.existsSync( source ) ) {
+		throw new Error( `Simple Icons has no icon named "${ slug }".` );
+	}
+
+	const paths = [
+		...fs.readFileSync( source, 'utf8' ).matchAll( /<path d="([^"]+)"/g ),
+	];
+
+	if ( paths.length !== 1 ) {
+		throw new Error( `Simple Icon "${ slug }" is not a single path.` );
+	}
+
+	fs.writeFileSync(
+		path.join( brandOutput, `${ slug }.svg` ),
+		[
+			`<svg class="simple-icon simple-icon-${ slug }" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">`,
+			`\t<path d="${ paths[ 0 ][ 1 ] }" />`,
+			'</svg>',
+			'',
+		].join( '\n' )
+	);
+} );
+
+fs.writeFileSync(
+	path.join( brandOutput, 'manifest.json' ),
+	JSON.stringify( brandManifest, null, '\t' ) + '\n'
+);
+fs.copyFileSync(
+	path.join( simpleIcons, 'LICENSE.md' ),
+	path.join( brandOutput, 'LICENSE.md' )
+);
+
+// eslint-disable-next-line no-console
+console.log( `Built ${ Object.keys( brandManifest ).length } Simple Icons.` );

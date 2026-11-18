@@ -36,18 +36,12 @@ if ( '' === $text || '' === $url ) {
 	return;
 }
 
-// Telephone links hand off to the dialler, so never open them in a new tab.
-$opens_in_new_tab = true === ( $cta_link['opensInNewTab'] ?? false )
-	&& ! str_starts_with( $url, 'tel:' );
-
 jmc_component(
 	name: 'button-link',
 	args: [
 		'text'    => $text,
-		'link'    => [
-			'url'    => $url,
-			'target' => $opens_in_new_tab ? '_blank' : '',
-		],
+		// The component decides whether the stored link opens in a new tab.
+		'link'    => [ 'url' => $url ] + $cta_link,
 		'classes' => [
 			'jmc-button--small',
 			'jmc-header-cta',

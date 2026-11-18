@@ -21,8 +21,9 @@
 
 		// Each child block (business details, then one per menu) is a column:
 		// stacked on narrow screens, then side by side, sharing the width so
-		// fewer columns spread further apart. The legal row always takes a
-		// row of its own. (A grid with auto-fit can't do this: the full-width
+		// fewer columns spread further apart. The credentials strip along the
+		// top and the legal row along the bottom always take a row of their
+		// own. (A grid with auto-fit can't do this: the full-width
 		// legal row stops empty tracks collapsing.)
 		&__container {
 			--jmc-footer-column-min: 12rem;
@@ -45,9 +46,16 @@
 					flex-basis: var(--jmc-footer-column-min);
 				}
 
-				> .jmc-footer-legal {
+				> .jmc-footer-legal,
+				> .jmc-trust-credentials {
 					flex-basis: 100%;
 				}
+			}
+
+			// The credentials section sits inside the footer's own padding and
+			// palette, so it drops the page section's spacing.
+			> .jmc-section.jmc-trust-credentials {
+				padding: 0;
 			}
 		}
 

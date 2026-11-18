@@ -22,15 +22,25 @@
       "type": "object",
       "default": {
         "url": "",
-        "opensInNewTab": false,
-        "target": "",
-        "rel": ""
+        "opensInNewTab": false
       }
     },
     "linkType": {
       "type": "string",
-      "enum": ["link", "phone", "email"],
+      "enum": ["link", "phone", "email", "whatsapp"],
       "default": "link"
+    },
+    "emailSubject": {
+      "type": "string",
+      "default": ""
+    },
+    "emailBody": {
+      "type": "string",
+      "default": ""
+    },
+    "whatsappMessage": {
+      "type": "string",
+      "default": ""
     }
   },
 
@@ -68,6 +78,17 @@
       },
       "scope": ["block", "transform"],
       "isActive": ["linkType"]
+    },
+    {
+      "name": "whatsapp",
+      "title": "WhatsApp Button",
+      "description": "Opens a WhatsApp chat with the business WhatsApp number set in Settings → General.",
+      "icon": "format-chat",
+      "attributes": {
+        "linkType": "whatsapp"
+      },
+      "scope": ["block", "transform"],
+      "isActive": ["linkType"]
     }
   ],
 
@@ -76,17 +97,17 @@
       "text": "Get a quote",
       "link": {
         "url": "#",
-        "target": "",
-        "rel": ""
+        "opensInNewTab": false
       }
     }
   },
 
+  "ancestor": ["jmc/text-with-image", "jmc/hero", "jmc/buttons"],
+
   "supports": {
     "anchor": true,
     "className": true,
-    "html": false,
-    "inserter": false
+    "html": false
   },
 
   "editorScript": "file:./index.js",

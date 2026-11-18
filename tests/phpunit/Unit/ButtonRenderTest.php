@@ -22,12 +22,13 @@ final class ButtonRenderTest extends TestCase {
 	}
 
 	/**
-	 * Phone and email buttons link to the site-wide business details, not their own link.
+	 * Phone, email and WhatsApp buttons link to the site-wide business details, not their own link.
 	 */
 	public function test_contact_buttons_use_business_details(): void {
 		$GLOBALS['jmc_test_options'] = [
-			JMC_BUSINESS_PHONE_OPTION => '01234 567890',
-			JMC_BUSINESS_EMAIL_OPTION => 'hello@example.com',
+			JMC_BUSINESS_PHONE_OPTION    => '01234 567890',
+			JMC_BUSINESS_EMAIL_OPTION    => 'hello@example.com',
+			JMC_BUSINESS_WHATSAPP_OPTION => '+44 7700 900123',
 		];
 
 		$phone = $this->render_button(
@@ -54,6 +55,62 @@ final class ButtonRenderTest extends TestCase {
 		);
 
 		self::assertStringContainsString( 'href="mailto:hello@example.com"', $email );
+
+		$whatsapp = $this->render_button(
+			[
+				'text'     => 'Message us on WhatsApp',
+				'linkType' => 'whatsapp',
+				'link'     => [ 'url' => 'https://example.com/' ],
+			]
+		);
+
+		self::assertStringContainsString( 'href="https://wa.me/447700900123"', $whatsapp );
+		self::assertStringNotContainsString( 'example.com', $whatsapp );
+		self::assertMatchesRegularExpression(
+			'#<svg class="jmc-button__icon" data-icon="jmc/whatsapp" aria-hidden="true"[^>]*></svg>\s*Message us on WhatsApp#',
+			$whatsapp
+		);
+		self::assertStringNotContainsString( 'jmc-button__icon', $phone . $email );
+	}
+
+	/**
+	 * Email and WhatsApp buttons add their own pre-filled message; phone buttons ignore it.
+	 */
+	public function test_contact_buttons_add_prefilled_message(): void {
+		$GLOBALS['jmc_test_options'] = [
+			JMC_BUSINESS_PHONE_OPTION    => '01234 567890',
+			JMC_BUSINESS_EMAIL_OPTION    => 'hello@example.com',
+			JMC_BUSINESS_WHATSAPP_OPTION => '+44 7700 900123',
+		];
+
+		$message = [
+			'emailSubject'    => 'Quote request',
+			'emailBody'       => "Please call me back.\nThanks",
+			'whatsappMessage' => "Hi there,\nI need an electrician.",
+		];
+
+		$email = $this->render_button(
+			[
+				'text'     => 'Email us',
+				'linkType' => 'email',
+			] + $message
+		);
+		$chat  = $this->render_button(
+			[
+				'text'     => 'Message us',
+				'linkType' => 'whatsapp',
+			] + $message
+		);
+		$phone = $this->render_button(
+			[
+				'text'     => 'Call us',
+				'linkType' => 'phone',
+			] + $message
+		);
+
+		self::assertStringContainsString( 'href="mailto:hello@example.com?subject=Quote%20request&amp;body=Please%20call%20me%20back.%0D%0AThanks"', $email );
+		self::assertStringContainsString( 'href="https://wa.me/447700900123?text=Hi%20there%2C%0AI%20need%20an%20electrician."', $chat );
+		self::assertStringContainsString( 'href="tel:01234567890"', $phone );
 	}
 
 	/**
@@ -76,13 +133,17 @@ final class ButtonRenderTest extends TestCase {
 	 * @return array<string, array{array<string, mixed>, array<string, mixed>}>
 	 */
 	public function missing_contact_provider(): array {
-		$phone = [
+		$phone    = [
 			'text'     => 'Call us',
 			'linkType' => 'phone',
 		];
-		$email = [
+		$email    = [
 			'text'     => 'Email us',
 			'linkType' => 'email',
+		];
+		$whatsapp = [
+			'text'     => 'Message us on WhatsApp',
+			'linkType' => 'whatsapp',
 		];
 
 		return [
@@ -90,6 +151,8 @@ final class ButtonRenderTest extends TestCase {
 			'no email set'    => [ [], $email ],
 			'invalid phone'   => [ [ JMC_BUSINESS_PHONE_OPTION => '0800 ELECTRIC' ], $phone ],
 			'invalid email'   => [ [ JMC_BUSINESS_EMAIL_OPTION => 'hello@' ], $email ],
+			'no WhatsApp set' => [ [], $whatsapp ],
+			'local WhatsApp'  => [ [ JMC_BUSINESS_WHATSAPP_OPTION => '07700 900123' ], $whatsapp ],
 			'phone, no label' => [
 				[ JMC_BUSINESS_PHONE_OPTION => '01234 567890' ],
 				[ 'linkType' => 'phone' ],
@@ -230,6 +293,48 @@ final class ButtonRenderTest extends TestCase {
 
 		self::assertStringNotContainsString( 'target=', $html );
 		self::assertStringNotContainsString( 'onclick', $html );
+	}
+
+	/**
+	 * A disabled, missing or malformed new-tab setting keeps the link in the same tab.
+	 *
+	 * @dataProvider same_tab_provider
+	 *
+	 * @param mixed $opens_in_new_tab Stored `opensInNewTab` value, or null to omit it.
+	 */
+	public function test_stays_in_same_tab( mixed $opens_in_new_tab ): void {
+		$link = [ 'url' => 'https://example.com/' ];
+
+		if ( null !== $opens_in_new_tab ) {
+			$link['opensInNewTab'] = $opens_in_new_tab;
+		}
+
+		$html = $this->render_button(
+			[
+				'text' => 'Get a quote',
+				'link' => $link,
+			]
+		);
+
+		self::assertStringContainsString( 'href="https://example.com/"', $html );
+		self::assertStringNotContainsString( 'target=', $html );
+		self::assertStringNotContainsString( 'rel=', $html );
+		self::assertStringNotContainsString( '(opens in a new tab)', $html );
+	}
+
+	/**
+	 * New-tab values that must not open a new tab.
+	 *
+	 * @return array<string, array{mixed}>
+	 */
+	public function same_tab_provider(): array {
+		return [
+			'missing' => [ null ],
+			'false'   => [ false ],
+			'string'  => [ 'true' ],
+			'integer' => [ 1 ],
+			'array'   => [ [ true ] ],
+		];
 	}
 
 	/**
