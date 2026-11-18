@@ -13,6 +13,18 @@
       "area": "footer"
     }
   ],
+  "customTemplates": [
+    {
+      "name": "services-landing",
+      "title": "Services landing page",
+      "postTypes": ["page"]
+    },
+    {
+      "name": "service",
+      "title": "Service page",
+      "postTypes": ["page"]
+    }
+  ],
   "settings": {
     "layout": {
       "contentSize": "768px",
