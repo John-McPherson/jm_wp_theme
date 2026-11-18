@@ -77,6 +77,18 @@ See [Roadmap and issue workflow](roadmap.md) for milestone scope and label conve
 
 Edit `src/`, never `build/`, as the source of truth. Run a production build before review.
 
+### Dependency advisories
+
+Every npm dependency is a development dependency, so `npm audit --omit=dev` must report 0. The full `npm audit` should have no critical advisories. The remaining high advisories come from three transitive packages that only the upstream tooling can update, and we don't force them with `overrides`:
+
+| Package | Pulled in by | Advisory | Status |
+| --- | --- | --- | --- |
+| `isomorphic-git` 1.37.x | `@wordpress/env` | Path traversal and arbitrary file write on clone ([GHSA-cw2g-2vwq-88w6](https://github.com/advisories/GHSA-cw2g-2vwq-88w6), [GHSA-9qw7-j9xw-fv9c](https://github.com/advisories/GHSA-9qw7-j9xw-fv9c)) and a resolution loop ([GHSA-96wc-2m84-2cj7](https://github.com/advisories/GHSA-96wc-2m84-2cj7)) | Fixed in 1.38.6; waiting for `@wordpress/env` to update. Only used to fetch WordPress core for the local environment. |
+| `serialize-javascript` 6.x | `copy-webpack-plugin` in `@wordpress/scripts` | RCE, DoS and XSS when serialising untrusted input ([GHSA-5c6j-r48x-rmvq](https://github.com/advisories/GHSA-5c6j-r48x-rmvq), [GHSA-qj8w-gfj5-8c6v](https://github.com/advisories/GHSA-qj8w-gfj5-8c6v), [GHSA-m5mm-p8h7-m29v](https://github.com/advisories/GHSA-m5mm-p8h7-m29v)) | Fixed in 7.1.3; waiting for `@wordpress/scripts` to update. Only serialises our own build config. |
+| `picomatch` | Linters, bundlers and test tooling | ReDoS through repeated extglobs ([GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)) | No patched release yet. Only matches our own glob patterns. |
+
+When upgrading dependencies, re-run `npm audit` and remove a row once its fix arrives through the parent package.
+
 ## Debugging
 
 - Missing block: build and confirm its compiled directory contains `block.json` under `build/js/blocks`.
