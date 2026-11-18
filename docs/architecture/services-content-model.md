@@ -109,7 +109,7 @@ The service-page structure should consistently support:
 ## Navigation, search, and breadcrumbs
 
 - Navigation links point to the canonical page URLs.
-- Service pages remain included in normal WordPress search unless a separate documented search decision overrides this.
+- Service pages remain included in normal WordPress search unless a separate documented search decision overrides this. Front-end site search is currently turned off for the whole site, so this applies again if search is restored; see [Site search](../blocks.md#site-search).
 - Breadcrumbs derive from the native page ancestry: Home → Services → Service.
 - Menus may feature selected services, but a menu is not the service catalogue or source of truth.
 - Removing a service requires unpublishing or moving the page and reviewing redirects and inbound navigation.

@@ -70,6 +70,7 @@ Theme patterns are unsynced starting points built from the blocks above, one PHP
 | `jmc/contact-details`       | Contact, Calls to action | `jmc/cta-banner` (Contact Details): H2 and paragraph beside `jmc/contact-details` |
 | `jmc/services-landing`      | Services | Starter content for the Services page: hero, `jmc/service-grid`, why choose us and contact details, each locked; see [Services templates](#services-templates) |
 | `jmc/service-page`          | Services | Starter content for a service page: hero, service introduction, why choose us and call to action, each locked; see [Services templates](#services-templates) |
+| `jmc/contact-page`          | Contact  | Starter content for the Contact page: hero, enquiry form, contact details and call to action, each locked; see [Contact and 404 templates](#contact-and-404-templates) |
 
 - Copy is lorem ipsum until client copy replaces it ([#135](https://github.com/John-McPherson/jm_wp_theme/issues/135)).
 - Buttons use the Phone Button variation, so numbers come from [Settings → Business](#business-contact-settings) and a button renders nothing until a phone number is set. Contact details follow the same settings and the block's [empty state](#contact-details); the only fixed link is the canonical `/services/` page.
@@ -105,6 +106,27 @@ To build the homepage, edit the page set as the homepage and insert patterns in 
 Once a template has been saved in the Site Editor, the saved copy overrides the theme file. Reset the template to pick up later changes to the theme file.
 
 `tests/phpunit/Unit/PageTemplatesTest.php` and `PageTitleTest.php` cover these contracts; see [testing](testing.md#php-regression-tests).
+
+## Contact and 404 templates
+
+Each template is the `header` part, one `<main class="jmc-main">` group, and the `footer` part. Everything visible between the header and footer sits inside `<main>`, which WordPress also uses as the skip link's target. Edit them in **Appearance → Editor → Templates**; once saved there, the saved copy overrides the theme file, so reset the template to pick up later theme changes.
+
+| Template            | Used for                                                                 | Sections                                                                                                                                                       |
+| ------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `page-contact.html` | The page with the `contact` slug, and any page given the **Contact** template (`customTemplates` in `theme.json`) | The page's own content (`core/post-content`, locked), seeded by the `jmc/contact-page` starter pattern: `jmc/hero` (label, H1, intro), `jmc/enquiry-form`, contact details (H2 beside the business contact details) and a call to action |
+| `404.html`          | Pages that don't exist, and every front-end search (see [Site search](#site-search)) | `jmc/hero` (label, H1, explanation, a **Go to the homepage** button) and a `jmc/cta-banner` with its own copy (H2 "Can’t find what you need?", a **Call us** phone button and a **View our services** link); it does not use the call-to-action pattern, whose copy is placeholder |
+
+- **Contact sections.** The ticket asked for "the agreed contact sections"; with no other record of what was agreed, the starter pattern uses the enquiry form, the business contact details and a closing call to action. The business name and address are in the footer on every page. All contact details come from [Settings → Business](#business-contact-settings), so neither the template nor the pattern holds any.
+- **Page content.** The contact template is layout only: the header, one `<main>` holding the page's own content, and the footer. The Contact page owns its copy. When a new page is created, the `jmc/contact-page` starter pattern (`Block Types: core/post-content`, `Post Types: page`) is offered; it seeds the sections, each locked against moving and removal, with all copy editable in the page editor. Pick it for the Contact page, which gets the template through its `contact` slug or the **Contact** template.
+- **Placeholder copy.** The starter pattern's hero is real copy, but its contact-details and call-to-action sections use the same lorem ipsum as their patterns. It becomes page content when the pattern is chosen, so replace it in the page editor before publishing ([#135](https://github.com/John-McPherson/jm_wp_theme/issues/135)). The 404 text is real interface copy.
+- **Fixed links.** Links are site-relative (`/` in the 404 hero, `/services/` in the 404's call to action), which assumes WordPress is installed at the domain root and the Services page keeps its slug.
+- `tests/phpunit/Unit/ContactNotFoundTemplatesTest.php` checks the landmarks, heading flow (patterns expanded), that no template offers search, block contracts and each template's sections; see [testing](testing.md#php-regression-tests).
+
+## Site search
+
+Site search is turned off: the site is small enough that its navigation, the Services page and the 404 page's links cover what search would, and a good search would need its own results design, relevance tuning and testing. `inc/search.php` answers every front-end search request (`?s=`) as not found, with a 404 status, no caching and the theme's 404 template, so no results page is shown or indexed. No template offers a search form, and the theme has no search template. Searches in the admin and the REST API, including the editor's link search, still work.
+
+To bring search back, remove `inc/search.php` (and its `require_once` in `functions.php`), then add a `search.html` template and search forms with visible labels and text buttons.
 
 ## Adding a block
 
@@ -530,7 +552,7 @@ Page content is the page's own. Two starter patterns, offered when a new page is
 
 Only the landing page lists services, always through `jmc/service-grid`, so its cards follow [the empty states above](#empty-states): with no published services, visitors see the grid's intro without cards. Trust credentials also appear on every page in the footer. Related content is not part of the service template: no relationship between services is defined beyond their shared parent.
 
-Breadcrumbs and canonical URLs come from the native page hierarchy: core Breadcrumbs renders Home → Services → Service from the page's ancestors, and the canonical URL is the page permalink, built from its slug and parent. Service pages stay in normal WordPress search. The theme outputs no structured data (JSON-LD): schema is deferred to Yoast SEO, which builds it from the same page record and site settings; see [Structured data](architecture/services-content-model.md#structured-data).
+Breadcrumbs and canonical URLs come from the native page hierarchy: core Breadcrumbs renders Home → Services → Service from the page's ancestors, and the canonical URL is the page permalink, built from its slug and parent. Front-end site search is turned off (see [Site search](#site-search)), so service pages are found through navigation and the Services page. The theme outputs no structured data (JSON-LD): schema is deferred to Yoast SEO, which builds it from the same page record and site settings; see [Structured data](architecture/services-content-model.md#structured-data).
 
 ### Publishing a service
 

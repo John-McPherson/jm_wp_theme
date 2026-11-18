@@ -94,7 +94,7 @@ The `style.css` header currently uses `jmc-custom-theme`; align it before releas
 - The global block allowlist exposes only `jmc/` blocks and must become context-aware before header, navigation, query, and broader FSE workflows are completed.
 - Some internal block metadata still uses legacy, unregistered categories.
 - TypeScript strict mode is disabled and existing contracts contain weak typing.
-- Header and footer template parts, the front-page and page templates, and the first theme patterns exist; other templates still fall back to `index.html`.
+- Header and footer template parts, the first theme patterns, and the front-page, page, services landing, service, contact and 404 templates exist; other views (posts and archives) still fall back to `index.html`. Front-end search is turned off by `inc/search.php` and answered with the 404 template.
 - Automated behavioural and accessibility tests are not configured.
 - Packaging uses Unix-specific shell tools and is not clean-install tested.
 - Production hosting, deployment, health-check, and rollback commands are undecided.
