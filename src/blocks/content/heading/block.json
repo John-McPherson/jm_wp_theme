@@ -29,11 +29,12 @@
     }
   },
   "usesContext": ["jmc/variant"],
+  "ancestor": ["jmc/text-with-image", "jmc/hero", "jmc/cta-banner"],
+
   "supports": {
     "anchor": true,
     "className": true,
-    "html": false,
-    "inserter": false
+    "html": false
   },
   "textdomain": "jmc-theme",
   "editorScript": "file:./index.js",
