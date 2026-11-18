@@ -1,11 +1,10 @@
-import apiFetch from '@wordpress/api-fetch';
 import { useBlockProps } from '@wordpress/block-editor';
-import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 import bindFields from '../../../utils/bindFields';
 import Sidebar from '../../../components/Sidebar';
 import TextInput from '../../../components/TextInput';
+import useThemeIcons from '../../../utils/useThemeIcons';
 
 type FooterBusinessAttributes = {
 	companyName: string;
@@ -22,53 +21,6 @@ type EditProps = {
 };
 
 const ICON_CLASS = 'jmc-footer-business__icon';
-
-// Theme collection holding the footer's Lucide icons (see inc/icons.php).
-const ICON_COLLECTION = 'jmc';
-
-type IconContent = Record< string, string >;
-
-/**
- * Fetch the registered SVG for each theme icon, so the editor shows the same
- * markup the frontend renders with wp_get_icon().
- */
-const useThemeIcons = (): IconContent => {
-	const [ icons, setIcons ] = useState< IconContent >( {} );
-
-	useEffect( () => {
-		let isMounted = true;
-
-		apiFetch( { path: `/wp/v2/icons/${ ICON_COLLECTION }` } )
-			.then( ( response ) => {
-				if ( ! isMounted || ! Array.isArray( response ) ) {
-					return;
-				}
-
-				const content: IconContent = {};
-
-				response.forEach(
-					( icon: { name?: unknown; content?: unknown } | null ) => {
-						if (
-							typeof icon?.name === 'string' &&
-							typeof icon?.content === 'string'
-						) {
-							content[ icon.name ] = icon.content;
-						}
-					}
-				);
-
-				setIcons( content );
-			} )
-			// Icons are decorative: the lines still work without them.
-			.catch( () => undefined );
-
-		return () => {
-			isMounted = false;
-		};
-	}, [] );
-
-	return icons;
-};
 
 type LineIconProps = {
 	content?: string;
