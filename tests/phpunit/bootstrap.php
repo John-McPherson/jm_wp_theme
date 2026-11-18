@@ -18,6 +18,7 @@ require_once dirname( __DIR__, 2 ) . '/inc/helpers/link.php';
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/navigation.php';
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/text.php';
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/contact.php';
+require_once dirname( __DIR__, 2 ) . '/inc/helpers/enquiry.php';
 
 /**
  * Render a theme component.
