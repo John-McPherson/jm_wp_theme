@@ -62,6 +62,7 @@ function jmc_get_the_attributes( array $attributes ): string {
 						'bookmark',
 						'external',
 						'help',
+						'home',
 						'license',
 						'next',
 						'nofollow',

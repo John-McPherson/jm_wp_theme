@@ -25,6 +25,7 @@ require_once get_theme_file_path( '/inc/helpers/text.php' );
 require_once get_theme_file_path( '/inc/helpers/services.php' );
 require_once get_theme_file_path( '/inc/helpers/contact.php' );
 require_once get_theme_file_path( '/inc/helpers/enquiry.php' );
+require_once get_theme_file_path( '/inc/helpers/svg.php' );
 
 require_once get_theme_file_path( '/inc/helpers/html/attributes.php' );
 
