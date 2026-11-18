@@ -1,0 +1,67 @@
+@use "../../../scss/abstracts/index" as *;
+
+@layer blocks {
+
+	/*
+	 * The logo's three colour groups read the --jmc-logo-* tokens. The default
+	 * "Follow palette" style sets none, so they come from the semantic tokens
+	 * and whichever `jmc-palette--*` class surrounds the logo. The other styles
+	 * pin the tokens on the logo itself.
+	 */
+	.jmc-site-logo {
+		display: inline-block;
+		color: inherit;
+		text-decoration: none;
+
+		&:focus-visible {
+			outline: 2px solid var(--jmc-text-highlight);
+			outline-offset: 4px;
+		}
+
+		// The width and height attributes give the intrinsic aspect ratio.
+		&__svg {
+			display: block;
+			width: 13rem;
+			max-width: 100%;
+			height: auto;
+		}
+
+		&__primary {
+			fill: var(--jmc-logo-primary);
+		}
+
+		&__accent {
+			fill: var(--jmc-logo-accent);
+		}
+
+		&__secondary {
+			fill: var(--jmc-logo-secondary);
+		}
+
+		&__name {
+
+			@include sr-only;
+		}
+
+		// Full-colour artwork for light backgrounds.
+		&.is-style-brand {
+			--jmc-logo-primary: var(--jmc-color-brand-900);
+			--jmc-logo-accent: var(--jmc-color-accent-500);
+			--jmc-logo-secondary: var(--jmc-color-base-600);
+		}
+
+		// One dark colour for light backgrounds.
+		&.is-style-mono-dark {
+			--jmc-logo-primary: var(--jmc-color-brand-900);
+			--jmc-logo-accent: var(--jmc-color-brand-900);
+			--jmc-logo-secondary: var(--jmc-color-brand-900);
+		}
+
+		// One light colour for dark backgrounds.
+		&.is-style-mono-light {
+			--jmc-logo-primary: var(--jmc-color-base-50);
+			--jmc-logo-accent: var(--jmc-color-base-50);
+			--jmc-logo-secondary: var(--jmc-color-base-50);
+		}
+	}
+}
