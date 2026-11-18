@@ -22,9 +22,9 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 
 | Block                 | Purpose                                                                            | Rendering                 | Notes                                                                                                                  |
 | --------------------- | ---------------------------------------------------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `jmc/button`          | Linked call-to-action                                                              | Dynamic PHP               | Internal composition block; primary or secondary; Button, Phone Button, Email Button and WhatsApp Button variations (`linkType`); optional pre-filled email or WhatsApp message; direct inserter disabled; see [Buttons](#buttons) |
-| `jmc/buttons`         | Group of one or more `jmc/button` blocks                                           | Dynamic PHP               | Allows only `jmc/button`; unlocked inside locked sections; adds buttons from its own **+** menu; renders nothing when every button is omitted; direct inserter disabled |
-| `jmc/column`          | Groups related inner content within a section                                      | Dynamic PHP               | Structural composition block; direct inserter disabled                                                                 |
+| `jmc/button`          | Linked call-to-action                                                              | Dynamic PHP               | Primary or secondary; Button, Phone Button, Email Button and WhatsApp Button variations (`linkType`); optional pre-filled email or WhatsApp message; insertable only inside `jmc/text-with-image`, `jmc/hero` and `jmc/buttons` (`ancestor`); see [Buttons](#buttons) |
+| `jmc/buttons`         | Group of one or more `jmc/button` blocks                                           | Dynamic PHP               | Allows only `jmc/button`; unlocked inside locked sections; adds buttons from its own **+** menu; renders nothing when every button is omitted; insertable only inside `jmc/cta-banner` (`ancestor`) |
+| `jmc/column`          | Groups related inner content within a section                                      | Dynamic PHP               | Structural composition block; direct inserter disabled; inherits its section's lock, except inside `jmc/cta-banner`, where its content is unlocked and limited to the CTA's content blocks |
 | `jmc/contact-details` | Business phone, WhatsApp, email, opening hours, and service area                   | Dynamic PHP               | Restricted to `jmc/column`; values come from the [business contact settings](#business-contact-settings), the block only chooses which to show; renders nothing when nothing is set; see [Contact details](#contact-details) |
 | `jmc/credential`      | One accreditation, guarantee or review logo with an optional link                  | Dynamic PHP               | Restricted to `jmc/credential-list`; informative logo whose alt text names the credential; renders nothing without an image; see [Credentials](#credentials) |
 | `jmc/credential-list` | Centred, wrapping list of `jmc/credential` logos                                   | Dynamic PHP               | Restricted to `jmc/trust-credentials`; direct inserter disabled; starts with one credential; credentials can be added, removed and reordered; renders nothing when empty |
@@ -34,21 +34,23 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/footer-legal`    | Site credit, copyright notice with the current year, and links from the `legal` menu | Dynamic PHP              | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
 | `jmc/header-cta`      | Optional header call-to-action linking to a page, URL, or telephone number         | Dynamic PHP               | Restricted to `jmc/navigation`; direct inserter disabled; single instance; locked against removal in the header part   |
 | `jmc/navigation`      | Primary navigation rendered from a selected `wp_navigation` menu                    | Dynamic PHP + view script | Site chrome; direct inserter disabled; allows only `jmc/header-cta`, rendered as the last menu item                     |
-| `jmc/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jmc/variant` context; level defaults to `2`; direct inserter disabled                                            |
-| `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; direct inserter disabled                                         |
+| `jmc/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jmc/variant` context; level defaults to `2`; insertable only inside `jmc/text-with-image`, `jmc/hero` and `jmc/cta-banner` (`ancestor`) |
+| `jmc/list`            | Styled list of short points with icon, bullet or number markers                    | Dynamic PHP               | `listStyle` `icon` (default), `bullet` or `number`; `icon` from a fixed Lucide set; provides `jmc/listStyle` and `jmc/listIcon`; allows only `jmc/list-item`; insertable only inside `jmc/text-with-image` and `jmc/cta-banner` (`ancestor`); renders nothing when empty; see [Lists](#lists) |
+| `jmc/list-item`       | One point in a `jmc/list`                                                          | Dynamic PHP               | Restricted to `jmc/list`; bold, italic and links only; Enter starts the next item; renders nothing without visible text |
+| `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; insertable only inside `jmc/text-with-image`, `jmc/hero` and `jmc/cta-banner` (`ancestor`) |
 | `jmc/service-list`    | Linked cards for the published child pages of the Services page                    | Dynamic PHP               | Restricted to `jmc/service-grid`; direct inserter disabled; card heading level `2`–`6`, default `3`; previewed in the editor with `ServerSideRender`; see [Services grid](#services-grid) |
-| `jmc/cta-banner`      | Call-to-action section with a heading, supporting copy, and one or more buttons     | Dynamic PHP               | Columns, Stacked and Contact Details variations (`layout`); palettes; left/right order (not stacked); defaults to inverse/right/columns; see [Call-to-action banner](#call-to-action-banner) |
+| `jmc/cta-banner`      | Call-to-action section with a heading, supporting copy, and one or more buttons     | Dynamic PHP               | Columns, Stacked and Contact Details variations (`layout`); palettes; left/right order (not stacked); defaults to inverse/right/columns; its two columns are fixed but their content is editable; see [Call-to-action banner](#call-to-action-banner) |
 | `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default |
 | `jmc/service-grid`    | Introductory content and the published services in one responsive grid              | Dynamic PHP               | Two locked Column children: the intro and `jmc/service-list`; palettes; defaults to default; the `order` attribute is currently unused |
 | `jmc/trust-credentials` | Strip of credential logos at the top of the site footer                        | Dynamic PHP               | Direct inserter disabled; allows only `jmc/credential-list`; placed and locked in the footer part; palettes, defaulting to the surrounding palette; renders nothing without logos |
-| `jmc/text-with-image` | Composable text content paired with an image                                       | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; contains legacy-looking attributes that need contract review |
+| `jmc/text-with-image` | Composable text content paired with an image                                       | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; unlocked: allows `jmc/heading`, `jmc/paragraph`, `jmc/list` and `jmc/button`; contains legacy-looking attributes that need contract review |
 
 This table should be updated whenever a block is added, renamed, deprecated, or removed.
 
 ### Composition model
 
 - Section blocks are assigned to `jmc-section` and are intended for direct insertion.
-- Content blocks are used inside section templates; their `supports.inserter` value is `false` where explicitly declared.
+- Content blocks are used inside sections. Those authors add themselves (`jmc/heading`, `jmc/paragraph`, `jmc/button`, `jmc/buttons`, `jmc/list`) are in the inserter but declare an `ancestor` list, so they appear only inside the sections that use them and never at the top level of a page. Purely structural blocks such as `jmc/column` keep `supports.inserter: false`.
 - `allowedBlocks`, `ancestor`, and block locking should keep editor composition valid without relying only on author training.
 - Section blocks use the registered `jmc-section` category. Internal content-block metadata still contains legacy `jm` and `jmc-blocks` categories and should be normalised.
 
@@ -105,7 +107,7 @@ The block is not insertable, so a site whose header template part has been custo
 
 ## Call-to-action banner
 
-`jmc/cta-banner` is an insertable section for a closing call to action: a heading, supporting copy, and one or more contact actions. Its content is a locked template of two `jmc/column` blocks:
+`jmc/cta-banner` is an insertable section for a closing call to action: a heading, supporting copy, and one or more contact actions. It starts from a template of two `jmc/column` blocks:
 
 ```text
 jmc/cta-banner
@@ -117,9 +119,11 @@ jmc/cta-banner
         └── jmc/button (one or more)
 ```
 
-Authors edit the text and buttons but cannot add, remove, or move the columns, heading, or paragraph. `jmc/buttons` is unlocked, so buttons can be added, removed, and reordered inside it.
+The section is locked with `templateLock: 'insert'`, so the two columns cannot be added or removed (they can be reordered, though the `order` setting is the usual way to swap sides). Each column unlocks its own content: `jmc/column` looks up its parent and, inside `jmc/cta-banner`, sets `templateLock: false` and allows `jmc/heading`, `jmc/paragraph`, `jmc/list`, `jmc/buttons` and `jmc/contact-details`. Authors can therefore add, remove and reorder content in either column; the template is only the starting content. `jmc/buttons` is unlocked too, so buttons can be added, removed, and reordered inside it.
 
-The **CTA Banner (Contact Details)** variation uses a different locked template, with no buttons:
+The section does not use a full lock because a fully locked block re-syncs its inner blocks to the template, recursively, which would discard anything an author adds to a column. Columns in other sections, such as `jmc/service-grid`, are unaffected and keep their section's lock.
+
+The **CTA Banner (Contact Details)** variation uses a different template, with no buttons:
 
 ```text
 jmc/cta-banner (layout: contact)
@@ -141,7 +145,7 @@ jmc/cta-banner (layout: contact)
 Unknown or malformed values fall back to the default. The `layout` attribute is exposed as three block variations, **CTA Banner** (columns, the default), **CTA Banner (Stacked)** and **CTA Banner (Contact Details)**, which can be chosen in the inserter or switched from the block's variation control.
 
 - **Columns** stacks the two columns on narrow screens and places them side by side from the `$tablet` width. `order` decides which side the copy and buttons sit on; the editor labels it **Buttons Left** / **Buttons Right**.
-- **Contact Details** stacks on narrow screens. From `$tablet` it gives the heading and copy two-thirds of the width and the contact details one-third, and bottom-aligns the details with the copy. `order` places the details column; the editor labels it **Contact Details Left** / **Contact Details Right**, and the default puts the details on the right. Fractions are used rather than content sizing, because section columns are `inline-size` containers and report no content width to the grid. Switching an existing banner to or from this variation resets its columns to the new template.
+- **Contact Details** stacks on narrow screens. From `$tablet` it gives the heading and copy two-thirds of the width and the contact details one-third, and bottom-aligns the details with the copy. `order` places the details column; the editor labels it **Contact Details Left** / **Contact Details Right**, and the default puts the details on the right. Fractions are used rather than content sizing, because section columns are `inline-size` containers and report no content width to the grid. Switching an existing banner to or from this variation rebuilds its columns from the new template (the editor does this explicitly, since the section no longer re-syncs), discarding their content; undo restores it.
 - **Stacked** keeps one centred column at every width, limited to `--jmc-container-sm`, with the heading above the copy and centred buttons. `order` has no effect and its control is hidden.
 
 ### Empty content
@@ -150,11 +154,11 @@ Headings, paragraphs, buttons, and the buttons group each render nothing when em
 
 ### Migrating existing banners
 
-Banners saved before `jmc/buttons` was introduced hold `jmc/button` directly in the second column. They keep rendering on the frontend. Because the section is locked to its template, opening one in the editor replaces that button with an empty `jmc/buttons` group, so its label and destination must be re-entered before saving.
+Banners saved before `jmc/buttons` was introduced hold `jmc/button` directly in the second column. They keep rendering on the frontend, and, now that the section no longer re-syncs to its template, they keep that button in the editor too. A bare button is not one of the blocks a CTA column allows, so it can be edited but not duplicated or moved; to add more buttons, insert a **Buttons** group, recreate the button inside it, and remove the old one.
 
 ## Buttons
 
-`jmc/button` renders a single `.jmc-button` link through the `button-link` component. It is hidden from the inserter, so inside `jmc/buttons` new buttons are added from the group's **+** menu (**Button**, **Phone button**, **Email button**, or **WhatsApp button**). Its `buttonType` attribute selects `primary` (default) or `secondary` (`jmc-button__secondary`).
+`jmc/button` renders a single `.jmc-button` link through the `button-link` component. It is in the inserter only inside `jmc/text-with-image`, `jmc/hero` and `jmc/buttons` (its `ancestor` list). Inside `jmc/buttons`, new buttons are usually added from the group's **+** menu (**Button**, **Phone button**, **Email button**, or **WhatsApp button**), which presets the link type. Its `buttonType` attribute selects `primary` (default) or `secondary` (`jmc-button__secondary`).
 
 ### Link types
 
@@ -205,6 +209,44 @@ The button renders nothing when its label is empty or its destination is missing
 ### Buttons group
 
 `jmc/buttons` wraps its buttons in `<div class="jmc-buttons">`: full-width and stacked on narrow screens, then a wrapping row from the `$compact` width. It renders nothing when all of its buttons are omitted. It can be used in any section, though only `jmc/cta-banner` places it today.
+
+## Lists
+
+`jmc/list` is a styled list of short points, such as benefits or included services. It holds `jmc/list-item` blocks and can be inserted inside `jmc/text-with-image` (after the paragraph, for example) and inside either column of `jmc/cta-banner`. It is not part of any default template.
+
+### Attributes
+
+| Attribute | Values | Default | Output |
+| --- | --- | --- | --- |
+| `listStyle` | `icon`, `bullet`, `number` | `icon` | `<ul class="jmc-list jmc-list--icon" role="list">`, `<ul class="jmc-list jmc-list--bullet">`, or `<ol class="jmc-list jmc-list--number">` |
+| `icon` | `check`, `circle-check`, `shield-check`, `plus`, `zap`, `arrow-right` | `check` | The Lucide icon `jmc/<icon>` before each item; used only by the `icon` style |
+
+The list passes both values to its items as the `jmc/listStyle` and `jmc/listIcon` context. Unknown or malformed values fall back to the defaults, in PHP (`render.php` in both blocks) and in the editor (`src/blocks/content/list/options.ts`, which also holds the editor's option lists). The values must match the `enum`s in `block.json`, the PHP allowlists, and `src/icons/lucide.json`; `options.test.ts` checks the editor side.
+
+### Markup and accessibility
+
+```html
+<ul class="jmc-list jmc-list--icon" role="list">
+	<li class="jmc-list__item">
+		<svg class="jmc-list__icon lucide" aria-hidden="true" focusable="false">…</svg>
+		<span class="jmc-list__text">Fully <strong>insured</strong></span>
+	</li>
+</ul>
+```
+
+- Icon lists remove the browser's markers with `list-style: none`, so they carry `role="list"`; Safari otherwise stops announcing them as lists. Bulleted and numbered lists keep their native markers and need no role.
+- Icons are decorative: `wp_get_icon()` marks them `aria-hidden="true"`, so screen readers announce only the text.
+- Item text allows bold, italic and links (`core/bold`, `core/italic`, `core/link` in the editor) and is filtered with `wp_kses()` to `<strong>`, `<em>` and `<a href target rel>` on output.
+
+### Empty content
+
+An item with no visible text renders nothing; the check runs on the text before filtering, so markup such as a lone `<script>` cannot leave stray text behind. A list whose items all render nothing renders nothing.
+
+### Presentation
+
+The icon or marker sits in a gutter (`--jmc-list-gutter`: the icon size plus `--jmc-padding-2xs`) and is aligned to the first line of text, so long items wrap beneath their text rather than under the icon. The list is indented from the surrounding content by `--jmc-list-indent` (`--jmc-padding-xs`), limited to the paragraph measure (`50ch`), and spaced like a paragraph from the next block. Icons and markers use `--jmc-text-highlight` and the text inherits the section's text colour, so lists follow the `default`, `secondary` and `inverse` palettes.
+
+In the editor the list spans the column (less the indent) so its **+** appender sits in the bottom corner; items keep the frontend measure, so text wraps the same way. Enter at the end of an item starts a new item (`supports.splitting`), and Backspace at the start of an item joins it to the previous one.
 
 ## Business contact settings
 
@@ -443,7 +485,7 @@ Theme icons are registered with the core Icons API in the `jmc` collection (`inc
 
 | Source | Icons | Used by |
 | --- | --- | --- |
-| [Lucide](https://lucide.dev) | Listed in `src/icons/lucide.json` | Service icons, the service card arrow, footer and contact details icons |
+| [Lucide](https://lucide.dev) | Listed in `src/icons/lucide.json` | Service icons, the service card arrow, footer and contact details icons, list markers |
 | [Simple Icons](https://simpleicons.org) | Listed in `src/icons/simple-icons.json` | Brand logos: `jmc/whatsapp` on WhatsApp buttons and contact details |
 
 Icons are decorative (`aria-hidden`) unless they carry meaning that the surrounding text does not.
