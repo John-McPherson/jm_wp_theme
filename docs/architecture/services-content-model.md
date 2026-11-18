@@ -102,7 +102,7 @@ The service-page structure should consistently support:
 ### Implementation
 
 - `templates/services-landing.html` lays out the Services page and `templates/service.html` its direct children. The theme routes each page to its template from the resolved Services page, ahead of any template assigned in the editor, and never applies either template to deeper descendants or unrelated pages; see [Services templates](../blocks.md#services-templates).
-- The templates hold the header, breadcrumbs, the page content and the footer, and no editorial content.
+- The templates hold the header, the page content and the footer, and no editorial content. Breadcrumbs belong to the page's hero, which shows them on child pages; see [Hero breadcrumbs](../blocks.md#hero-breadcrumbs).
 - The `jmc/services-landing` and `jmc/service-page` starter patterns give each page the structure above, as locked sections whose copy belongs to the page. Only the landing page lists services, through `jmc/service-grid`.
 - No related-content section is provided yet, because no relationship between services is defined beyond their shared parent.
 
@@ -110,7 +110,7 @@ The service-page structure should consistently support:
 
 - Navigation links point to the canonical page URLs.
 - Service pages remain included in normal WordPress search unless a separate documented search decision overrides this. Front-end site search is currently turned off for the whole site, so this applies again if search is restored; see [Site search](../blocks.md#site-search).
-- Breadcrumbs derive from the native page ancestry: Home → Services → Service.
+- Breadcrumbs derive from the native page ancestry: Home → Services → Service. The hero renders them on service pages, with Home as an icon link; the Services page itself is top level, so it shows its label instead.
 - Menus may feature selected services, but a menu is not the service catalogue or source of truth.
 - Removing a service requires unpublishing or moving the page and reviewing redirects and inbound navigation.
 
