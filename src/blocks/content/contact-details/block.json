@@ -7,7 +7,7 @@
   "category": "jmc-section",
   "icon": "phone",
   "parent": ["jmc/column"],
-  "description": "The business phone number, WhatsApp number, email address, opening hours and service area, from Settings → General.",
+  "description": "The business phone number, WhatsApp number, email address, opening hours and service area, from Settings → Business.",
   "attributes": {
     "showPhone": {
       "type": "boolean",

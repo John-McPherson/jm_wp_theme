@@ -60,7 +60,7 @@
     {
       "name": "phone",
       "title": "Phone Button",
-      "description": "Calls the business phone number set in Settings → General.",
+      "description": "Calls the business phone number set in Settings → Business.",
       "icon": "phone",
       "attributes": {
         "linkType": "phone"
@@ -71,7 +71,7 @@
     {
       "name": "email",
       "title": "Email Button",
-      "description": "Emails the business email address set in Settings → General.",
+      "description": "Emails the business email address set in Settings → Business.",
       "icon": "email",
       "attributes": {
         "linkType": "email"
@@ -82,7 +82,7 @@
     {
       "name": "whatsapp",
       "title": "WhatsApp Button",
-      "description": "Opens a WhatsApp chat with the business WhatsApp number set in Settings → General.",
+      "description": "Opens a WhatsApp chat with the business WhatsApp number set in Settings → Business.",
       "icon": "format-chat",
       "attributes": {
         "linkType": "whatsapp"
