@@ -36,6 +36,7 @@ All notable changes will be documented here. The project follows semantic versio
 - Service List: a **Parent page** setting, and a **Choose pages** toggle with an ordered page picker. The toggle is locked on when the parent has no published children, and the choice is kept if children are published later (#141).
 - Service cards show a “Learn more” cue beside the arrow, with the text editable per grid (#141).
 - Reusable `PageSelect` and `PageListInput` editor controls (#141).
+- Primary navigation submenus: one level of submenus from the Site Editor menu. On desktop each opens as a dropdown on mouse hover or from its own disclosure button (keyboard and touch), one at a time, closing on Escape, focus leaving or a click outside; on mobile they are always expanded in the menu. Every link stays reachable without JavaScript, and deeper nesting is flattened into the submenu (#85).
 
 ### Changed
 
