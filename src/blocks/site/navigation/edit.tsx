@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useEntityRecords } from '@wordpress/core-data';
-import { Spinner } from '@wordpress/components';
+import { Disabled, Spinner } from '@wordpress/components';
 import { ServerSideRender } from '@wordpress/server-side-render';
 import { useEffect, useMemo } from '@wordpress/element';
 import { useInnerBlocksProps } from '@wordpress/block-editor';
@@ -78,10 +78,13 @@ export default function Edit( { attributes, setAttributes } ) {
 				</Sidebar.Section>
 			</Sidebar>
 
-			<ServerSideRender
-				block="jmc/navigation"
-				attributes={ attributes }
-			/>
+			{ /* Disabled keeps the menu links from leaving the editor. */ }
+			<Disabled>
+				<ServerSideRender
+					block="jmc/navigation"
+					attributes={ attributes }
+				/>
+			</Disabled>
 
 			<div { ...innerBlocksProps } />
 		</>
