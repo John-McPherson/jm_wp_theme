@@ -27,6 +27,8 @@ All notable changes will be documented here. The project follows semantic versio
 ### Changed
 
 - Server-rendered editor previews (contact details, services list, navigation, footer navigation) are inert, so links in them no longer leave the editor.
+- Development tooling upgraded to the latest `@wordpress/*` majors (`scripts` 37, `env` 12), Playwright 1.65 and PHPUnit 9.6.39, clearing every critical `npm audit` advisory; the remaining upstream-only advisories are documented in `docs/development.md`. Tooling now needs Node 22.13 or later (`.nvmrc` stays on 24).
+- JavaScript unit tests run on Vitest instead of Jest.
 
 ### Known issues
 

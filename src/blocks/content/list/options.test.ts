@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import metadata from './block.json';
 import {
 	DEFAULT_LIST_ICON,

@@ -81,7 +81,7 @@ const dayProblem = ( times: Partial< Record< Time, string > > = {} ) => {
 		? __(
 				'Closing time must be after opening time. Saved as closed until then.',
 				'jmc-theme'
-		  )
+			)
 		: '';
 };
 

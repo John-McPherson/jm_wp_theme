@@ -112,12 +112,12 @@ npm run typecheck
 npm run lint:js && npm run lint:styles
 npm run lint:php && npm run lint:phpcs
 composer test                          # PHP render/helper changes
-npm run test:unit -- --runInBand       # view script changes
+npm run test:unit                      # view script changes (Vitest)
 npm run build                          # always, before review
 ```
 
 Add or extend tests when the ticket changes behaviour: PHPUnit render tests under
-`tests/phpunit/Unit/` covering omitted, default, supported and malformed attributes; Jest
+`tests/phpunit/Unit/` covering omitted, default, supported and malformed attributes; Vitest
 tests beside the view script (`view.test.ts`); Playwright only when the ticket is about
 browser behaviour. If a gate fails on code you didn't touch, report it — don't fix it.
 

@@ -81,7 +81,7 @@ const joinPlaces = ( places: string[] ): string => {
 				__( '%1$s and %2$s', 'jmc-theme' ),
 				rest.join( ', ' ),
 				last
-		  )
+			)
 		: last;
 };
 
