@@ -115,3 +115,4 @@ jobs:
           test -d dist/templates
           test -d dist/parts
           test -f dist/parts/header.html
+          test -f dist/patterns/hero.php

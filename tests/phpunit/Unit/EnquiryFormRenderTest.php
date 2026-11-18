@@ -249,11 +249,13 @@ final class EnquiryFormRenderTest extends TestCase {
 	}
 
 	/**
-	 * The introduction column only renders when it has content.
+	 * Inner content saved by older forms, which had an introduction, is not rendered.
 	 */
-	public function test_intro_column(): void {
-		self::assertStringNotContainsString( 'jmc-enquiry-form__intro', $this->render() );
-		self::assertStringContainsString( '<p>Tell us about your project.</p>', $this->render( [], '<p>Tell us about your project.</p>' ) );
+	public function test_ignores_inner_content(): void {
+		$html = $this->render( [], '<p>Tell us about your project.</p>' );
+
+		self::assertStringNotContainsString( 'Tell us about your project.', $html );
+		self::assertStringNotContainsString( 'jmc-enquiry-form__intro', $html );
 	}
 
 	/**

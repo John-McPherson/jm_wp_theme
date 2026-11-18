@@ -7,17 +7,7 @@ import bindFields from '../../../utils/bindFields';
 import Sidebar from '../../../components/Sidebar';
 import SelectInput from '../../../components/SelectInput';
 
-const TEMPLATE = [
-	[
-		'jmc/column',
-		{},
-		[
-			[ 'jmc/paragraph', { variant: 'label' } ],
-			[ 'jmc/heading', { level: '2' } ],
-		],
-	],
-	[ 'jmc/column', {}, [ [ 'jmc/service-list' ] ] ],
-];
+import { TEMPLATE } from './template';
 
 const VARIANT_CLASSES = {
 	default: '',

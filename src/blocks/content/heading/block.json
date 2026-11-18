@@ -29,7 +29,7 @@
     }
   },
   "usesContext": ["jmc/variant"],
-  "ancestor": ["jmc/text-with-image", "jmc/hero", "jmc/cta-banner"],
+  "ancestor": ["jmc/text-with-image", "jmc/hero", "jmc/cta-banner", "jmc/service-grid"],
 
   "supports": {
     "anchor": true,

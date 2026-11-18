@@ -1,0 +1,36 @@
+@use "../base/typography" as typography;
+
+@layer layout {
+
+	// Core Breadcrumbs block in page templates (Home → Services → Service).
+	// Core lays the trail out as a wrapping row with separators; this aligns it
+	// with the section containers and sets the theme's small type.
+	.jmc-breadcrumbs {
+
+		@include typography.p4;
+
+		width: 100%;
+		padding-block: var(--jmc-padding-2xs);
+		// Align the trail with section content (`.jmc-section__container`).
+		padding-inline: max(var(--jmc-page-margin), (100% - var(--jmc-container-l)) / 2);
+		background-color: var(--jmc-background-color);
+
+		a {
+			display: inline-block;
+			// Meet the 24px minimum target size without changing the row height.
+			min-block-size: 1.5rem;
+			padding-block: var(--jmc-padding-3xs);
+			color: inherit;
+			text-decoration: underline;
+			text-underline-offset: 0.2em;
+
+			&:hover {
+				text-decoration-thickness: 2px;
+			}
+		}
+
+		[aria-current="page"] {
+			font-weight: 600;
+		}
+	}
+}

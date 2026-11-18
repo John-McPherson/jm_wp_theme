@@ -34,14 +34,14 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/footer-legal`    | Site credit, copyright notice with the current year, and links from the `legal` menu | Dynamic PHP              | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
 | `jmc/header-cta`      | Optional header call-to-action linking to a page, URL, or telephone number         | Dynamic PHP               | Restricted to `jmc/navigation`; direct inserter disabled; single instance; locked against removal in the header part   |
 | `jmc/navigation`      | Primary navigation rendered from a selected `wp_navigation` menu                    | Dynamic PHP + view script | Site chrome; direct inserter disabled; allows only `jmc/header-cta`, rendered as the last menu item                     |
-| `jmc/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jmc/variant` context; level defaults to `2`; insertable only inside `jmc/text-with-image`, `jmc/hero` and `jmc/cta-banner` (`ancestor`) |
+| `jmc/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jmc/variant` context; level defaults to `2`; insertable only inside `jmc/text-with-image`, `jmc/hero`, `jmc/cta-banner` and `jmc/service-grid` (`ancestor`) |
 | `jmc/list`            | Styled list of short points with icon, bullet or number markers                    | Dynamic PHP               | `listStyle` `icon` (default), `bullet` or `number`; `icon` from a fixed Lucide set; provides `jmc/listStyle` and `jmc/listIcon`; allows only `jmc/list-item`; insertable only inside `jmc/text-with-image` and `jmc/cta-banner` (`ancestor`); renders nothing when empty; see [Lists](#lists) |
 | `jmc/list-item`       | One point in a `jmc/list`                                                          | Dynamic PHP               | Restricted to `jmc/list`; bold, italic and links only; Enter starts the next item; renders nothing without visible text |
-| `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; insertable only inside `jmc/text-with-image`, `jmc/hero` and `jmc/cta-banner` (`ancestor`) |
+| `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; insertable only inside `jmc/text-with-image`, `jmc/hero`, `jmc/cta-banner` and `jmc/service-grid` (`ancestor`) |
 | `jmc/service-list`    | Linked cards for the published child pages of the Services page                    | Dynamic PHP               | Restricted to `jmc/service-grid`; direct inserter disabled; card heading level `2`–`6`, default `3`; previewed in the editor with `ServerSideRender`; see [Services grid](#services-grid) |
 | `jmc/site-logo`       | The theme's inline SVG logo, linked to the homepage                                | Dynamic PHP               | Site chrome; direct inserter disabled; locked against removal in the header part; colour variants are block styles (Follow palette, Brand, Mono dark, Mono light); see [Site logo](#site-logo) |
 | `jmc/cta-banner`      | Call-to-action section with a heading, supporting copy, and one or more buttons     | Dynamic PHP               | Columns, Stacked and Contact Details variations (`layout`); palettes; left/right order (not stacked); defaults to inverse/right/columns; its two columns are fixed but their content is editable; see [Call-to-action banner](#call-to-action-banner) |
-| `jmc/enquiry-form`    | Enquiry form section with an optional introduction                                 | Dynamic PHP + view script | Palettes; single instance; submits without reloading the page and works without JavaScript; stores and emails each enquiry; see [Enquiry form](#enquiry-form) |
+| `jmc/enquiry-form`    | Enquiry form section                                                               | Dynamic PHP + view script | Palettes; single instance; submits without reloading the page and works without JavaScript; stores and emails each enquiry; see [Enquiry form](#enquiry-form) |
 | `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default |
 | `jmc/service-grid`    | Introductory content and the published services in one responsive grid              | Dynamic PHP               | Two locked Column children: the intro and `jmc/service-list`; palettes; defaults to default; the `order` attribute is currently unused |
 | `jmc/trust-credentials` | Strip of credential logos at the top of the site footer                        | Dynamic PHP               | Direct inserter disabled; allows only `jmc/credential-list`; placed and locked in the footer part; palettes, defaulting to the surrounding palette; renders nothing without logos |
@@ -54,7 +54,80 @@ This table should be updated whenever a block is added, renamed, deprecated, or 
 - Section blocks are assigned to `jmc-section` and are intended for direct insertion.
 - Content blocks are used inside sections. Those authors add themselves (`jmc/heading`, `jmc/paragraph`, `jmc/button`, `jmc/buttons`, `jmc/list`) are in the inserter but declare an `ancestor` list, so they appear only inside the sections that use them and never at the top level of a page. Purely structural blocks such as `jmc/column` keep `supports.inserter: false`.
 - `allowedBlocks`, `ancestor`, and block locking should keep editor composition valid without relying only on author training.
+- A section's editor template must itself satisfy those rules: every block it seeds, at any depth, must be allowed there by its `parent` and `ancestor` lists. Templates bypass the check when they insert blocks, so nothing in the editor catches a mismatch. Each layout block keeps its templates in `template.ts` beside `edit.tsx`, and `src/blocks/layouts/templates.test.ts` checks them against every `block.json`.
 - Section blocks use the registered `jmc-section` category. Internal content-block metadata still contains legacy `jm` and `jmc-blocks` categories and should be normalised.
+
+## Patterns
+
+Theme patterns are unsynced starting points built from the blocks above, one PHP file per pattern under `patterns/`. WordPress registers them from their file headers; `inc/patterns.php` registers the categories they use. Naming, categories, locking, placeholder and accessibility rules are in the [pattern taxonomy and registration decision](architecture/pattern-taxonomy-and-registration.md).
+
+| Pattern                     | Category | Built from                                                                                   |
+| --------------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `jmc/hero`                  | Heroes   | `jmc/hero`: label, the page's H1, a paragraph and a Phone Button                              |
+| `jmc/service-introduction`  | Services | `jmc/text-with-image`: label, H2, two paragraphs and a Phone Button beside an image           |
+| `jmc/why-choose-us`         | Trust    | `jmc/text-with-image` (secondary, image left): label, H2, paragraph, a ticked `jmc/list` and a Phone Button |
+| `jmc/call-to-action`        | Calls to action | `jmc/cta-banner`: H2 beside a paragraph, a Phone Button and a secondary button linking to `/services/` |
+| `jmc/contact-details`       | Contact, Calls to action | `jmc/cta-banner` (Contact Details): H2 and paragraph beside `jmc/contact-details` |
+| `jmc/services-landing`      | Services | Starter content for the Services page: hero, `jmc/service-grid`, why choose us and contact details, each locked; see [Services templates](#services-templates) |
+| `jmc/service-page`          | Services | Starter content for a service page: hero, service introduction, why choose us and call to action, each locked; see [Services templates](#services-templates) |
+| `jmc/home-page`             | Heroes, Services | Starter content for the homepage: hero, service introduction, `jmc/service-grid`, why choose us and contact details, each locked; see [Page templates](#page-templates) |
+| `jmc/contact-page`          | Contact  | Starter content for the Contact page: hero, enquiry form, contact details and call to action, each locked; see [Contact and 404 templates](#contact-and-404-templates) |
+
+- Copy is lorem ipsum until client copy replaces it ([#135](https://github.com/John-McPherson/jm_wp_theme/issues/135)).
+- Buttons use the Phone Button variation, so numbers come from [Settings → Business](#business-contact-settings) and a button renders nothing until a phone number is set. Contact details follow the same settings and the block's [empty state](#contact-details); the only fixed link is the canonical `/services/` page.
+- Patterns ship without images; editors choose one after inserting.
+- There is no services listing pattern: insert `jmc/service-grid`, whose layout is locked and whose cards come from the service pages (see [Services grid](#services-grid)). The `jmc/services-landing` starter pattern includes the grid as-is, with no card content.
+- WordPress caches the list of pattern files. Set `WP_DEVELOPMENT_MODE` to `theme` locally so new or renamed patterns appear without bumping the theme version (see [development](development.md#debugging)).
+- `tests/phpunit/Unit/PatternsTest.php` checks every pattern's header, categories and markup against each block's `block.json`; see [testing](testing.md#php-regression-tests).
+
+## Page templates
+
+`templates/front-page.html` and `templates/page.html` render pages. WordPress uses the front-page template for the page set as the homepage in **Settings → Reading** (choose **A static page**; the theme has no blog listing, so a "latest posts" homepage is not supported), and the page template for every other page. Anything else still falls back to `templates/index.html` until its own template exists.
+
+Both templates have the same structure:
+
+```text
+header template part   <header class="jmc-header">
+<main class="site-main">
+  page title           <h1 class="jmc-page-title">  (core Post Title, level 1)
+  page content         core Post Content: the page's sections
+</main>
+footer template part   <footer class="jmc-footer">
+```
+
+They are separate files so the homepage can be changed in the Site Editor (its front-page template, under **Appearance → Editor → Templates**) without changing every other page. Neither template holds copy: the page's own title and content fill them.
+
+- **One main landmark.** `<main>` is the only main landmark, so WordPress's automatic skip link targets it.
+- **One H1.** The page title is the H1, and sections in the content start at H2. A `jmc/hero` section locks its heading to H1, so on a page whose content contains a hero, `inc/templates.php` omits the template's title and the hero's heading names the page instead (`jmc_filter_page_title()` on `render_block_core/post-title`; only level-one titles are affected). Start a homepage, or any page that needs a visual introduction, with the **Hero** pattern.
+- **Content widths.** Sections in the content are full width and centre their own containers, so the content wrapper adds no width constraint. The title uses the same width as section content: the page margin on narrow screens, and the section container width (`--jmc-container-l`) centred on wide ones. Long titles wrap rather than overflow.
+- **Missing content.** A page without a title or content renders the parts that exist. When a page has no sections (empty or plain content), the main landmark keeps space above the footer. A page with no title and no hero has no H1, so always give pages a title.
+
+To build the homepage, create the page you will set as the homepage and choose the **Home page** starter pattern (`jmc/home-page`) when WordPress offers patterns for the new page (`Block Types: core/post-content`, `Post Types: page`). It seeds the standard sections in order: **Hero** (the page's H1), a service introduction, the **Service Grid**, **Why choose us** and **Contact details**. Each section is locked against moving and removal; all copy is editable. Replace the lorem ipsum placeholder copy before publishing. The pattern is copied into the page, so the homepage's content stays in the page record rather than the template. For an existing homepage, insert the sections from the pattern inserter instead.
+
+Once a template has been saved in the Site Editor, the saved copy overrides the theme file. Reset the template to pick up later changes to the theme file.
+
+`tests/phpunit/Unit/PageTemplatesTest.php` and `PageTitleTest.php` cover these contracts; see [testing](testing.md#php-regression-tests).
+
+## Contact and 404 templates
+
+Each template is the `header` part, one `<main class="jmc-main">` group, and the `footer` part. Everything visible between the header and footer sits inside `<main>`, which WordPress also uses as the skip link's target. Edit them in **Appearance → Editor → Templates**; once saved there, the saved copy overrides the theme file, so reset the template to pick up later theme changes.
+
+| Template            | Used for                                                                 | Sections                                                                                                                                                       |
+| ------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `page-contact.html` | The page with the `contact` slug, and any page given the **Contact** template (`customTemplates` in `theme.json`) | The page's own content (`core/post-content`, locked), seeded by the `jmc/contact-page` starter pattern: `jmc/hero` (label, H1, intro), `jmc/enquiry-form`, contact details (H2 beside the business contact details) and a call to action |
+| `404.html`          | Pages that don't exist, and every front-end search (see [Site search](#site-search)) | `jmc/hero` (label, H1, explanation, a **Go to the homepage** button) and a `jmc/cta-banner` with its own copy (H2 "Can’t find what you need?", a **Call us** phone button and a **View our services** link); it does not use the call-to-action pattern, whose copy is placeholder |
+
+- **Contact sections.** The ticket asked for "the agreed contact sections"; with no other record of what was agreed, the starter pattern uses the enquiry form, the business contact details and a closing call to action. The business name and address are in the footer on every page. All contact details come from [Settings → Business](#business-contact-settings), so neither the template nor the pattern holds any.
+- **Page content.** The contact template is layout only: the header, one `<main>` holding the page's own content, and the footer. The Contact page owns its copy. When a new page is created, the `jmc/contact-page` starter pattern (`Block Types: core/post-content`, `Post Types: page`) is offered; it seeds the sections, each locked against moving and removal, with all copy editable in the page editor. Pick it for the Contact page, which gets the template through its `contact` slug or the **Contact** template.
+- **Placeholder copy.** The starter pattern's hero is real copy, but its contact-details and call-to-action sections use the same lorem ipsum as their patterns. It becomes page content when the pattern is chosen, so replace it in the page editor before publishing ([#135](https://github.com/John-McPherson/jm_wp_theme/issues/135)). The 404 text is real interface copy.
+- **Fixed links.** Links are site-relative (`/` in the 404 hero, `/services/` in the 404's call to action), which assumes WordPress is installed at the domain root and the Services page keeps its slug.
+- `tests/phpunit/Unit/ContactNotFoundTemplatesTest.php` checks the landmarks, heading flow (patterns expanded), that no template offers search, block contracts and each template's sections; see [testing](testing.md#php-regression-tests).
+
+## Site search
+
+Site search is turned off: the site is small enough that its navigation, the Services page and the 404 page's links cover what search would, and a good search would need its own results design, relevance tuning and testing. `inc/search.php` answers every front-end search request (`?s=`) as not found, with a 404 status, no caching and the theme's 404 template, so no results page is shown or indexed. No template offers a search form, and the theme has no search template. Searches in the admin and the REST API, including the editor's link search, still work.
+
+To bring search back, remove `inc/search.php` (and its `require_once` in `functions.php`), then add a `search.html` template and search forms with visible labels and text buttons.
 
 ## Adding a block
 
@@ -350,7 +423,7 @@ Blocks that preview their server render (`jmc/contact-details`, `jmc/service-lis
 
 ## Enquiry form
 
-`jmc/enquiry-form` is a section with an optional introduction (paragraphs only) above a single, centred form column. One is allowed per page. Its attributes are `palette` (`default`, `secondary`, `inverse`; default `default`) and `submitText` (the button label; default "Send enquiry"). Its anchor, or `enquiry-form`, names the section and prefixes every field ID.
+`jmc/enquiry-form` is a section with a single, centred form column and no inner blocks. One is allowed per page. Its attributes are `palette` (`default`, `secondary`, `inverse`; default `default`) and `submitText` (the button label; default "Send enquiry"). Its anchor, or `enquiry-form`, names the section and prefixes every field ID.
 
 ### Fields
 
@@ -404,7 +477,7 @@ Each accepted enquiry is saved as a private `jmc_enquiry` post before it is emai
 
 `jmc/service-grid` lists the site's services without anyone maintaining a list. Services are published pages directly beneath the Services page, and every card is built from those page records; see the [services content model](architecture/services-content-model.md) for the decision behind this.
 
-The block holds two locked `jmc/column` blocks: an editable intro (a label paragraph and an H2) and a column containing `jmc/service-list`. `jmc/service-list` renders the cards on the server from page data, so there is no card content to edit inside the block. It replaces the hand-authored `jmc/service-card` block, which has been removed (see [Migrating from `jmc/service-card`](#migrating-from-jmcservice-card)).
+The block holds two locked `jmc/column` blocks: an editable intro (a label `jmc/paragraph` and an H2 `jmc/heading`, which list `jmc/service-grid` in their `ancestor`) and a column containing `jmc/service-list`. `jmc/service-list` renders the cards on the server from page data, so there is no card content to edit inside the block. It replaces the hand-authored `jmc/service-card` block, which has been removed (see [Migrating from `jmc/service-card`](#migrating-from-jmcservice-card)).
 
 ### Choosing the Services page
 
@@ -458,9 +531,33 @@ The choice is stored in the `jmc_service_icon` page meta, which only users who c
 
 The panel's script is `src/editor/service-icon/`, built to `build/js/editor/service-icon.js` by an extra entry in `webpack.config.js` and enqueued by `inc/services.php` on page editor screens only. Page excerpts are enabled by the same file.
 
+### Services templates
+
+The Services page and its direct children are laid out by two block templates, registered as `customTemplates` in `theme.json`:
+
+| Template | File | Applies to |
+| --- | --- | --- |
+| Services landing page | `templates/services-landing.html` | The resolved Services page (see [Choosing the Services page](#choosing-the-services-page)) |
+| Service page | `templates/service.html` | Every direct child of the Services page, whatever its status, so drafts preview with the template they will publish with |
+
+Both hold only layout: the header, one `<main>` landmark containing the core Breadcrumbs block and the page content, then the footer. Breadcrumbs and post content are locked against moving and removal. The templates contain no titles, excerpts, images, links or copy; everything a visitor reads comes from the page record or a dynamic block.
+
+Routing is automatic, so editors never pick these templates. `inc/services.php` filters `page_template_hierarchy` with `jmc_service_template_hierarchy()` (`inc/helpers/services.php`), which puts the template for the page's role first, ahead of any template assigned in the editor, and removes both services templates from every other page. A page's role comes from `jmc_service_page_role()`: `landing` for the Services page, `service` for its direct children, and `none` for everything else, including deeper descendants, which stay ordinary pages laid out by the normal page template. When the Services page is unresolved (`invalid` or `missing`), no page has a role. The `theme_page_templates` filter likewise offers each services template only on the page it governs, so the template picker cannot assign one elsewhere. To change a layout, edit the template in **Appearance → Editor → Templates**.
+
+Page content is the page's own. Two starter patterns, offered when a new page is created (`Block Types: core/post-content`), give it the governed structure, with every section locked against moving and removal and all copy editable:
+
+| Pattern | Sections |
+| --- | --- |
+| `jmc/services-landing` | Hero (the page's H1 and proposition), the Service Grid, Why choose us (trust), and a Contact Details call to action |
+| `jmc/service-page` | Hero (the page's H1 and proposition), a service introduction beside an image, Why choose us (trust), and a call to action |
+
+Only the landing page lists services, always through `jmc/service-grid`, so its cards follow [the empty states above](#empty-states): with no published services, visitors see the grid's intro without cards. Trust credentials also appear on every page in the footer. Related content is not part of the service template: no relationship between services is defined beyond their shared parent.
+
+Breadcrumbs and canonical URLs come from the native page hierarchy: core Breadcrumbs renders Home → Services → Service from the page's ancestors, and the canonical URL is the page permalink, built from its slug and parent. Front-end site search is turned off (see [Site search](#site-search)), so service pages are found through navigation and the Services page. The theme outputs no structured data (JSON-LD): schema is deferred to Yoast SEO, which builds it from the same page record and site settings; see [Structured data](architecture/services-content-model.md#structured-data).
+
 ### Publishing a service
 
-1. Create a page and set its **Parent** to the Services page (**Page → Parent**).
+1. Create a page and set its **Parent** to the Services page (**Page → Parent**). Choose the **Service page** starter pattern; the Service page template applies automatically.
 2. Give it a unique, specific title. It becomes the card heading and link text.
 3. Write an **Excerpt** in the page sidebar: one or two plain sentences for the card.
 4. Choose a **Service icon**.

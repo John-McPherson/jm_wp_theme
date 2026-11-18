@@ -14,45 +14,7 @@ import bindFields from '../../../utils/bindFields';
 import Sidebar from '../../../components/Sidebar';
 import SelectInput from '../../../components/SelectInput';
 
-type Template = Parameters< typeof createBlocksFromInnerBlocksTemplate >[ 0 ];
-
-const TEMPLATE: Template = [
-	[
-		'jmc/column',
-		{},
-		[
-			[
-				'jmc/heading',
-				{
-					level: '2',
-				},
-			],
-		],
-	],
-	[
-		'jmc/column',
-		{},
-		[
-			[ 'jmc/paragraph', {} ],
-			// `jmc/buttons` seeds its own first button.
-			[ 'jmc/buttons', {} ],
-		],
-	],
-];
-
-// Contact variation: a heading and supporting text beside the business contact
-// details, which `order` places on the chosen side (right by default).
-const CONTACT_TEMPLATE: Template = [
-	[
-		'jmc/column',
-		{},
-		[
-			[ 'jmc/heading', { level: '2' } ],
-			[ 'jmc/paragraph', {} ],
-		],
-	],
-	[ 'jmc/column', {}, [ [ 'jmc/contact-details', {} ] ] ],
-];
+import { TEMPLATE, CONTACT_TEMPLATE } from './template';
 
 const VARIANT_CLASSES = {
 	default: '',

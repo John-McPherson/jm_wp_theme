@@ -10,12 +10,7 @@ import MediaInput from '../../../components/MediaInput';
 import Sidebar from '../../../components/Sidebar';
 import SelectInput from '../../../components/SelectInput';
 
-const TEMPLATE = [
-	[ 'jmc/paragraph', { variant: 'label' } ],
-	[ 'jmc/heading', { level: '1', lockLevel: true } ],
-	[ 'jmc/paragraph' ],
-	[ 'jmc/button', { buttonType: 'secondary' } ],
-];
+import { TEMPLATE } from './template';
 
 const VARIANT_CLASSES = {
 	default: '',

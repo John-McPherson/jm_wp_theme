@@ -64,7 +64,7 @@ For each new or changed user-facing feature:
 - Global list resets currently remove visible bullets and numbering.
 - No deliberate shared `:focus-visible` system has been demonstrated.
 - Global smooth scrolling does not yet include a reduced-motion override.
-- Skip-link, landmark, navigation, and template behaviour remain unverified.
+- Skip-link, landmark, navigation, and template behaviour remain unverified in a browser. The contact and 404 templates have one `<main>` landmark and one H1 with no skipped heading levels, checked from the template markup by `ContactNotFoundTemplatesTest`. Site search is turned off, so no template has a search form.
 - No automated accessibility check currently runs in CI.
 
 These gaps must be resolved and manually verified before claiming WCAG 2.2 AA conformance.

@@ -21,7 +21,6 @@ declare(strict_types=1);
  *     palette?: string,
  *     submitText?: string
  * } $attributes
- * @var string $content Rendered inner-block content (the introduction).
  */
 
 $palette = jmc_html_allowed_value(
@@ -153,15 +152,6 @@ $alternative_attributes = [
 
 <section <?php jmc_the_attributes( $section_attributes ); ?>>
 	<div class="jmc-section__container">
-		<?php if ( '' !== trim( $content ) ) : ?>
-			<div class="jmc-section__column jmc-enquiry-form__intro">
-				<?php
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered and filtered inner-block markup supplied by WordPress.
-				echo $content;
-				?>
-			</div>
-		<?php endif; ?>
-
 		<div class="jmc-section__column jmc-enquiry-form__body">
 			<div <?php jmc_the_attributes( $notice_attributes ); ?>>
 				<p class="jmc-enquiry-form__notice-message"><?php echo esc_html( $messages[ $result ] ?? '' ); ?></p>

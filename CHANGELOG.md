@@ -25,10 +25,20 @@ All notable changes will be documented here. The project follows semantic versio
 - WhatsApp Button variation with the WhatsApp logo, and optional pre-filled email subjects and bodies and WhatsApp messages, keeping line breaks.
 - Simple Icons brand logos in the theme's icon collection, starting with WhatsApp.
 - Site Logo block (`jmc/site-logo`): the theme's logo as an inline SVG in the header, coloured by `--jmc-logo-*` tokens that follow the surrounding palette, with Brand, Mono dark and Mono light styles.
+- Hero, Service introduction and Why choose us patterns in new Heroes, Services and Trust pattern categories, with lorem ipsum placeholder copy until client copy is supplied.
 - Switchable colour palettes (Appearance → Editor → Styles → Colors): the default navy and copper, Alternate palette 1 (black and red on light grey) and Alternate palette 2 (graphite and verdigris on concrete). Includes a contrast report (`npm run test:contrast`) and tests covering every palette, section palette and logo colour.
+- Call to action and Contact details patterns in new Calls to action and Contact pattern categories. Service listings use the Service Grid block rather than a pattern.
+- Front-page and page templates: the shared header and footer parts around one `<main>` landmark holding the page title (H1) and content. The title is omitted when the page contains a hero, whose heading is the H1.
+- Services landing page and Service page templates, applied automatically to the Services page and its direct children, with breadcrumbs (Home → Services → Service) and matching starter patterns. Structured data is left to Yoast SEO.
+- Home page starter pattern (`jmc/home-page`): the homepage's standard sections (hero, service introduction, Service Grid, why choose us and contact details), each locked, offered when a page is created.
+- Contact (`page-contact`) and 404 templates, with a `jmc/contact-page` starter pattern that seeds the Contact page's own content (hero, enquiry form, contact details and call to action): one main landmark, a single H1, and 404 recovery through a homepage link and a call to action.
+- Front-end site search is turned off: search requests get a 404 and the 404 template. Admin and editor searches still work.
 
 ### Changed
 
+- Buttons in a Buttons group stack in columns narrower than 30rem, with every button as wide as the widest, and sit side by side at their own width in wider columns.
+- The Heading and Paragraph blocks list `jmc/service-grid` as an allowed ancestor, matching the intro the Services grid seeds, and each layout block's editor template now lives in `template.ts` and is checked against every block's `parent` and `ancestor` rules (#136).
+- The Enquiry form no longer has an introduction paragraph; it is just the form. Introductions saved by older forms are no longer shown and are dropped the next time the page is saved.
 - Primary buttons on light and secondary sections hover to `brand-800` instead of `brand-900`, a slightly softer dark that each palette can tune.
 - The header uses the theme's inline SVG logo instead of the core Site Logo block's uploaded image.
 - The business settings moved from Settings → General to Settings → Business; stored values are unchanged.

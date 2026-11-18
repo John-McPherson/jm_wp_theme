@@ -254,3 +254,111 @@ function jmc_get_services( int $parent_id ): array {
 function jmc_is_block_preview_request(): bool {
 	return wp_is_serving_rest_request() && current_user_can( 'edit_posts' );
 }
+
+/**
+ * Template that lays out the Services landing page.
+ */
+const JMC_SERVICES_LANDING_TEMPLATE = 'services-landing';
+
+/**
+ * Template that lays out every direct child service page.
+ */
+const JMC_SERVICE_TEMPLATE = 'service';
+
+/**
+ * Determine a page's role in the services content model.
+ *
+ * Only the resolved Services page is the landing page, and only its direct
+ * children are services. Deeper descendants, unrelated pages and other post
+ * types have no role. Child status is not checked so drafts preview with the
+ * template they will publish with.
+ *
+ * @param object|null $page             Page record (WP_Post or compatible).
+ * @param int         $services_page_id Resolved Services page ID; 0 when unresolved.
+ *
+ * @return 'landing'|'service'|'none' The page's role.
+ */
+function jmc_service_page_role( ?object $page, int $services_page_id ): string {
+	if ( null === $page || $services_page_id <= 0 ) {
+		return 'none';
+	}
+
+	$id     = $page->ID ?? null;
+	$type   = $page->post_type ?? null;
+	$parent = $page->post_parent ?? null;
+
+	if ( ! is_int( $id ) || $id <= 0 || 'page' !== $type ) {
+		return 'none';
+	}
+
+	if ( $id === $services_page_id ) {
+		return 'landing';
+	}
+
+	return (int) $parent === $services_page_id ? 'service' : 'none';
+}
+
+/**
+ * Map each services role to its template slug.
+ *
+ * @return array{landing:string,service:string} Template slugs keyed by role.
+ */
+function jmc_service_templates(): array {
+	return [
+		'landing' => JMC_SERVICES_LANDING_TEMPLATE,
+		'service' => JMC_SERVICE_TEMPLATE,
+	];
+}
+
+/**
+ * Apply the governed services template to a page template hierarchy.
+ *
+ * The services templates are removed wherever they appear, including when an
+ * editor assigned one to a page it does not govern, and the template for the
+ * page's role is put first so it also wins over any other assigned template.
+ *
+ * @param array<int, string> $templates Template candidates, most specific first.
+ * @param string             $role      Page role from jmc_service_page_role().
+ *
+ * @return array<int, string> Template candidates.
+ */
+function jmc_service_template_hierarchy( array $templates, string $role ): array {
+	$service_templates = jmc_service_templates();
+
+	$templates = array_values(
+		array_filter(
+			$templates,
+			static fn ( mixed $template ): bool => ! in_array(
+				preg_replace( '/\.(php|html)$/', '', (string) $template ),
+				$service_templates,
+				true
+			)
+		)
+	);
+
+	if ( isset( $service_templates[ $role ] ) ) {
+		array_unshift( $templates, $service_templates[ $role ] );
+	}
+
+	return $templates;
+}
+
+/**
+ * Limit the selectable page templates to those that govern the page.
+ *
+ * @param array<string, string> $templates Template names keyed by slug.
+ * @param string                $role      Page role from jmc_service_page_role().
+ *
+ * @return array<string, string> Selectable templates.
+ */
+function jmc_service_selectable_templates( array $templates, string $role ): array {
+	$service_templates = jmc_service_templates();
+	$own_template      = $service_templates[ $role ] ?? null;
+
+	return array_filter(
+		$templates,
+		static fn ( string|int $slug ): bool => (string) $slug === $own_template
+			|| ! in_array( (string) $slug, $service_templates, true ),
+		ARRAY_FILTER_USE_KEY
+	);
+}

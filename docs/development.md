@@ -95,6 +95,7 @@ When upgrading dependencies, re-run `npm audit` and remove a row once its fix ar
 - Missing shared styles: confirm `build/css/style.css` exists; enqueueing intentionally returns early otherwise.
 - Missing component: confirm the requested component resolves to a PHP file under `components/`.
 - Editor/frontend mismatch: compare both SCSS entry points, wrapper classes, attributes, and block context.
+- Missing pattern: WordPress caches the theme's pattern files until the theme version changes. Add `define( 'WP_DEVELOPMENT_MODE', 'theme' );` to your local `wp-config.php` so new and edited patterns appear on reload. Do not set it in production, where it turns off pattern and `theme.json` caching.
 - Use `WP_DEBUG` and `WP_DEBUG_LOG` locally; never expose debug output in production.
 
 ## Definition of done
