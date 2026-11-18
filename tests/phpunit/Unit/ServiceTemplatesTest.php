@@ -324,7 +324,8 @@ final class ServiceTemplatesTest extends TestCase {
 	}
 
 	/**
-	 * Each template wraps breadcrumbs and the page content in one main landmark.
+	 * Each template wraps the page content in one main landmark. Breadcrumbs
+	 * belong to the hero, so the template adds none of its own.
 	 *
 	 * @dataProvider template_slugs
 	 *
@@ -336,13 +337,13 @@ final class ServiceTemplatesTest extends TestCase {
 		self::assertMatchesRegularExpression(
 			'/^<!--\s+wp:template-part\s+\{[^}]*"slug":"header"[^}]*\}\s+\/-->'
 			. '\s*<!--\s+wp:group\s+\{"tagName":"main"[^}]*\}[^}]*\}\s+-->\s*<main\b[^>]*>'
-			. '\s*<!--\s+wp:breadcrumbs\s+\{[^}]*"lock":\{"move":true,"remove":true\}\}\s+\/-->'
 			. '\s*<!--\s+wp:post-content\s+\{"lock":\{"move":true,"remove":true\}\}\s+\/-->'
 			. '\s*<\/main>\s*<!--\s+\/wp:group\s+-->'
 			. '\s*<!--\s+wp:template-part\s+\{[^}]*"slug":"footer"[^}]*\}\s+\/-->\s*$/',
 			$template
 		);
 		self::assertSame( 1, substr_count( $template, '<main' ), 'One main landmark.' );
+		self::assertStringNotContainsString( 'wp:breadcrumbs', $template, 'The hero renders the breadcrumbs.' );
 	}
 
 	/**
