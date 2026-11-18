@@ -1,0 +1,29 @@
+// Editor-only rules sit outside the cascade layers on purpose: WordPress's
+// editor styles are unlayered and would otherwise override them.
+
+// An empty credential is a dashed tile the same size as a logo.
+.jmc-credential:has(.jmc-credential__add) {
+	padding: 0;
+}
+
+.jmc-credential__add {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	border: 1px dashed currentcolor;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	font-size: 0.875rem;
+	opacity: 0.7;
+	cursor: pointer;
+
+	&:hover,
+	&:focus-visible {
+		opacity: 1;
+	}
+}

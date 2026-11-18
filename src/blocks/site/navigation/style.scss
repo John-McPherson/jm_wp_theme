@@ -1,6 +1,5 @@
 @use "../../../scss/abstracts/mixins" as m;
 @use "../../../scss/abstracts/index" as *;
-@use "../../../scss/layers/" as *;
 
 @layer site {
 
@@ -128,6 +127,7 @@
 			&.no-js .jmc-navigation__list {
 				position: static;
 				flex-direction: row;
+				align-items: center;
 				width: auto;
 				height: auto;
 				margin-top: 0;

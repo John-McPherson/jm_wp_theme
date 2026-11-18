@@ -1,0 +1,32 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/footer-legal",
+  "version": "0.1.0",
+  "title": "Footer Legal",
+  "category": "jmc-site",
+  "icon": "shield",
+  "parent": ["jmc/footer"],
+  "description": "The copyright notice, with the current year, and the links from the Legal navigation menu, shown along the bottom of the site footer.",
+  "attributes": {
+    "copyrightHolder": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "example": {
+    "attributes": {
+      "copyrightHolder": "Example Electrical Ltd"
+    }
+  },
+  "supports": {
+    "className": true,
+    "html": false,
+    "inserter": false,
+    "multiple": false
+  },
+  "textdomain": "jmc-theme",
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

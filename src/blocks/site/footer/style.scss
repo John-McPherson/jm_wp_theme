@@ -1,0 +1,92 @@
+@use "../../../scss/abstracts/index" as *;
+@use "../../../scss/base/typography" as typography;
+
+@layer blocks {
+
+	// Paints the selected palette across the full width; the container keeps
+	// content aligned with the header.
+	.jmc-footer-inner {
+
+		@include typography.p4;
+
+		display: flex;
+		justify-content: center;
+
+		width: 100%;
+		padding-block: var(--jmc-padding-l);
+		padding-inline: var(--jmc-page-margin);
+
+		background-color: var(--jmc-background-color);
+		color: var(--jmc-text-color);
+
+		// Each child block (business details, then one per menu) is a column:
+		// stacked on narrow screens, then side by side, sharing the width so
+		// fewer columns spread further apart. The credentials strip along the
+		// top and the legal row along the bottom always take a row of their
+		// own. (A grid with auto-fit can't do this: the full-width
+		// legal row stops empty tracks collapsing.)
+		&__container {
+			--jmc-footer-column-min: 12rem;
+
+			display: flex;
+			flex-wrap: wrap;
+			gap: var(--jmc-padding-l);
+
+			width: 100%;
+			max-width: var(--jmc-container-xl);
+
+			> * {
+				flex: 1 1 100%;
+				min-width: 0;
+			}
+
+			@include min($mobile) {
+
+				> * {
+					flex-basis: var(--jmc-footer-column-min);
+				}
+
+				> .jmc-footer-legal,
+				> .jmc-trust-credentials {
+					flex-basis: 100%;
+				}
+			}
+
+			// The credentials section sits inside the footer's own padding and
+			// palette, so it drops the page section's spacing.
+			> .jmc-section.jmc-trust-credentials {
+				padding: 0;
+			}
+		}
+
+		// One hover treatment for every footer link (menus, phone, email and
+		// the business name), shared with keyboard focus.
+		a {
+			text-decoration-line: underline;
+			text-decoration-color: transparent;
+			text-decoration-thickness: 1px;
+			text-underline-offset: 0.2em;
+			transition:
+				color 0.2s ease,
+				text-decoration-color 0.2s ease;
+
+			&:hover,
+			&:focus-visible {
+				color: var(--jmc-text-highlight);
+				text-decoration-color: currentcolor;
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				transition: none;
+			}
+		}
+
+		// Base styles size every paragraph as body copy; keep footer text at
+		// the footer's smaller size. `:where()` leaves block weights intact.
+		:where(p) {
+			font-size: inherit;
+			line-height: inherit;
+			letter-spacing: inherit;
+		}
+	}
+}

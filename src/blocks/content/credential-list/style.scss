@@ -1,0 +1,84 @@
+@use "../../../scss/abstracts/index" as *;
+
+@layer blocks {
+
+	.jmc-credential-list {
+		--jmc-credential-cols: 2;
+		--jmc-credential-gap: var(--jmc-padding-s);
+
+		// A centred row, so a few logos sit in the middle instead of filling
+		// the first columns of a grid.
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--jmc-credential-gap);
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+
+		@include min($mobile) {
+			--jmc-credential-cols: 3;
+			--jmc-credential-gap: var(--jmc-padding-m);
+		}
+
+		@include min($tablet) {
+			--jmc-credential-cols: 4;
+		}
+
+		@include min($laptop) {
+			--jmc-credential-cols: 5;
+		}
+	}
+
+	.jmc-credential {
+		position: relative;
+		flex: 0 0 calc((100% - (var(--jmc-credential-cols) - 1) * var(--jmc-credential-gap)) / var(--jmc-credential-cols));
+		min-width: 0;
+		aspect-ratio: 3 / 2;
+		padding: var(--jmc-padding-xs);
+
+		// Logos fill the tile but keep their proportions, so wide and tall
+		// marks are as large as the tile allows.
+		&__image {
+			display: block;
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+		}
+
+		// The link fills the tile, so the whole logo is the target.
+		&__link {
+			display: block;
+			width: 100%;
+			height: 100%;
+
+			// Outline the tile rather than the inner link.
+			&:focus-visible {
+				outline: none;
+			}
+
+			// Make the whole tile clickable while keeping one link per logo.
+			&::after {
+				content: "";
+				position: absolute;
+				inset: 0;
+			}
+		}
+
+		&:has(.jmc-credential__link:focus-visible) {
+			outline: 2px solid var(--jmc-text-highlight);
+			outline-offset: 2px;
+		}
+	}
+
+	// A strip of logos needs less room above and below than a full section.
+	.jmc-trust-credentials.jmc-section {
+		padding-block: var(--jmc-section-padding-sm);
+
+		// Keep the extra space before the footer when it ends the page.
+		&:last-of-type {
+			padding-bottom: var(--jmc-padding-3xl);
+		}
+	}
+}

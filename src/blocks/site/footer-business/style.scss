@@ -1,0 +1,57 @@
+@use "../../../scss/abstracts/index" as *;
+
+@layer blocks {
+
+	// Content-level styles only; jmc/footer sets the column layout and type size.
+	// One row gap for every line, so the service area (outside <address>)
+	// is spaced like the contact lines.
+	.jmc-footer-business {
+		--jmc-footer-business-gap: var(--jmc-padding-2xs);
+
+		display: flex;
+		flex-direction: column;
+		gap: var(--jmc-footer-business-gap);
+
+		&__name,
+		&__label {
+			font-weight: 700;
+		}
+
+		&__contact {
+			display: flex;
+			flex-direction: column;
+			gap: var(--jmc-footer-business-gap);
+			font-style: normal;
+		}
+
+		&__line {
+			--jmc-footer-icon-size: 1.25em;
+
+			display: flex;
+			align-items: flex-start;
+			gap: var(--jmc-padding-2xs);
+		}
+
+		// Sized to the text and nudged to sit on the first line, including
+		// multi-line addresses. Lucide outlines take their stroke from
+		// `color` through the shared `svg.lucide` rule.
+		&__icon {
+			flex-shrink: 0;
+			width: var(--jmc-footer-icon-size);
+			height: var(--jmc-footer-icon-size);
+			margin-block-start: calc((1lh - var(--jmc-footer-icon-size)) / 2);
+			color: var(--jmc-text-highlight);
+
+			// The editor wraps the registered SVG in the icon element.
+			> svg {
+				display: block;
+				width: 100%;
+				height: 100%;
+			}
+		}
+
+		p {
+			margin: 0;
+		}
+	}
+}

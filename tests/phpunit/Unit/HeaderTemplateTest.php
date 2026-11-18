@@ -123,6 +123,24 @@ final class HeaderTemplateTest extends TestCase {
 	}
 
 	/**
+	 * The header must nest the editable call to action inside the navigation,
+	 * so it renders as the last menu item (inside the mobile dropdown), and lock
+	 * it against removal because the block is not insertable.
+	 */
+	public function test_navigation_contains_locked_call_to_action(): void {
+		$header = $this->read_theme_file(
+			'parts/header.html'
+		);
+
+		$this->assertMatchesRegularExpression(
+			'/<!--\s+wp:jmc\/navigation\b[^>]*[^\/]-->'
+			. '\s*<!--\s+wp:jmc\/header-cta\s+\{"lock":\{"remove":true\}\}\s+\/-->'
+			. '\s*<!--\s+\/wp:jmc\/navigation\s+-->/',
+			$header
+		);
+	}
+
+	/**
 	 * Business identity must not be hard-coded into the template.
 	 */
 	public function test_header_does_not_hard_code_site_identity(): void {

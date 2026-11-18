@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/header-cta",
+  "version": "0.1.0",
+  "title": "Header Call to Action",
+  "category": "jmc-site",
+  "icon": "button",
+  "parent": ["jmc/navigation"],
+  "description": "An optional header button linking to a page, URL or telephone number.",
+  "attributes": {
+    "text": {
+      "type": "string",
+      "default": ""
+    },
+    "link": {
+      "type": "object",
+      "default": {
+        "url": "",
+        "opensInNewTab": false
+      }
+    }
+  },
+  "example": {
+    "attributes": {
+      "text": "Call 01234 567890",
+      "link": {
+        "url": "tel:01234567890",
+        "opensInNewTab": false
+      }
+    }
+  },
+  "supports": {
+    "className": true,
+    "html": false,
+    "inserter": false,
+    "multiple": false
+  },
+  "textdomain": "jmc-theme",
+  "editorScript": "file:./index.js",
+  "style": ["jmc-button-style", "file:./style-index.css"],
+  "render": "file:./render.php"
+}

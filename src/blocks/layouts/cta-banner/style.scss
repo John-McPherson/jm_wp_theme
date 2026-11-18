@@ -13,6 +13,12 @@
 			&:nth-of-type(2) {
 				grid-area: b;
 			}
+
+			// A lone column (the other was empty) spans the full width.
+			&:only-of-type {
+				grid-area: auto;
+				grid-column: 1 / -1;
+			}
 		}
 
 		.jmc-section__container {
@@ -26,6 +32,54 @@
 
 			.jmc-column-left {
 				--grid-template-areas: "b a";
+			}
+		}
+
+		// Contact variation: two-thirds copy, one-third details, instead of an
+		// even split. Fixed fractions, because columns are inline-size
+		// containers and so can't be sized to their content.
+		&.jmc-cta--contact {
+			--jmc-cta-columns: minmax(0, 2fr) minmax(0, 1fr);
+
+			@include min($tablet) {
+
+				.jmc-section__container {
+					grid-template-columns: var(--jmc-cta-columns);
+				}
+
+				// Details on the left: swap the column sizes to match.
+				.jmc-column-left {
+					--jmc-cta-columns: minmax(0, 1fr) minmax(0, 2fr);
+				}
+
+				// The details end level with the copy, leaving the heading to
+				// lead on its own.
+				.jmc-section__column:nth-of-type(2) {
+					justify-content: flex-end;
+				}
+			}
+		}
+
+		// Stacked variation: one centred column at every width.
+		&.jmc-cta--stacked {
+
+			.jmc-section__container {
+				max-width: var(--jmc-container-sm);
+				gap: var(--jmc-section-padding-sm);
+				text-align: center;
+			}
+
+			.jmc-section__column {
+				align-items: center;
+			}
+
+			.jmc-buttons {
+				justify-content: center;
+			}
+
+			@include min($tablet) {
+				--jmc-cols: 1;
+				--grid-template-areas: "a" "b";
 			}
 		}
 	}

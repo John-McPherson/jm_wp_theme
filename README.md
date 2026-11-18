@@ -38,6 +38,7 @@ npm start
 | `npm start` | Watch block JavaScript and Sass sources |
 | `npm run build` | Build static assets, compressed CSS, and block JavaScript |
 | `npm run build:assets` | Copy `src/assets` to `build/assets` |
+| `npm run build:icons` | Generate the theme's Lucide icons into `build/assets/icons/lucide` |
 | `npm run build:styles` | Compile frontend and editor Sass |
 | `npm run build:js` | Build Gutenberg block scripts with `wp-scripts` |
 | `npm run typecheck` | Type-check TypeScript without emitting files |
@@ -59,7 +60,8 @@ npm start
 | `functions.php` | Theme bootstrap only |
 | `inc/` | Setup, asset loading, block registration, and helpers |
 | `components/` | Reusable server-rendered PHP components |
-| `src/` | Authoring sources: SCSS, TypeScript, blocks, and static assets |
+| `src/` | Authoring sources: SCSS, TypeScript, blocks, editor plugins, icon lists, and static assets |
+| `scripts/` | Build scripts, such as the Lucide icon generator |
 | `build/` | Generated runtime assets used by WordPress |
 | `templates/` | FSE templates; currently the minimal `index.html` fallback |
 | `parts/` | Registered FSE template parts, including the editable site header |

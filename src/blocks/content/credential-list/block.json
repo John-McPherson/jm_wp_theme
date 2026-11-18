@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/credential-list",
+  "version": "0.1.0",
+  "title": "Credential List",
+  "category": "jmc-blocks",
+  "icon": "awards",
+  "description": "A list of credentials: accreditation logos, guarantees, experience and review scores.",
+  "allowedBlocks": [
+    "jmc/credential"
+  ],
+  "parent": [
+    "jmc/trust-credentials"
+  ],
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false,
+    "inserter": false,
+    "reusable": false
+  },
+  "textdomain": "jmc-theme",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

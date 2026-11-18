@@ -43,7 +43,7 @@ function jmc_get_the_attributes( array $attributes ): string {
 				break;
 
 			case 'href':
-				$value = esc_url( (string) $value );
+				$value = jmc_esc_href( (string) $value );
 				break;
 
 			case 'target':

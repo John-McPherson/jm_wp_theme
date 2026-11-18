@@ -6,7 +6,7 @@
   "title": "Service Grid",
   "category": "jmc-section",
   "icon": "screenoptions",
-  "description": "Display introductory content alongside a responsive grid of services.",
+  "description": "Display introductory content alongside a responsive grid of the published services.",
   "keywords": ["services", "grid", "cards"],
   "attributes": {
     "palette": {
@@ -47,92 +47,7 @@
       },
       {
         "name": "jmc/column",
-        "innerBlocks": [
-          {
-            "name": "jmc/service-card",
-            "attributes": {
-              "icon": "electrical-installation"
-            },
-            "innerBlocks": [
-              {
-                "name": "jmc/heading",
-                "attributes": {
-                  "text": "Electrical Installations",
-                  "level": "3"
-                }
-              },
-              {
-                "name": "jmc/paragraph",
-                "attributes": {
-                  "text": "Complete design and installation for commercial projects."
-                }
-              }
-            ]
-          },
-          {
-            "name": "jmc/service-card",
-            "attributes": {
-              "icon": "maintenance"
-            },
-            "innerBlocks": [
-              {
-                "name": "jmc/heading",
-                "attributes": {
-                  "text": "Maintenance & Support",
-                  "level": "3"
-                }
-              },
-              {
-                "name": "jmc/paragraph",
-                "attributes": {
-                  "text": "Keep your systems running safely and efficiently."
-                }
-              }
-            ]
-          },
-          {
-            "name": "jmc/service-card",
-            "attributes": {
-              "icon": "inspection"
-            },
-            "innerBlocks": [
-              {
-                "name": "jmc/heading",
-                "attributes": {
-                  "text": "Testing & Inspection",
-                  "level": "3"
-                }
-              },
-              {
-                "name": "jmc/paragraph",
-                "attributes": {
-                  "text": "EICR, testing and certification to the highest standards."
-                }
-              }
-            ]
-          },
-          {
-            "name": "jmc/service-card",
-            "attributes": {
-              "icon": "emergency"
-            },
-            "innerBlocks": [
-              {
-                "name": "jmc/heading",
-                "attributes": {
-                  "text": "Emergency Callouts",
-                  "level": "3"
-                }
-              },
-              {
-                "name": "jmc/paragraph",
-                "attributes": {
-                  "text": "24/7 response for urgent electrical issues."
-                }
-              }
-            ]
-          }
-        ]
+        "innerBlocks": [{ "name": "jmc/service-list" }]
       }
     ],
     "viewportWidth": 1440

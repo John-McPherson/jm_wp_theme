@@ -1,0 +1,73 @@
+@use "../../../scss/abstracts/index" as *;
+
+@layer blocks {
+
+	.jmc-contact-details {
+		--jmc-contact-icon: 1.25em;
+		--jmc-contact-gutter: calc(var(--jmc-contact-icon) + var(--jmc-padding-2xs));
+
+		font-style: normal;
+	}
+
+	.jmc-contact-details__list {
+		display: grid;
+		gap: var(--jmc-padding-s);
+		margin: 0;
+	}
+
+	// The icon sits in a gutter beside the value, as in the footer. It lives in
+	// the <dt> so the list keeps its term/description pairs.
+	.jmc-contact-details__item {
+		position: relative;
+		padding-inline-start: var(--jmc-contact-gutter);
+	}
+
+	// Sized to the text and nudged to sit on the value's first line. Lucide
+	// outlines and the filled WhatsApp logo take their colour from `color`
+	// through the shared `svg.lucide` and `svg.simple-icon` rules.
+	.jmc-contact-details__icon {
+		position: absolute;
+		inset-inline-start: 0;
+		width: var(--jmc-contact-icon);
+		height: var(--jmc-contact-icon);
+		margin-block-start: calc((1lh - var(--jmc-contact-icon)) / 2);
+		color: var(--jmc-text-highlight);
+
+		// The editor wraps the registered SVG in the icon element.
+		> svg {
+			display: block;
+			width: 100%;
+			height: 100%;
+		}
+	}
+
+	// The icon stands in for the label visually; screen readers still hear it.
+	.jmc-contact-details__label-text {
+
+		@include sr-only;
+	}
+
+	.jmc-contact-details__value {
+		margin: 0;
+
+		// Long email addresses wrap rather than overflow a narrow column.
+		overflow-wrap: anywhere;
+	}
+
+	.jmc-contact-details__hours,
+	.jmc-contact-details__areas {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.jmc-contact-details__day {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0 var(--jmc-padding-xs);
+	}
+
+	.jmc-contact-details__day-name {
+		min-width: 7em;
+	}
+}

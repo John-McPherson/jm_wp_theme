@@ -26,8 +26,73 @@
         "target": "",
         "rel": ""
       }
+    },
+    "linkType": {
+      "type": "string",
+      "enum": ["link", "phone", "email", "whatsapp"],
+      "default": "link"
+    },
+    "emailSubject": {
+      "type": "string",
+      "default": ""
+    },
+    "emailBody": {
+      "type": "string",
+      "default": ""
+    },
+    "whatsappMessage": {
+      "type": "string",
+      "default": ""
     }
   },
+
+  "variations": [
+    {
+      "name": "link",
+      "title": "Button",
+      "description": "Links to a page, URL, or telephone number.",
+      "icon": "button",
+      "attributes": {
+        "linkType": "link"
+      },
+      "isDefault": true,
+      "scope": ["block", "transform"],
+      "isActive": ["linkType"]
+    },
+    {
+      "name": "phone",
+      "title": "Phone Button",
+      "description": "Calls the business phone number set in Settings → General.",
+      "icon": "phone",
+      "attributes": {
+        "linkType": "phone"
+      },
+      "scope": ["block", "transform"],
+      "isActive": ["linkType"]
+    },
+    {
+      "name": "email",
+      "title": "Email Button",
+      "description": "Emails the business email address set in Settings → General.",
+      "icon": "email",
+      "attributes": {
+        "linkType": "email"
+      },
+      "scope": ["block", "transform"],
+      "isActive": ["linkType"]
+    },
+    {
+      "name": "whatsapp",
+      "title": "WhatsApp Button",
+      "description": "Opens a WhatsApp chat with the business WhatsApp number set in Settings → General.",
+      "icon": "format-chat",
+      "attributes": {
+        "linkType": "whatsapp"
+      },
+      "scope": ["block", "transform"],
+      "isActive": ["linkType"]
+    }
+  ],
 
   "example": {
     "attributes": {

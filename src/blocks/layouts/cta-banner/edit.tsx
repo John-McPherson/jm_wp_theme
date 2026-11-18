@@ -25,9 +25,25 @@ const TEMPLATE = [
 		{},
 		[
 			[ 'jmc/paragraph', {} ],
-			[ 'jmc/button', {} ],
+			// No inner template here: the locked section re-syncs to its template, which
+			// would drop any extra buttons. `jmc/buttons` seeds its own first button.
+			[ 'jmc/buttons', {} ],
 		],
 	],
+];
+
+// Contact variation: a heading and supporting text beside the business contact
+// details, which `order` places on the chosen side (right by default).
+const CONTACT_TEMPLATE = [
+	[
+		'jmc/column',
+		{},
+		[
+			[ 'jmc/heading', { level: '2' } ],
+			[ 'jmc/paragraph', {} ],
+		],
+	],
+	[ 'jmc/column', {}, [ [ 'jmc/contact-details', {} ] ] ],
 ];
 
 const VARIANT_CLASSES = {
@@ -40,23 +56,48 @@ const VARIANT_CLASSES = {
 
 const ALLOWED_BLOCKS = [ 'jmc/column' ];
 
+// `order` places the second column (copy and buttons) on the chosen side.
+const ORDER_OPTIONS = [
+	{ label: __( 'Buttons Left', 'jmc-theme' ), value: 'left' },
+	{ label: __( 'Buttons Right', 'jmc-theme' ), value: 'right' },
+];
+
+const CONTACT_ORDER_OPTIONS = [
+	{ label: __( 'Contact Details Left', 'jmc-theme' ), value: 'left' },
+	{ label: __( 'Contact Details Right', 'jmc-theme' ), value: 'right' },
+];
+
 export default function Edit( { attributes, setAttributes } ) {
 	const bind = bindFields( attributes, setAttributes );
 
-	const { palette, order } = attributes;
+	const { palette, order, layout } = attributes;
+	const isStacked = 'stacked' === layout;
+
 	const blockProps = useBlockProps( {
-		className: [ 'jmc-section', 'jmc-cta', VARIANT_CLASSES[ palette ] ]
+		className: [
+			'jmc-section',
+			'jmc-cta',
+			isStacked && 'jmc-cta--stacked',
+			'contact' === layout && 'jmc-cta--contact',
+			VARIANT_CLASSES[ palette ],
+		]
 			.filter( Boolean )
 			.join( ' ' ),
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{
-			className: [ 'jmc-section__container', VARIANT_CLASSES[ order ] ],
+			className: [
+				'jmc-section__container',
+				// Column order only applies side by side.
+				! isStacked && VARIANT_CLASSES[ order ],
+			]
+				.filter( Boolean )
+				.join( ' ' ),
 		},
 		{
 			allowedBlocks: ALLOWED_BLOCKS,
-			template: TEMPLATE,
+			template: 'contact' === layout ? CONTACT_TEMPLATE : TEMPLATE,
 			templateLock: true,
 		}
 	);
@@ -72,9 +113,21 @@ export default function Edit( { attributes, setAttributes } ) {
 						type="palette"
 					/>
 				</Sidebar.Section>
-				<Sidebar.Section title={ __( 'Order Settings', 'jmc-theme' ) }>
-					<SelectInput { ...bind.select( 'order' ) } type="order" />
-				</Sidebar.Section>
+				{ ! isStacked && (
+					<Sidebar.Section
+						title={ __( 'Order Settings', 'jmc-theme' ) }
+					>
+						<SelectInput
+							{ ...bind.select( 'order' ) }
+							type="order"
+							options={
+								'contact' === layout
+									? CONTACT_ORDER_OPTIONS
+									: ORDER_OPTIONS
+							}
+						/>
+					</Sidebar.Section>
+				) }
 			</Sidebar>
 
 			<section { ...blockProps }>

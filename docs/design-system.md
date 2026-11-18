@@ -29,6 +29,8 @@ The primitive palette contains neutral `base`, blue `brand`, warm `accent`, and 
 
 Current section palettes are `default`, `secondary`, and `inverse`. Store the unprefixed value in block attributes; rendering code maps it to the relevant `jmc-palette--*` class.
 
+Surfaces raised above a section, such as service cards, use `--jmc-card-background`, which each palette sets to a colour distinct from its section background: `base-50` in `default` and `secondary`, `brand-800` in `inverse`.
+
 Required contrast targets are documented in [Accessibility](accessibility.md).
 
 ## Typography

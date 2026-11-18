@@ -1,0 +1,25 @@
+@use "../../../scss/abstracts/index" as *;
+
+@layer blocks {
+
+	// Content-level styles only; jmc/footer sets the column layout and type size.
+	.jmc-footer-navigation {
+
+		&__list {
+			display: flex;
+			flex-direction: column;
+			gap: var(--jmc-padding-3xs);
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+
+		&__link {
+			color: inherit;
+
+			&[aria-current="page"] {
+				font-weight: 700;
+			}
+		}
+	}
+}

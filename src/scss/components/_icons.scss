@@ -1,0 +1,23 @@
+@layer components {
+
+	// Lucide icons are path-only outlines (see scripts/icons/shapes.js); the core
+	// Icons API strips their stroke attributes, so the styling is restored here.
+	svg.lucide {
+		fill: none;
+		stroke: currentcolor;
+		stroke-width: 2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	// Simple Icons brand logos are filled shapes in the current text colour.
+	svg.simple-icon {
+		fill: currentcolor;
+	}
+}
+
+// Core's Icon block sets `fill: currentColor` on its SVGs outside any cascade
+// layer, which beats every layered rule. Restore the outline fill unlayered.
+.wp-block-icon svg.lucide {
+	fill: none;
+}
