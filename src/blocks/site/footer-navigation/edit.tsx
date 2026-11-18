@@ -1,6 +1,6 @@
 import { useBlockProps } from '@wordpress/block-editor';
 import { useEntityRecords } from '@wordpress/core-data';
-import { Placeholder, Spinner } from '@wordpress/components';
+import { Disabled, Placeholder, Spinner } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { ServerSideRender } from '@wordpress/server-side-render';
 
@@ -76,10 +76,13 @@ export default function Edit( { attributes, setAttributes }: EditProps ) {
 
 			<div { ...blockProps }>
 				{ navigationId ? (
-					<ServerSideRender
-						block="jmc/footer-navigation"
-						attributes={ attributes }
-					/>
+					// Disabled keeps the menu links from leaving the editor.
+					<Disabled>
+						<ServerSideRender
+							block="jmc/footer-navigation"
+							attributes={ attributes }
+						/>
+					</Disabled>
 				) : (
 					<Placeholder
 						icon="menu"

@@ -9,7 +9,13 @@ type TextInputProps = {
 	tagName?: TextTag;
 	placeholder?: string;
 	className?: string;
+	// Rich-text formats such as 'core/bold'; none by default.
+	allowedFormats?: string[];
+	// Attribute key, so the editor can split and merge blocks at this field.
+	identifier?: string;
 };
+
+const NO_FORMATS: string[] = [];
 
 const TextInput = ( {
 	value,
@@ -17,11 +23,14 @@ const TextInput = ( {
 	tagName = 'p',
 	placeholder,
 	className = '',
+	allowedFormats = NO_FORMATS,
+	identifier,
 }: TextInputProps ) => {
 	return (
 		<RichText
 			tagName={ tagName }
-			allowedFormats={ [] }
+			identifier={ identifier }
+			allowedFormats={ allowedFormats }
 			value={ value }
 			onChange={ set }
 			placeholder={ placeholder ?? __( 'Enter text here', 'jmc-theme' ) }

@@ -6,9 +6,10 @@
  * `wp_get_icon( 'jmc/<name>' )` like core icons and appear in the core Icon
  * block's picker.
  *
- * Theme icons are Lucide SVGs (ISC licence) generated into
- * build/assets/icons/lucide by scripts/icons/build.js from the list in
- * src/icons/lucide.json.
+ * Theme icons are Lucide SVGs (ISC licence) and Simple Icons brand logos
+ * (CC0, subject to each brand's guidelines), generated into
+ * build/assets/icons/<set> by scripts/icons/build.js from the lists in
+ * src/icons/lucide.json and src/icons/simple-icons.json.
  *
  * @package JMC_Theme
  */
@@ -26,32 +27,35 @@ add_action(
 			]
 		);
 
-		$lucide_directory = get_theme_file_path( 'build/assets/icons/lucide' );
-		$lucide_manifest  = $lucide_directory . '/manifest.json';
+		// Lucide outline icons and Simple Icons brand logos, generated at build time.
+		foreach ( [ 'lucide', 'simple-icons' ] as $icon_set ) {
+			$directory = get_theme_file_path( "build/assets/icons/{$icon_set}" );
+			$manifest  = $directory . '/manifest.json';
 
-		if ( ! is_readable( $lucide_manifest ) ) {
-			return;
-		}
-
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local build file.
-		$lucide_icons = json_decode( (string) file_get_contents( $lucide_manifest ), true );
-
-		if ( ! is_array( $lucide_icons ) ) {
-			return;
-		}
-
-		foreach ( $lucide_icons as $name => $label ) {
-			if ( ! is_string( $name ) || ! is_string( $label ) ) {
+			if ( ! is_readable( $manifest ) ) {
 				continue;
 			}
 
-			wp_register_icon(
-				"jmc/{$name}",
-				[
-					'label'     => $label,
-					'file_path' => "{$lucide_directory}/{$name}.svg",
-				]
-			);
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local build file.
+			$icons = json_decode( (string) file_get_contents( $manifest ), true );
+
+			if ( ! is_array( $icons ) ) {
+				continue;
+			}
+
+			foreach ( $icons as $name => $label ) {
+				if ( ! is_string( $name ) || ! is_string( $label ) ) {
+					continue;
+				}
+
+				wp_register_icon(
+					"jmc/{$name}",
+					[
+						'label'     => $label,
+						'file_path' => "{$directory}/{$name}.svg",
+					]
+				);
+			}
 		}
 	}
 );

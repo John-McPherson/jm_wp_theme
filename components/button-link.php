@@ -18,7 +18,8 @@ declare(strict_types=1);
  *         target?: string
  *     },
  *     id?: string,
- *     classes?: string|string[]
+ *     classes?: string|string[],
+ *     icon?: string
  * } $args
  */
 
@@ -35,6 +36,12 @@ $button_link = is_array( $args['link'] ?? null )
 $url = jmc_args_string(
 	args: $button_link,
 	key: 'url'
+);
+
+// Optional registered icon name (e.g. `jmc/whatsapp`), shown before the text.
+$icon = jmc_args_string(
+	args: $args,
+	key: 'icon'
 );
 
 if ( '' === $text || '' === $url ) {
@@ -62,6 +69,13 @@ $attributes = [
 ?>
 
 <a<?php jmc_the_attributes( $attributes ); ?>>
+	<?php
+	if ( '' !== $icon ) {
+		// Decorative: wp_get_icon() marks it aria-hidden, and the text names the action.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Registered SVG markup built by WP_HTML_Tag_Processor.
+		echo wp_get_icon( $icon, [ 'class' => 'jmc-button__icon' ] );
+	}
+	?>
 	<?php echo esc_html( $text ); ?>
 
 	<?php

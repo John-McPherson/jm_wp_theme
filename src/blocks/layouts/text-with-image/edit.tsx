@@ -25,7 +25,12 @@ const VARIANT_CLASSES = {
 	right: 'jmc-text-with-image--image-right',
 };
 
-const ALLOWED_BLOCKS = [ 'jmc/heading', 'jmc/paragraph', 'jmc/button' ];
+const ALLOWED_BLOCKS = [
+	'jmc/heading',
+	'jmc/paragraph',
+	'jmc/list',
+	'jmc/button',
+];
 
 export default function Edit( { attributes, setAttributes } ) {
 	const bind = bindFields( attributes, setAttributes );

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/contact-details",
+  "version": "0.1.0",
+  "title": "Contact Details",
+  "category": "jmc-section",
+  "icon": "phone",
+  "parent": ["jmc/column"],
+  "description": "The business phone number, WhatsApp number, email address, opening hours and service area, from Settings → General.",
+  "attributes": {
+    "showPhone": {
+      "type": "boolean",
+      "default": true
+    },
+    "showWhatsApp": {
+      "type": "boolean",
+      "default": true
+    },
+    "showEmail": {
+      "type": "boolean",
+      "default": true
+    },
+    "showHours": {
+      "type": "boolean",
+      "default": true
+    },
+    "showServiceArea": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "supports": {
+    "className": true,
+    "html": false
+  },
+  "textdomain": "jmc-theme",
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}
