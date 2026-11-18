@@ -107,6 +107,7 @@ jobs:
           test -f dist/functions.php
           test -f dist/style.css
           test -f dist/theme.json
+          test -d dist/styles/colors
           test -f dist/build/css/style.css
           test -d dist/build/js
           test -d dist/inc
