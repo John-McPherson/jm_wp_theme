@@ -28,6 +28,7 @@ flowchart TD
 - `inc/enqueue.php` loads the compiled shared stylesheet when it exists and uses its modification time for cache busting. It also prints the cascade-layer order (see Styling and tokens) at the top of the frontend `<head>` and as a dependency of the shared stylesheet in the editor.
 - `inc/blocks.php` recursively registers compiled block metadata, registers the section category, and applies the current editor allowlist.
 - `inc/contact.php` registers the site-wide business contact settings (phone, WhatsApp, email, opening hours, service area) and their Settings → General fields, and copies the footer's pre-#115 contact attributes into them once (see [Business contact settings](blocks.md#business-contact-settings)).
+- `inc/helpers/svg.php` reads a theme SVG file and filters it through an SVG allow-list for inline output (used by the site logo).
 - `inc/icons.php` registers the theme's `jmc` icon collection with the core icon registry: the Lucide icons and Simple Icons brand logos generated at build time (see [Icons](blocks.md#icons)).
 - `inc/services.php` enables page excerpts, registers the Services page setting and the `jmc_service_icon` page meta, and loads the service icon editor panel (see [Services grid](blocks.md#services-grid)).
 - `inc/enquiries.php` registers the private `jmc_enquiry` post type and handles enquiry delivery, the admin list and resend action, failure notices, retention, and personal data export and erasure. `inc/enquiry-submission.php` registers the enquiry REST routes and the no-JavaScript `admin-post.php` handler (see [Enquiry form](blocks.md#enquiry-form)). Both are loaded after the helpers they use.
@@ -39,11 +40,11 @@ Feature logic should not accumulate in the bootstrap.
 
 Source metadata and editor code live in `src/blocks/content/`, `src/blocks/layouts/`, and `src/blocks/site/`; production compilation writes to `build/js/blocks/`. Registration scans each compiled directory containing `block.json`.
 
-The current library contains seventeen dynamic blocks:
+The current library contains eighteen dynamic blocks:
 
 - Four insertable sections: `cta-banner`, `hero`, `service-grid`, and `text-with-image`.
 - Seven composition blocks: `button`, `buttons`, `column`, `contact-details`, `heading`, `paragraph`, and `service-list`.
-- Six site-chrome blocks used in template parts: `navigation` and `header-cta` in the header; `footer`, `footer-business`, `footer-navigation`, and `footer-legal` in the footer.
+- Seven site-chrome blocks used in template parts: `site-logo`, `navigation` and `header-cta` in the header; `footer`, `footer-business`, `footer-navigation`, and `footer-legal` in the footer.
 
 Editor code that is not tied to one block lives in `src/editor/`, with its own entry in `webpack.config.js`; it currently holds the service icon panel.
 

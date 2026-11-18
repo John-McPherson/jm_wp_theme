@@ -23,9 +23,11 @@ All notable changes will be documented here. The project follows semantic versio
 - CTA Banner (Contact Details) variation: a heading and text beside the contact details.
 - WhatsApp Button variation with the WhatsApp logo, and optional pre-filled email subjects and bodies and WhatsApp messages, keeping line breaks.
 - Simple Icons brand logos in the theme's icon collection, starting with WhatsApp.
+- Site Logo block (`jmc/site-logo`): the theme's logo as an inline SVG in the header, coloured by `--jmc-logo-*` tokens that follow the surrounding palette, with Brand, Mono dark and Mono light styles.
 
 ### Changed
 
+- The header uses the theme's inline SVG logo instead of the core Site Logo block's uploaded image.
 - Server-rendered editor previews (contact details, services list, navigation, footer navigation) are inert, so links in them no longer leave the editor.
 - Development tooling upgraded to the latest `@wordpress/*` majors (`scripts` 37, `env` 12), Playwright 1.65 and PHPUnit 9.6.39, clearing every critical `npm audit` advisory; the remaining upstream-only advisories are documented in `docs/development.md`. Tooling now needs Node 22.13 or later (`.nvmrc` stays on 24).
 - JavaScript unit tests run on Vitest instead of Jest.
