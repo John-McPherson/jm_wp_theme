@@ -33,7 +33,7 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/footer-navigation` | A column of links from a selected `wp_navigation` menu                          | Dynamic PHP               | Restricted to `jmc/footer`; insertable there, multiple allowed (one column each); no toggle or view script            |
 | `jmc/footer-legal`    | Site credit, copyright notice with the current year, and links from the `legal` menu | Dynamic PHP              | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
 | `jmc/header-cta`      | Optional header call-to-action linking to a page, URL, or telephone number         | Dynamic PHP               | Restricted to `jmc/navigation`; direct inserter disabled; single instance; locked against removal in the header part   |
-| `jmc/navigation`      | Primary navigation rendered from a selected `wp_navigation` menu                    | Dynamic PHP + view script | Site chrome; direct inserter disabled; allows only `jmc/header-cta`, rendered as the last menu item                     |
+| `jmc/navigation`      | Primary navigation rendered from a selected `wp_navigation` menu, with one level of submenus | Dynamic PHP + view script | Site chrome; direct inserter disabled; allows only `jmc/header-cta`, rendered as the last menu item                     |
 | `jmc/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jmc/variant` context; level defaults to `2`; insertable only inside `jmc/text-with-image`, `jmc/hero`, `jmc/cta-banner` and `jmc/service-grid` (`ancestor`) |
 | `jmc/list`            | Styled list of short points with icon, bullet or number markers                    | Dynamic PHP               | `listStyle` `icon` (default), `bullet` or `number`; `icon` from a fixed Lucide set; provides `jmc/listStyle` and `jmc/listIcon`; allows only `jmc/list-item`; insertable only inside `jmc/text-with-image` and `jmc/cta-banner` (`ancestor`); renders nothing when empty; see [Lists](#lists) |
 | `jmc/list-item`       | One point in a `jmc/list`                                                          | Dynamic PHP               | Restricted to `jmc/list`; bold, italic and links only; Enter starts the next item; renders nothing without visible text |
@@ -173,6 +173,42 @@ On a page with a parent, the Hero shows the core Breadcrumbs trail at the top of
 | Editor | The sidebar toggle, and a server-rendered preview of the same trail (including the home icon) for the page being edited, inert so its links stay in the editor. The label is hidden while the preview shows. The preview follows the saved parent, so a changed parent shows after saving. |
 
 Variants change structural presentation. If descendants require the value, provide it through block context with a namespaced key such as `jmc/variant` rather than copying attributes through unrelated blocks.
+
+## Primary navigation
+
+`jmc/navigation` renders the header menu from the `wp_navigation` menu chosen in its sidebar. The theme writes all of the public markup, ARIA, CSS and JavaScript; none of `core/navigation`'s front-end markup, styles or overlay is used.
+
+### Editing the menu
+
+Edit the menu in **Appearance → Editor → Navigation**. Primary items are **Custom Link** or **Page Link** items; to give one a submenu, use **Add submenu** on it, or add a **Submenu** item, and add links inside it. Two levels are supported:
+
+- A primary item needs a label. It needs a URL too, unless it has a submenu: a submenu parent without a URL is a heading for its links rather than a page.
+- Submenu links need a label and a URL. Items without them are skipped.
+- A submenu with no usable links renders as a plain link, or is dropped when it has no URL either.
+- Submenus nested deeper than one level are not supported. Their links are moved up into the parent submenu, in menu order, so they stay reachable, and the `jmc_navigation_unsupported_depth` action fires with the block that nested too deeply, so the problem can be logged.
+- Other block types in the menu are skipped.
+
+`jmc_get_navigation_tree()` (`inc/helpers/navigation.php`) normalises the menu into primary items, each with a `children` list. The footer menus keep using `get_navigation_links()`, which flattens submenus.
+
+### Markup
+
+Each primary item is an `<li class="jmc-navigation__item">`. A submenu parent also gets `jmc-navigation__item--has-submenu`, and contains:
+
+- the parent link (`<a class="jmc-navigation__link">`), which stays a normal link; or, for a parent without a URL, its label as `<span class="jmc-navigation__label">`;
+- a separate disclosure `<button type="button" class="jmc-navigation__submenu-toggle">` with `aria-expanded` and an `aria-controls` pointing at the submenu. A toggle beside a link is named "{label} submenu" with visually hidden text; a toggle for a parent without a URL shows the label itself (and gets `jmc-navigation__submenu-toggle--label`). The chevron is decorative;
+- the submenu, a nested `<ul class="jmc-navigation__submenu">` whose ID comes from `wp_unique_id()`, so it never collides with the primary list's ID or another submenu's.
+
+The current page's link gets `aria-current="page"` at either level; custom links never do. The parent of the current page gets `jmc-navigation__item--current-ancestor` and is shown bold. Labels and URLs are escaped.
+
+### Behaviour
+
+`view.ts` runs the primary menu toggle and hands submenus to `NavigationSubmenus` (`submenus.ts`). The desktop layout starts at the `$tablet` breakpoint (768px).
+
+- **Desktop:** each submenu is a dropdown below the header, its top on the header's bottom edge and its links in line with the parent label. Hovering the parent item with a mouse opens it, and it closes 300ms after the mouse leaves, so the pointer can cross into the panel. The toggle opens and closes it by click, Enter or Space, so hover is never the only way in; a submenu opened with the toggle stays open when the mouse leaves. Touch and pen pointers never trigger hover, so a tap only toggles once. Only one submenu is open at a time. Escape closes it, and returns focus to its toggle when focus was inside it; Escape again closes the mobile menu as before. Moving focus out of the item, or clicking outside it, also closes it. A submenu on the last item opens towards the start so it stays on the page.
+- **Mobile:** submenus are always expanded inside the open primary menu, indented under their parent, and the toggles are hidden. Labels for parents without a URL show as plain text. The open menu scrolls when it is taller than the screen.
+- **Crossing the breakpoint** resets submenus: closed on desktop, expanded on mobile.
+- **Without JavaScript:** submenus are not hidden in the server markup, so every link stays visible and reachable. The toggles are hidden and the labels shown; on desktop the submenus sit under their parents in the header.
+- Closed submenus are `hidden`, so focus never moves into them.
 
 ## Header call-to-action
 

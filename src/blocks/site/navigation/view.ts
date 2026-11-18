@@ -1,8 +1,11 @@
+import { NavigationSubmenus } from './submenus';
+
 export class MainNavigation {
 	private readonly menuButton: HTMLButtonElement | null;
 	private readonly menuList: HTMLUListElement | null;
 	private readonly navigation: HTMLElement | null;
 	private readonly desktopQuery = window.matchMedia( '(min-width: 768px)' );
+	private readonly submenus: NavigationSubmenus | null;
 
 	private isOpen: boolean;
 
@@ -15,6 +18,10 @@ export class MainNavigation {
 		this.menuList = this.navigation?.querySelector< HTMLUListElement >(
 			'.jmc-navigation__list'
 		);
+
+		this.submenus = this.navigation
+			? new NavigationSubmenus( this.navigation, this.desktopQuery )
+			: null;
 
 		this.isOpen = false;
 	}
@@ -34,6 +41,7 @@ export class MainNavigation {
 		this.menuButton.setAttribute( 'aria-expanded', String( this.isOpen ) );
 
 		this.handleResize();
+		this.submenus?.init();
 
 		setTimeout( () => {
 			this.navigation?.classList.remove( 'no-js' );
@@ -67,6 +75,8 @@ export class MainNavigation {
 			return;
 		}
 
+		this.submenus?.sync();
+
 		if ( this.desktopQuery.matches ) {
 			this.isOpen = false;
 			this.menuButton.setAttribute( 'aria-expanded', 'false' );
@@ -77,7 +87,15 @@ export class MainNavigation {
 		this.menuList.hidden = ! this.isOpen;
 	};
 	private handleKeydown = ( event: KeyboardEvent ): void => {
-		if ( event.key === 'Escape' && this.isOpen ) {
+		if ( event.key !== 'Escape' ) {
+			return;
+		}
+
+		if ( this.submenus?.closeOnEscape() ) {
+			return;
+		}
+
+		if ( this.isOpen ) {
 			this.closeMenu();
 		}
 	};
