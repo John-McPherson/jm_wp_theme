@@ -23,6 +23,11 @@
       "name": "service",
       "title": "Service page",
       "postTypes": ["page"]
+    },
+    {
+      "name": "page-contact",
+      "title": "Contact",
+      "postTypes": ["page"]
     }
   ],
   "settings": {
