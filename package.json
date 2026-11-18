@@ -1,8 +1,8 @@
 {
   "name": "jmc_custom_theme",
   "version": "0.1.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Custom Full Site Editing WordPress theme for AMC Electrical.",
+  "private": true,
   "scripts": {
     "build:assets": "mkdir -p build/assets && rsync -av --delete --exclude icons/ src/assets/ build/assets/",
     "build:icons": "node scripts/icons/build.js",
@@ -31,9 +31,8 @@
     "type": "git",
     "url": "git+https://github.com/John-McPherson/jm_wp_theme.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "John McPherson (https://github.com/John-McPherson)",
+  "license": "GPL-2.0-or-later",
   "bugs": {
     "url": "https://github.com/John-McPherson/jm_wp_theme/issues"
   },
