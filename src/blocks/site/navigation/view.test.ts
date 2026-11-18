@@ -1,3 +1,5 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { MainNavigation } from './view';
 
 const renderNavigation = (): void => {
@@ -11,22 +13,22 @@ const renderNavigation = (): void => {
 
 describe( 'MainNavigation', () => {
 	beforeEach( () => {
-		jest.useFakeTimers();
+		vi.useFakeTimers();
 		renderNavigation();
 		Object.defineProperty( window, 'matchMedia', {
 			writable: true,
-			value: jest.fn().mockReturnValue( { matches: false } ),
+			value: vi.fn().mockReturnValue( { matches: false } ),
 		} );
 	} );
 
 	afterEach( () => {
-		jest.useRealTimers();
+		vi.useRealTimers();
 		document.body.innerHTML = '';
 	} );
 
 	it( 'initialises a closed enhanced mobile menu', () => {
 		new MainNavigation().init();
-		jest.runAllTimers();
+		vi.runAllTimers();
 
 		const navigation = document.querySelector( '.jmc-navigation' );
 		const button = document.querySelector< HTMLButtonElement >(
@@ -43,7 +45,7 @@ describe( 'MainNavigation', () => {
 
 	it( 'opens, closes on Escape, and restores focus to the toggle', () => {
 		new MainNavigation().init();
-		jest.runAllTimers();
+		vi.runAllTimers();
 
 		const button = document.querySelector< HTMLButtonElement >(
 			'.jmc-navigation__toggle'

@@ -32,7 +32,7 @@ src/blocks/<layouts|content|site>/<name>/
 ├── style.scss      shared frontend + editor styles
 ├── editor.scss     editor-only tweaks (only if needed)
 ├── view.ts         frontend JS (only if interaction requires it)
-└── view.test.ts    Jest tests for view.ts
+└── view.test.ts    Vitest tests for view.ts
 ```
 
 Use `index.tsx` when `save` returns JSX (`<InnerBlocks.Content />`), `index.ts` when it
@@ -344,7 +344,7 @@ new Thing().init();
 
 - Only add one when interaction requires it; the block must work without JS (use a
   `no-js` class fallback when relevant).
-- Export the class so Jest can test it; guard every query result; arrow-function handlers;
+- Export the class so Vitest can test it; guard every query result; arrow-function handlers;
   keep ARIA state (`aria-expanded`, `hidden`) in sync and restore focus where expected.
 
 ## 10. SCSS (`style.scss`)
@@ -391,9 +391,10 @@ new Thing().init();
   TestCase`, docblocked methods, `@dataProvider` covering omitted, default, each supported
   and malformed values; convert warnings to exceptions with `set_error_handler` as in
   `HeroRenderTest.php`.
-- **Jest** (`view.test.ts` beside `view.ts`): build fixture markup in `document.body`,
-  `beforeEach`/`afterEach` reset, test initial state, interactions, keyboard, and safe
-  init when markup is missing.
+- **Vitest** (`view.test.ts` beside `view.ts`): import `describe`/`it`/`expect`/`vi` from
+  `vitest` (no globals), build fixture markup in `document.body`, `beforeEach`/`afterEach`
+  reset, test initial state, interactions, keyboard, and safe init when markup is missing.
+  Stub browser APIs jsdom lacks in `tests/unit/setup.ts`.
 - **Playwright** (`tests/e2e/*.spec.ts`): only for browser behaviour; restore any
   WordPress state you change.
 

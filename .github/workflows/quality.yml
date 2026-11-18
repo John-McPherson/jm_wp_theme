@@ -86,8 +86,8 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Run Jest unit tests
-        run: npm run test:unit -- --runInBand
+      - name: Run Vitest unit tests
+        run: npm run test:unit
 
       - name: Type-check
         run: npm run typecheck
