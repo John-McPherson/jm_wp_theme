@@ -1,9 +1,10 @@
 <?php
 /**
- * WordPress test doubles for template filters.
+ * WordPress test doubles for template filters and routing.
  *
- * Record added filters in `$GLOBALS['jmc_test_filters']`. Doubles are guarded
- * so they never replace a definition supplied elsewhere.
+ * Record added filters in `$GLOBALS['jmc_test_filters']` and return the
+ * queried object from `$GLOBALS['jmc_test_queried_object']`. Doubles are
+ * guarded so they never replace a definition supplied elsewhere.
  *
  * @package JMC_Theme
  */
@@ -27,5 +28,16 @@ if ( ! function_exists( 'add_filter' ) ) {
 		$GLOBALS['jmc_test_filters'][ $hook_name ][] = [ $callback, $priority, $accepted_args ];
 
 		return true;
+	}
+}
+
+if ( ! function_exists( 'get_queried_object' ) ) {
+	/**
+	 * Return the queried object from `$GLOBALS['jmc_test_queried_object']`.
+	 *
+	 * @return object|null The queried object.
+	 */
+	function get_queried_object(): ?object {
+		return $GLOBALS['jmc_test_queried_object'] ?? null;
 	}
 }
