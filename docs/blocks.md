@@ -26,7 +26,9 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/buttons`         | Group of one or more `jmc/button` blocks                                           | Dynamic PHP               | Allows only `jmc/button`; unlocked inside locked sections; adds buttons from its own **+** menu; renders nothing when every button is omitted; direct inserter disabled |
 | `jmc/column`          | Groups related inner content within a section                                      | Dynamic PHP               | Structural composition block; direct inserter disabled                                                                 |
 | `jmc/contact-details` | Business phone, WhatsApp, email, opening hours, and service area                   | Dynamic PHP               | Restricted to `jmc/column`; values come from the [business contact settings](#business-contact-settings), the block only chooses which to show; renders nothing when nothing is set; see [Contact details](#contact-details) |
-| `jmc/footer`          | Site footer container with a selectable palette                                    | Dynamic PHP               | Site chrome; direct inserter disabled; single instance; allows only footer blocks, each rendered as a column, with the legal row spanning the bottom; inverse and locked in the footer part |
+| `jmc/credential`      | One accreditation, guarantee or review logo with an optional link                  | Dynamic PHP               | Restricted to `jmc/credential-list`; informative logo whose alt text names the credential; renders nothing without an image; see [Credentials](#credentials) |
+| `jmc/credential-list` | Centred, wrapping list of `jmc/credential` logos                                   | Dynamic PHP               | Restricted to `jmc/trust-credentials`; direct inserter disabled; starts with one credential; credentials can be added, removed and reordered; renders nothing when empty |
+| `jmc/footer`          | Site footer container with a selectable palette                                    | Dynamic PHP               | Site chrome; direct inserter disabled; single instance; allows only footer blocks and `jmc/trust-credentials`, each rendered as a column, with the credential logos spanning the top and the legal row the bottom; inverse and locked in the footer part |
 | `jmc/footer-business` | Business name, address, telephone, email, and service area                          | Dynamic PHP               | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
 | `jmc/footer-navigation` | A column of links from a selected `wp_navigation` menu                          | Dynamic PHP               | Restricted to `jmc/footer`; insertable there, multiple allowed (one column each); no toggle or view script            |
 | `jmc/footer-legal`    | Site credit, copyright notice with the current year, and links from the `legal` menu | Dynamic PHP              | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
@@ -38,6 +40,7 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/cta-banner`      | Call-to-action section with a heading, supporting copy, and one or more buttons     | Dynamic PHP               | Columns, Stacked and Contact Details variations (`layout`); palettes; left/right order (not stacked); defaults to inverse/right/columns; see [Call-to-action banner](#call-to-action-banner) |
 | `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default |
 | `jmc/service-grid`    | Introductory content and the published services in one responsive grid              | Dynamic PHP               | Two locked Column children: the intro and `jmc/service-list`; palettes; defaults to default; the `order` attribute is currently unused |
+| `jmc/trust-credentials` | Strip of credential logos at the top of the site footer                        | Dynamic PHP               | Direct inserter disabled; allows only `jmc/credential-list`; placed and locked in the footer part; palettes, defaulting to the surrounding palette; renders nothing without logos |
 | `jmc/text-with-image` | Composable text content paired with an image                                       | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; contains legacy-looking attributes that need contract review |
 
 This table should be updated whenever a block is added, renamed, deprecated, or removed.
@@ -336,6 +339,11 @@ wp eval 'global $wpdb; print_r( $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} W
 
 ```html
 <!-- wp:jmc/footer {"palette":"inverse","lock":{"remove":true}} -->
+  <!-- wp:jmc/trust-credentials {"lock":{"remove":true}} -->
+    <!-- wp:jmc/credential-list -->
+      <!-- wp:jmc/credential /-->
+    <!-- /wp:jmc/credential-list -->
+  <!-- /wp:jmc/trust-credentials -->
   <!-- wp:jmc/footer-business {"lock":{"remove":true}} /-->
   <!-- wp:jmc/footer-navigation /-->
   <!-- wp:jmc/footer-legal {"lock":{"remove":true}} /-->
@@ -344,9 +352,30 @@ wp eval 'global $wpdb; print_r( $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} W
 
 ### Footer container
 
-`jmc/footer` paints its palette across the full width and centres its content in a `--jmc-container-xl` container. Each child block is one column: stacked on narrow screens, then side by side from the `$mobile` container width, at least `12rem` wide, sharing the width equally (so fewer columns spread further apart) and wrapping as space runs out. The legal row is the exception: it always takes a full-width row along the bottom. The layout is a wrapping flexbox rather than an `auto-fit` grid, because a full-width item stops `auto-fit` from collapsing empty tracks and squeezes the columns to the left. The footer sets the smaller `p4` type style, and every footer link shares one hover and keyboard-focus treatment (highlight colour and underline). It renders nothing when its inner blocks produce no markup.
+`jmc/footer` paints its palette across the full width and centres its content in a `--jmc-container-xl` container. Each child block is one column: stacked on narrow screens, then side by side from the `$mobile` container width, at least `12rem` wide, sharing the width equally (so fewer columns spread further apart) and wrapping as space runs out. The credential logos (`jmc/trust-credentials`) and the legal row are the exceptions: the logos always take a full-width row along the top, and the legal row a full-width row along the bottom. The layout is a wrapping flexbox rather than an `auto-fit` grid, because a full-width item stops `auto-fit` from collapsing empty tracks and squeezes the columns to the left. The footer sets the smaller `p4` type style, and every footer link shares one hover and keyboard-focus treatment (highlight colour and underline). It renders nothing when its inner blocks produce no markup.
 
 Its palette follows the Hero contract: `default` (no class), `secondary` (`jmc-palette--secondary`), and `inverse` (`jmc-palette--inverse`). The attribute default is `default`; the footer part sets `inverse`. Unknown or malformed values fall back to `default`.
+
+### Credentials
+
+The footer opens with a strip of accreditation, guarantee and review logos: `jmc/trust-credentials` holds one `jmc/credential-list`, which holds the `jmc/credential` logos. Credentials are logos only; text claims with a label and detail are out of scope (see #8). Edit them in the Site Editor on the **Site footer** template part. The section block is not in the inserter, so it exists only where the footer part places it; it is locked against removal there.
+
+Each credential stores two attributes:
+
+| Attribute | Purpose | Validation |
+| --- | --- | --- |
+| `imageId` | Media Library image shown as the logo, at the `medium` size | Must be a positive integer for an existing image attachment; otherwise the credential renders nothing |
+| `link` | Optional `{ url, opensInNewTab }` destination, set from the block toolbar | `jmc_safe_link_url()` (web URLs, site paths and `tel:`; no `mailto:`); an unsafe or malformed link leaves the logo unlinked |
+
+**Alternative text.** A logo is the credential itself, so it is informative, never decorative: its alt text comes from the Media Library and should name the credential (for example "NICEIC Approved Contractor"). When the image has no alt text, the image title is used so the logo, and any link around it, is never unnamed; the editor sidebar warns about the missing alt text. The [image component](#images) takes the alt as an argument.
+
+**Links.** A linked logo is wrapped in one `<a>` whose clickable area covers the whole tile. With **Open in new tab**, the link gets `target="_blank"` and `rel="noopener noreferrer"`, and screen readers hear "(opens in a new tab)" after the logo's name. Telephone links never open a new tab. Keyboard focus outlines the tile with a 2px `--jmc-text-highlight` outline.
+
+**Layout.** Logos sit in a centred, wrapping row of equal-width `3 / 2` tiles with no border or background, each image scaled to fit (`object-fit: contain`). Tiles are sized for 2 per row on narrow screens, then 3, 4 and 5 from the `$mobile`, `$tablet` and `$laptop` widths; a shorter row stays centred. In the footer the section drops its own padding and spans a full row.
+
+**Empty states.** A credential without a usable image renders nothing, a list with no rendered credentials renders nothing, and the section renders nothing when its list is empty, so the footer shows no empty band until a logo is added. In the editor, an empty credential is a dashed **Add logo** tile that opens the Media Library, and the list's standard **+** appender adds another credential. A new list starts with one empty credential.
+
+The section's `palette` attribute (`default`, `secondary`, `inverse`) follows the Hero contract; `default` adds no class, so in the footer the logos sit on the footer's own palette.
 
 ### Business details
 
@@ -455,6 +484,8 @@ Keyboard focus (`:focus-visible`) uses the hover colours plus a 2px `--jmc-text-
 ## Images
 
 Background images are decorative: they must not contain information needed to understand the page. A meaningful image must render as an `<img>` or image block with appropriate alternative-text handling.
+
+`components/image.php` renders a Media Library image with `wp_get_attachment_image()`. Its arguments are `image_id` (required; nothing renders without it), `classes`, `size` (default `large`), `sizes` (default `(max-width: 768px) 100vw, 50vw`) and `alt`. Without `alt`, the Media Library alternative text is used; a string `alt` replaces it, trimmed, and an empty string marks the image as decorative. Images load lazily.
 
 ## Deprecation
 

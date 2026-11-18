@@ -18,12 +18,14 @@ type EditProps = {
 };
 
 const ALLOWED_BLOCKS = [
+	'jmc/trust-credentials',
 	'jmc/footer-business',
 	'jmc/footer-navigation',
 	'jmc/footer-legal',
 ];
 
 const TEMPLATE: [ string, Record< string, unknown > ][] = [
+	[ 'jmc/trust-credentials', { lock: { remove: true } } ],
 	[ 'jmc/footer-business', { lock: { remove: true } } ],
 	[ 'jmc/footer-navigation', {} ],
 	[ 'jmc/footer-legal', { lock: { remove: true } } ],

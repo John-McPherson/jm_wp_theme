@@ -15,7 +15,8 @@ declare(strict_types=1);
  *     classes?: string|string[],
  *     size?: string,
  *     loading?: string,
- *     sizes?: string
+ *     sizes?: string,
+ *     alt?: string
  * } $args
  */
 
@@ -38,15 +39,30 @@ $classes = jmc_html_classes(
 	]
 );
 
+$image_attributes = [
+	'class'   => $classes,
+	'loading' => 'lazy',
+	'sizes'   => jmc_args_string(
+		args: $args,
+		key: 'sizes',
+		fallback_value: '(max-width: 768px) 100vw, 50vw'
+	),
+];
+
+// An explicit alt replaces the Media Library text.
+if ( is_string( $args['alt'] ?? null ) ) {
+	$image_attributes['alt'] = trim( $args['alt'] );
+}
+
 $image = wp_get_attachment_image(
 	attachment_id: $image_id,
-	size: 'large',
+	size: jmc_args_string(
+		args: $args,
+		key: 'size',
+		fallback_value: 'large'
+	),
 	icon: false,
-	attr: [
-		'class'   => $classes,
-		'loading' => 'lazy',
-		'sizes'   => '(max-width: 768px) 100vw, 50vw',
-	]
+	attr: $image_attributes
 );
 
 if ( '' !== $image ) {
