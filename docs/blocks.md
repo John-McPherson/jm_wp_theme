@@ -353,7 +353,7 @@ Each accepted enquiry is saved as a private `jmc_enquiry` post before it is emai
 
 - **Delivery** — `jmc_send_enquiry()` emails the business, with `Reply-To` set to the enquirer, and records the status (`sent` or `failed`), the number of attempts and the last mail error. `sent` means the mail provider accepted the message; use an SMTP plugin for reliable delivery. A failure also writes a log line containing only the enquiry ID, and fires `jmc_enquiry_delivery`.
 - **Admin** — **Enquiries** lists name, email, postcode, service, delivery status and date, with a **Failed to send** filter. Each enquiry opens as a read-only view with **Reply by email**, **Resend** and **Move to bin**. Editors and administrators can see enquiries; nobody can create them by hand.
-- **Recovering a failed delivery** — a notice on the dashboard and the Enquiries screens counts failed enquiries. Fix the business email address (**Settings → General**) or the site's mail settings, then use **Resend**.
+- **Recovering a failed delivery** — a notice on the dashboard and the Enquiries screens counts failed enquiries. Fix the business email address (**Settings → Business**) or the site's mail settings, then use **Resend**.
 - **Retention** — a daily cron job (`jmc_purge_enquiries`) deletes enquiries older than 365 days; filter `jmc_enquiry_retention_days` to change this. Switching theme unschedules it.
 - **Privacy** — suggested privacy-policy text is added under **Settings → Privacy**. Enquiries are included in **Tools → Export Personal Data** and **Erase Personal Data**, matched by email address.
 

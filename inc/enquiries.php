@@ -618,7 +618,7 @@ add_action(
 		} elseif ( 'failed' === $resent ) {
 			printf(
 				'<div class="notice notice-error is-dismissible"><p>%s</p></div>',
-				esc_html__( 'The enquiry still couldn’t be sent. Check the business email address in Settings → General and the site’s email (SMTP) settings, then try again.', 'jmc-theme' )
+				esc_html__( 'The enquiry still couldn’t be sent. Check the business email address in Settings → Business and the site’s email (SMTP) settings, then try again.', 'jmc-theme' )
 			);
 		}
 
