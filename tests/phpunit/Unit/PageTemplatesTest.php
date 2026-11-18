@@ -9,8 +9,12 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+require_once dirname( __DIR__ ) . '/doubles/templates.php';
+require_once dirname( __DIR__, 3 ) . '/inc/templates.php';
+
 /**
- * Tests the landmarks, heading and content structure of the page templates.
+ * Tests the landmarks, heading and content structure of the page templates,
+ * and the homepage's starter pattern.
  */
 final class PageTemplatesTest extends TestCase {
 
@@ -167,5 +171,50 @@ final class PageTemplatesTest extends TestCase {
 			'<main class="wp-block-group site-main"> </main>',
 			trim( (string) preg_replace( '/\s+/', ' ', (string) preg_replace( '/<!--.*?-->/s', '', $template ) ) )
 		);
+	}
+
+	/**
+	 * The homepage's sections come from the `jmc/home-page` starter pattern,
+	 * offered for new pages: the hero (whose H1 replaces the template title),
+	 * an introduction, the services, reasons to choose the business and the
+	 * contact details, in that order, each locked in place.
+	 */
+	public function test_home_page_starter_pattern(): void {
+		$pattern = $this->read_theme_file( 'patterns/home-page.php' );
+
+		$this->assertMatchesRegularExpression( '/^\s*\*\s*Slug:\s*jmc\/home-page\s*$/m', $pattern );
+		$this->assertMatchesRegularExpression( '/^\s*\*\s*Block Types:\s*core\/post-content\s*$/m', $pattern );
+		$this->assertMatchesRegularExpression( '/^\s*\*\s*Post Types:\s*page\s*$/m', $pattern );
+
+		$blocks   = $this->parse( explode( '?>', $pattern, 2 )[1] ?? '' );
+		$sections = array_values(
+			array_filter(
+				$blocks,
+				static fn ( array $block ): bool => [] === $block['ancestors']
+			)
+		);
+
+		$this->assertSame(
+			[ 'jmc/hero', 'jmc/text-with-image', 'jmc/service-grid', 'jmc/text-with-image', 'jmc/cta-banner' ],
+			array_column( $sections, 'name' )
+		);
+		$this->assertSame( 'contact', $sections[4]['attributes']['layout'] ?? null );
+
+		foreach ( $sections as $section ) {
+			$this->assertSame(
+				[
+					'move'   => true,
+					'remove' => true,
+				],
+				$section['attributes']['lock'] ?? null,
+				"{$section['name']} is locked in place."
+			);
+		}
+
+		$names = array_column( $blocks, 'name' );
+
+		$this->assertContains( 'jmc/service-list', $names );
+		$this->assertContains( 'jmc/contact-details', $names );
+		$this->assertTrue( jmc_content_has_page_heading( $pattern ), 'The hero supplies the H1, so the template title is hidden.' );
 	}
 }
