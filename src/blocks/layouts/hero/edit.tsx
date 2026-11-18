@@ -1,6 +1,9 @@
 import { __ } from '@wordpress/i18n';
 
 import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
+import { Disabled, ToggleControl } from '@wordpress/components';
+import { useEntityProp } from '@wordpress/core-data';
+import ServerSideRender from '@wordpress/server-side-render';
 
 import './editor.scss';
 
@@ -19,15 +22,37 @@ const VARIANT_CLASSES = {
 
 const ALLOWED_BLOCKS = [ 'jmc/heading', 'jmc/paragraph', 'jmc/button' ];
 
-export default function Edit( { attributes, setAttributes } ) {
-	const { imageUrl, className, palette } = attributes;
+// Core Breadcrumbs, rendered as on the frontend; inc/breadcrumbs.php adds
+// the home icon in place of the "Home" item.
+const BREADCRUMB_ATTRIBUTES = {
+	className: 'jmc-hero__breadcrumbs',
+	showHomeItem: false,
+};
+
+export default function Edit( { attributes, setAttributes, context } ) {
+	const { imageUrl, className, palette, showBreadcrumbs } = attributes;
+	const { postId, postType } = context;
 
 	const bind = bindFields( attributes, setAttributes );
+
+	// Only child pages get a trail; outside a page (templates, patterns)
+	// there is no ancestry to show.
+	const [ parentId ] = useEntityProp(
+		'postType',
+		postType ?? 'page',
+		'parent',
+		postId
+	);
+	const hasBreadcrumbs =
+		false !== showBreadcrumbs &&
+		Boolean( postId ) &&
+		0 < Number( parentId );
 
 	const blockProps = useBlockProps( {
 		className: [
 			'jmc-section',
 			'jmc-hero',
+			hasBreadcrumbs && 'jmc-hero--has-breadcrumbs',
 			className,
 			VARIANT_CLASSES[ palette ],
 		]
@@ -35,7 +60,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			.join( ' ' ),
 	} );
 
-	const innerBlocksProps = useInnerBlocksProps(
+	const { children: innerBlocks, ...innerBlocksProps } = useInnerBlocksProps(
 		{
 			className: 'jmc-hero__text',
 		},
@@ -64,10 +89,38 @@ export default function Edit( { attributes, setAttributes } ) {
 						type="palette"
 					/>
 				</Sidebar.Section>
+				<Sidebar.Section title={ __( 'Breadcrumbs', 'jmc-theme' ) }>
+					<ToggleControl
+						label={ __( 'Show breadcrumbs', 'jmc-theme' ) }
+						help={ __(
+							'On child pages, the trail to this page replaces the label.',
+							'jmc-theme'
+						) }
+						checked={ false !== showBreadcrumbs }
+						onChange={ ( checked: boolean ) =>
+							setAttributes( { showBreadcrumbs: checked } )
+						}
+						__nextHasNoMarginBottom
+					/>
+				</Sidebar.Section>
 			</Sidebar>
 
 			<section { ...blockProps }>
-				<div { ...innerBlocksProps } />
+				<div { ...innerBlocksProps }>
+					{ hasBreadcrumbs && (
+						// Preview core Breadcrumbs for this page. Disabled keeps
+						// its links from leaving the editor.
+						<Disabled>
+							<ServerSideRender
+								key={ parentId }
+								block="core/breadcrumbs"
+								attributes={ BREADCRUMB_ATTRIBUTES }
+								urlQueryArgs={ { post_id: postId } }
+							/>
+						</Disabled>
+					) }
+					{ innerBlocks }
+				</div>
 				<div { ...imageProps }>
 					<MediaInput { ...bind.media( 'imageId', 'imageUrl' ) } />
 				</div>
