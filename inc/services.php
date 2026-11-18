@@ -1,6 +1,7 @@
 <?php
 /**
- * Register the Services parent setting and page excerpt support.
+ * Register the Services parent setting, page excerpt support and the routing
+ * of the Services page and its children to their governed templates.
  *
  * @package JMC_Theme
  */
@@ -123,4 +124,54 @@ add_action(
 
 		wp_set_script_translations( 'jmc-service-icon', 'jmc-theme' );
 	}
+);
+
+// Lay out the Services page and its direct children with their governed templates.
+add_filter(
+	'page_template_hierarchy',
+	/**
+	 * Put the services template for the queried page first.
+	 *
+	 * @param array<int, string> $templates Template candidates, most specific first.
+	 *
+	 * @return array<int, string> Template candidates.
+	 */
+	function ( array $templates ): array {
+		$page = get_queried_object();
+
+		return jmc_service_template_hierarchy(
+			templates: $templates,
+			role: jmc_service_page_role(
+				page: is_object( $page ) ? $page : null,
+				services_page_id: jmc_get_services_page()['id']
+			)
+		);
+	}
+);
+
+// Offer each services template only on the pages it governs.
+add_filter(
+	'theme_page_templates',
+	/**
+	 * Remove services templates that do not govern the edited page.
+	 *
+	 * @param array<string, string> $templates Template names keyed by slug.
+	 * @param mixed                 $theme     Theme the templates belong to.
+	 * @param mixed                 $post      Edited page, or null.
+	 *
+	 * @return array<string, string> Selectable templates.
+	 */
+	function ( array $templates, mixed $theme, mixed $post ): array {
+		unset( $theme );
+
+		return jmc_service_selectable_templates(
+			templates: $templates,
+			role: jmc_service_page_role(
+				page: is_object( $post ) ? $post : null,
+				services_page_id: jmc_get_services_page()['id']
+			)
+		);
+	},
+	10,
+	3
 );
