@@ -99,6 +99,13 @@ The service-page structure should consistently support:
 4. relevant call to action;
 5. optional related content where a defined relationship exists.
 
+### Implementation
+
+- `templates/services-landing.html` lays out the Services page and `templates/service.html` its direct children. The theme routes each page to its template from the resolved Services page, ahead of any template assigned in the editor, and never applies either template to deeper descendants or unrelated pages; see [Services templates](../blocks.md#services-templates).
+- The templates hold the header, breadcrumbs, the page content and the footer, and no editorial content.
+- The `jmc/services-landing` and `jmc/service-page` starter patterns give each page the structure above, as locked sections whose copy belongs to the page. Only the landing page lists services, through `jmc/service-grid`.
+- No related-content section is provided yet, because no relationship between services is defined beyond their shared parent.
+
 ## Navigation, search, and breadcrumbs
 
 - Navigation links point to the canonical page URLs.
@@ -120,6 +127,10 @@ At minimum:
 - validate the final rendered output.
 
 Any additional schema-specific value must satisfy the custom-meta rule: structured, validated, and not reliably derivable from existing content.
+
+### Implementation
+
+The theme outputs no structured data. Schema is deferred to Yoast SEO, which is planned to own it and builds it from the page record (title, excerpt, permalink and hierarchy) and its site-wide organisation settings, satisfying the rules above without a parallel form. The theme's part is to keep the visible content clean for it: one H1 per page, the excerpt as the page summary, canonical permalinks, and native breadcrumbs. Validate the rendered output once Yoast is configured.
 
 ## Editorial governance
 

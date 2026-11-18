@@ -68,11 +68,13 @@ Theme patterns are unsynced starting points built from the blocks above, one PHP
 | `jmc/why-choose-us`         | Trust    | `jmc/text-with-image` (secondary, image left): label, H2, paragraph, a ticked `jmc/list` and a Phone Button |
 | `jmc/call-to-action`        | Calls to action | `jmc/cta-banner`: H2 beside a paragraph, a Phone Button and a secondary button linking to `/services/` |
 | `jmc/contact-details`       | Contact, Calls to action | `jmc/cta-banner` (Contact Details): H2 and paragraph beside `jmc/contact-details` |
+| `jmc/services-landing`      | Services | Starter content for the Services page: hero, `jmc/service-grid`, why choose us and contact details, each locked; see [Services templates](#services-templates) |
+| `jmc/service-page`          | Services | Starter content for a service page: hero, service introduction, why choose us and call to action, each locked; see [Services templates](#services-templates) |
 
 - Copy is lorem ipsum until client copy replaces it ([#135](https://github.com/John-McPherson/jm_wp_theme/issues/135)).
 - Buttons use the Phone Button variation, so numbers come from [Settings → Business](#business-contact-settings) and a button renders nothing until a phone number is set. Contact details follow the same settings and the block's [empty state](#contact-details); the only fixed link is the canonical `/services/` page.
 - Patterns ship without images; editors choose one after inserting.
-- There is no services listing pattern: insert `jmc/service-grid`, whose layout is locked and whose cards come from the service pages (see [Services grid](#services-grid)).
+- There is no services listing pattern: insert `jmc/service-grid`, whose layout is locked and whose cards come from the service pages (see [Services grid](#services-grid)). The `jmc/services-landing` starter pattern includes the grid as-is, with no card content.
 - WordPress caches the list of pattern files. Set `WP_DEVELOPMENT_MODE` to `theme` locally so new or renamed patterns appear without bumping the theme version (see [development](development.md#debugging)).
 - `tests/phpunit/Unit/PatternsTest.php` checks every pattern's header, categories and markup against each block's `block.json`; see [testing](testing.md#php-regression-tests).
 
@@ -506,9 +508,33 @@ The choice is stored in the `jmc_service_icon` page meta, which only users who c
 
 The panel's script is `src/editor/service-icon/`, built to `build/js/editor/service-icon.js` by an extra entry in `webpack.config.js` and enqueued by `inc/services.php` on page editor screens only. Page excerpts are enabled by the same file.
 
+### Services templates
+
+The Services page and its direct children are laid out by two block templates, registered as `customTemplates` in `theme.json`:
+
+| Template | File | Applies to |
+| --- | --- | --- |
+| Services landing page | `templates/services-landing.html` | The resolved Services page (see [Choosing the Services page](#choosing-the-services-page)) |
+| Service page | `templates/service.html` | Every direct child of the Services page, whatever its status, so drafts preview with the template they will publish with |
+
+Both hold only layout: the header, one `<main>` landmark containing the core Breadcrumbs block and the page content, then the footer. Breadcrumbs and post content are locked against moving and removal. The templates contain no titles, excerpts, images, links or copy; everything a visitor reads comes from the page record or a dynamic block.
+
+Routing is automatic, so editors never pick these templates. `inc/services.php` filters `page_template_hierarchy` with `jmc_service_template_hierarchy()` (`inc/helpers/services.php`), which puts the template for the page's role first, ahead of any template assigned in the editor, and removes both services templates from every other page. A page's role comes from `jmc_service_page_role()`: `landing` for the Services page, `service` for its direct children, and `none` for everything else, including deeper descendants, which stay ordinary pages laid out by the normal page template. When the Services page is unresolved (`invalid` or `missing`), no page has a role. The `theme_page_templates` filter likewise offers each services template only on the page it governs, so the template picker cannot assign one elsewhere. To change a layout, edit the template in **Appearance → Editor → Templates**.
+
+Page content is the page's own. Two starter patterns, offered when a new page is created (`Block Types: core/post-content`), give it the governed structure, with every section locked against moving and removal and all copy editable:
+
+| Pattern | Sections |
+| --- | --- |
+| `jmc/services-landing` | Hero (the page's H1 and proposition), the Service Grid, Why choose us (trust), and a Contact Details call to action |
+| `jmc/service-page` | Hero (the page's H1 and proposition), a service introduction beside an image, Why choose us (trust), and a call to action |
+
+Only the landing page lists services, always through `jmc/service-grid`, so its cards follow [the empty states above](#empty-states): with no published services, visitors see the grid's intro without cards. Trust credentials also appear on every page in the footer. Related content is not part of the service template: no relationship between services is defined beyond their shared parent.
+
+Breadcrumbs and canonical URLs come from the native page hierarchy: core Breadcrumbs renders Home → Services → Service from the page's ancestors, and the canonical URL is the page permalink, built from its slug and parent. Service pages stay in normal WordPress search. The theme outputs no structured data (JSON-LD): schema is deferred to Yoast SEO, which builds it from the same page record and site settings; see [Structured data](architecture/services-content-model.md#structured-data).
+
 ### Publishing a service
 
-1. Create a page and set its **Parent** to the Services page (**Page → Parent**).
+1. Create a page and set its **Parent** to the Services page (**Page → Parent**). Choose the **Service page** starter pattern; the Service page template applies automatically.
 2. Give it a unique, specific title. It becomes the card heading and link text.
 3. Write an **Excerpt** in the page sidebar: one or two plain sentences for the card.
 4. Choose a **Service icon**.
