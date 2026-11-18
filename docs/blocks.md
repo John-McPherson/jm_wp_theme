@@ -145,7 +145,7 @@ Non-text contrast (WCAG 1.4.11, minimum 3:1) of each part against the palette ba
 
 Brand and Mono dark fail on `inverse` (the letters are 1.00:1), and Mono light fails on light palettes (1.05:1 on `default`), so use them only where the table says. The artwork's original gold (`accent-400`) is 2.65:1 on `base-100`, which is why the light palettes use `accent-500` and `accent-600`. Recheck these ratios when the palette changes.
 
-**Sizing.** The header sets the logo's width to `clamp(8rem, 20vw, 13rem)`; elsewhere it is `13rem`, capped at its container.
+**Sizing.** The header sets the logo's width to a fixed `9.5rem`; elsewhere it is `13rem`, capped at its container. The logo always keeps `--jmc-padding-xs` of clear space above and below.
 
 **Editor.** The editor previews the server render (see [Editor previews](#editor-previews)), so the Site Editor shows the same artwork and colours. A header part customised in the Site Editor before this block existed keeps the core Site Logo block; reset the part, or replace `<!-- wp:site-logo /-->` with `<!-- wp:jmc/site-logo {"lock":{"remove":true}} /-->`.
 

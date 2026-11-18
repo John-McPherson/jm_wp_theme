@@ -10,6 +10,8 @@
 	 */
 	.jmc-site-logo {
 		display: inline-block;
+		// Keep clear space above and below the artwork wherever the logo sits.
+		padding-block: var(--jmc-padding-xs);
 		color: inherit;
 		text-decoration: none;
 
