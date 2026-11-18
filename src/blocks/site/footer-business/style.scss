@@ -17,6 +17,12 @@
 			font-weight: 700;
 		}
 
+		// The icon stands in for the label visually; screen readers still hear it.
+		&__hidden-label {
+
+			@include sr-only;
+		}
+
 		&__contact {
 			display: flex;
 			flex-direction: column;

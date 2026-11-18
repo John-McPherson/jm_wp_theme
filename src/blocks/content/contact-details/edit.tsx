@@ -5,9 +5,8 @@ import { store as coreStore } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import ServerSideRender from '@wordpress/server-side-render';
 
+import ContactSettings from '../../../components/ContactSettings';
 import Sidebar from '../../../components/Sidebar';
-
-import ContactSettings from './settings';
 
 type Attributes = {
 	showPhone: boolean;
