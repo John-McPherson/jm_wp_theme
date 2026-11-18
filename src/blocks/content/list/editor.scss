@@ -1,0 +1,20 @@
+// Editor-only rules sit outside the cascade layers on purpose: WordPress's
+// editor styles are unlayered and would otherwise override them.
+
+// The list spans the column so its "+" appender sits in the bottom corner,
+// clear of the text. Items keep the frontend measure, so text wraps the same.
+.jmc-list {
+	width: calc(100% - var(--jmc-list-indent));
+	max-width: none;
+
+	> .jmc-list__item {
+		max-width: 50ch;
+	}
+
+	> .block-list-appender {
+		position: static;
+		justify-self: end;
+		margin: 0;
+		list-style: none;
+	}
+}
