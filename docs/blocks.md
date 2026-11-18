@@ -101,7 +101,7 @@ The link is validated by `jmc_safe_link_url()` (`inc/helpers/link.php`):
 
 `mailto:` links are rejected unless the caller passes `allow_mailto: true`; the header CTA does not, `jmc/button` does (see [Buttons](#buttons)).
 
-The block renders nothing when the label is empty or the link is missing, malformed, or rejected. Telephone links never open in a new tab. Output uses the `button-link` component with the `jmc-button--small` size modifier.
+The block renders nothing when the label is empty or the link is missing, malformed, or rejected. Output uses the `button-link` component with the `jmc-button--small` size modifier, so new-tab handling follows [Button links](#button-links): telephone links never open in a new tab.
 
 The block is not insertable, so a site whose header template part has been customised in the Site Editor does not pick it up from `parts/header.html`. Either reset the header template part, or add `<!-- wp:jmc/header-cta {"lock":{"remove":true}} /-->` inside the `jmc/navigation` block of the saved part.
 
@@ -204,7 +204,7 @@ A `link` button's destination is validated by `jmc_safe_link_url()` with `allow_
 
 In the editor, a bare phone number or email address typed into the link field is saved as a `tel:` or `mailto:` link (`src/utils/contactLink.ts`). Without this, the link control would save it as `https://01234 567890` or `https://hello@example.com`.
 
-The button renders nothing when its label is empty or its destination is missing or rejected. `opensInNewTab` opens a web link in a new tab with `rel="noopener noreferrer"` and a screen-reader hint; content saved with the older `link.target: "_blank"` shape is honoured too. Telephone and email links never open in a new tab.
+The button renders nothing when its label is empty or its destination is missing or rejected. Whether it opens in a new tab follows [Button links](#button-links).
 
 ### Buttons group
 
@@ -521,6 +521,28 @@ Two WordPress styles sit outside the theme's cascade layers and therefore beat a
 
 - The core Icon block sets `.wp-block-icon svg { fill: currentColor }`. An unlayered `.wp-block-icon svg.lucide { fill: none }` keeps Lucide icons as outlines.
 - Global styles set `:root :where(.wp-block-icon svg) { width: 24px }`. To size an icon rendered through the Icon block, target its SVG with an unlayered rule that is more specific, as `.jmc-service-card__icon svg` does.
+
+## Button links
+
+Blocks that render a button link store a `link` attribute in the shape saved by `LinkToolBar` (`src/components/LinkToolBar.tsx`) and `bindFields().link()`:
+
+```json
+{ "url": "", "opensInNewTab": false }
+```
+
+`block.json` defaults and examples use this shape. The editor replaces the whole object when the link changes, so other keys are never written.
+
+Blocks validate `url` themselves (see [Link validation](#link-validation)) and pass the stored link to the `button-link` component with the validated URL. The component decides whether the link opens in a new tab:
+
+| Stored link | Output |
+| --- | --- |
+| `opensInNewTab: true` | `target="_blank"`, `rel="noopener noreferrer"`, and a visually hidden "(opens in a new tab)" |
+| `opensInNewTab` missing, `false`, or not a boolean | Same tab: no `target`, `rel`, or hint |
+| Legacy `target: "_blank"` (content saved before `opensInNewTab`) | New tab, as above |
+| Any other `target` value | Ignored |
+| `tel:` or `mailto:` URL | Always the same tab, because the dialler or mail app handles it |
+
+No deprecation is needed: `jmc/button` and `jmc/header-cta` are dynamic, so existing content keeps its saved attributes and renders through the component.
 
 ## Button sizes
 

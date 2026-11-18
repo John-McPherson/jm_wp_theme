@@ -22,9 +22,7 @@
       "type": "object",
       "default": {
         "url": "",
-        "opensInNewTab": false,
-        "target": "",
-        "rel": ""
+        "opensInNewTab": false
       }
     },
     "linkType": {
@@ -99,8 +97,7 @@
       "text": "Get a quote",
       "link": {
         "url": "#",
-        "target": "",
-        "rel": ""
+        "opensInNewTab": false
       }
     }
   },
