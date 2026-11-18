@@ -93,7 +93,7 @@ The `style.css` header currently uses `jmc-custom-theme`; align it before releas
 - The global block allowlist exposes only `jmc/` blocks and must become context-aware before header, navigation, query, and broader FSE workflows are completed.
 - Some internal block metadata still uses legacy, unregistered categories.
 - TypeScript strict mode is disabled and existing contracts contain weak typing.
-- Header and footer template parts exist; patterns and full template coverage are not implemented.
+- Header and footer template parts and the first theme patterns exist; full template coverage is not implemented.
 - Automated behavioural and accessibility tests are not configured.
 - Packaging uses Unix-specific shell tools and is not clean-install tested.
 - Production hosting, deployment, health-check, and rollback commands are undecided.

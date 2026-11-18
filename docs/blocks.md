@@ -56,6 +56,23 @@ This table should be updated whenever a block is added, renamed, deprecated, or 
 - `allowedBlocks`, `ancestor`, and block locking should keep editor composition valid without relying only on author training.
 - Section blocks use the registered `jmc-section` category. Internal content-block metadata still contains legacy `jm` and `jmc-blocks` categories and should be normalised.
 
+## Patterns
+
+Theme patterns are unsynced starting points built from the blocks above, one PHP file per pattern under `patterns/`. WordPress registers them from their file headers; `inc/patterns.php` registers the categories they use. Naming, categories, locking, placeholder and accessibility rules are in the [pattern taxonomy and registration decision](architecture/pattern-taxonomy-and-registration.md).
+
+| Pattern                     | Category | Built from                                                                                   |
+| --------------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `jmc/hero`                  | Heroes   | `jmc/hero`: label, the page's H1, a paragraph and a Phone Button                              |
+| `jmc/service-introduction`  | Services | `jmc/text-with-image`: label, H2, two paragraphs and a Phone Button beside an image           |
+| `jmc/why-choose-us`         | Trust    | `jmc/text-with-image` (secondary, image left): label, H2, paragraph, a ticked `jmc/list` and a Phone Button |
+
+- Copy is lorem ipsum until client copy replaces it ([#135](https://github.com/John-McPherson/jm_wp_theme/issues/135)).
+- Buttons use the Phone Button variation, so numbers come from [Settings → Business](#business-contact-settings) and a button renders nothing until a phone number is set.
+- Patterns ship without images; editors choose one after inserting.
+- There is no services listing pattern: insert `jmc/service-grid`, whose layout is locked and whose cards come from the service pages (see [Services grid](#services-grid)).
+- WordPress caches the list of pattern files. Set `WP_DEVELOPMENT_MODE` to `theme` locally so new or renamed patterns appear without bumping the theme version (see [development](development.md#debugging)).
+- `tests/phpunit/Unit/PatternsTest.php` checks every pattern's header, categories and markup against each block's `block.json`; see [testing](testing.md#php-regression-tests).
+
 ## Adding a block
 
 1. Create the source directory and `block.json`.

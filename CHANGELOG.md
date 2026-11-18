@@ -25,6 +25,7 @@ All notable changes will be documented here. The project follows semantic versio
 - WhatsApp Button variation with the WhatsApp logo, and optional pre-filled email subjects and bodies and WhatsApp messages, keeping line breaks.
 - Simple Icons brand logos in the theme's icon collection, starting with WhatsApp.
 - Site Logo block (`jmc/site-logo`): the theme's logo as an inline SVG in the header, coloured by `--jmc-logo-*` tokens that follow the surrounding palette, with Brand, Mono dark and Mono light styles.
+- Hero, Service introduction and Why choose us patterns in new Heroes, Services and Trust pattern categories, with lorem ipsum placeholder copy until client copy is supplied.
 
 ### Changed
 
