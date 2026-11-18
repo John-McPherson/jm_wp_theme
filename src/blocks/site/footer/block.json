@@ -14,7 +14,7 @@
       "default": "default"
     }
   },
-  "allowedBlocks": ["jmc/footer-business", "jmc/footer-navigation", "jmc/footer-legal"],
+  "allowedBlocks": ["jmc/trust-credentials", "jmc/footer-business", "jmc/footer-navigation", "jmc/footer-legal"],
   "example": {
     "attributes": {
       "palette": "inverse"
