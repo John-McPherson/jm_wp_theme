@@ -58,12 +58,15 @@
 			flex-direction: column;
 			gap: var(--jmc-section-padding-sm);
 			width: 100%;
-			height: 100vh;
+			// Fill the viewport below the header, so the end of the
+			// scrollable panel stays reachable.
+			height: calc(100dvh - var(--jmc-header-height));
 			margin-top: var(--jmc-header-height);
 			padding-top: var(--jmc-section-padding-sm);
 			padding-inline: var(--jmc-page-margin);
 			background-color: var(--jmc-background-color);
 			border-top: 1px solid var(--jmc-shadow-color);
+			overflow-y: auto;
 			clip-path: var(--navigation-list-clip);
 			transition: clip-path 0.3s ease-in-out;
 
@@ -81,6 +84,63 @@
 				pointer-events: none;
 			}
 
+		}
+
+		&__item--has-submenu {
+			display: flex;
+			flex-direction: column;
+			gap: var(--jmc-padding-xs);
+		}
+
+		&__item--current-ancestor > .jmc-navigation__link,
+		&__item--current-ancestor > .jmc-navigation__label {
+			font-weight: 700;
+		}
+
+		// Mobile: submenus are always expanded, indented under their parent.
+		&__submenu {
+			display: flex;
+			flex-direction: column;
+			gap: var(--jmc-padding-xs);
+			margin: 0;
+			padding: 0 0 0 var(--jmc-padding-m);
+			list-style: none;
+
+			&[hidden] {
+				display: none;
+			}
+		}
+
+		&__submenu-toggle {
+			display: none;
+			align-items: center;
+			gap: var(--jmc-padding-xs);
+			padding: 0;
+			color: inherit;
+			font: inherit;
+			background: transparent;
+			border: 0;
+			cursor: pointer;
+
+			.sro {
+
+				@include m.sr-only;
+			}
+		}
+
+		&__submenu-icon {
+			display: inline-block;
+			width: 0.5em;
+			height: 0.5em;
+			margin: 0.25em;
+			border-inline-end: 2px solid currentcolor;
+			border-block-end: 2px solid currentcolor;
+			transform: translateY(-25%) rotate(45deg);
+			transition: transform 0.2s ease;
+
+			[aria-expanded="true"] > & {
+				transform: translateY(25%) rotate(-135deg);
+			}
 		}
 
 		&:has(&__toggle[aria-expanded="true"]) {
@@ -111,7 +171,8 @@
 			&__toggle-open,
 			&__toggle-close,
 			&__list,
-			&__list[hidden] {
+			&__list[hidden],
+			&__submenu-icon {
 				transition: none;
 			}
 		}
@@ -132,12 +193,97 @@
 				height: auto;
 				margin-top: 0;
 				padding: 0;
+				overflow: visible;
 				background-color: transparent;
 				border-top: 0;
 			}
 
 			&__toggle {
 				display: none;
+			}
+
+			&__item--has-submenu {
+				position: relative;
+				flex-direction: row;
+				align-items: center;
+			}
+
+			// The item is centred in the header, so half the header height below
+			// its centre is the header's bottom edge. The panel is pulled back by
+			// its padding so its links line up with the parent label.
+			&__submenu {
+				--jmc-navigation-submenu-padding: var(--jmc-padding-s);
+
+				position: absolute;
+				inset-block-start: calc(50% + var(--jmc-header-height) / 2);
+				inset-inline-start: calc(-1 * var(--jmc-navigation-submenu-padding));
+				z-index: var(--jmc-z-index-dropdown);
+				width: max-content;
+				min-width: 12rem;
+				max-width: min(20rem, calc(100vw - 2 * var(--jmc-page-margin)));
+				padding: var(--jmc-navigation-submenu-padding);
+				background-color: var(--jmc-background-color);
+				box-shadow: 0 2px 8px var(--jmc-shadow-color);
+
+				// Bridge the gap up to the item so the pointer never leaves it.
+				&::before {
+					position: absolute;
+					inset-block-end: 100%;
+					inset-inline: 0;
+					height: calc(var(--jmc-header-height) / 2);
+					content: "";
+				}
+			}
+
+			// A submenu on the last item opens towards the start so it never
+			// overflows the page.
+			&__item--has-submenu:last-of-type &__submenu {
+				inset-inline: auto calc(-1 * var(--jmc-navigation-submenu-padding));
+			}
+
+			&__submenu-toggle {
+				display: inline-flex;
+			}
+
+			&__label {
+				display: none;
+			}
+
+			// Without JavaScript the toggles can't work, so submenus stay in the
+			// flow, visible under their parent, and labels replace the toggles.
+			&.no-js {
+
+				.jmc-navigation__list {
+					align-items: flex-start;
+				}
+
+				.jmc-navigation__item--has-submenu {
+					flex-direction: column;
+					align-items: flex-start;
+				}
+
+				.jmc-navigation__submenu {
+					position: static;
+					inset: auto;
+					width: auto;
+					min-width: 0;
+					margin: 0;
+					padding: 0;
+					background-color: transparent;
+					box-shadow: none;
+
+					&::before {
+						content: none;
+					}
+				}
+
+				.jmc-navigation__submenu-toggle {
+					display: none;
+				}
+
+				.jmc-navigation__label {
+					display: inline;
+				}
 			}
 		}
 	}
