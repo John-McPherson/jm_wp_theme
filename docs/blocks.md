@@ -22,9 +22,10 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 
 | Block                 | Purpose                                                                            | Rendering                 | Notes                                                                                                                  |
 | --------------------- | ---------------------------------------------------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `jmc/button`          | Linked call-to-action                                                              | Dynamic PHP               | Internal composition block; primary or secondary; Button, Phone Button and Email Button variations (`linkType`); direct inserter disabled; see [Buttons](#buttons) |
+| `jmc/button`          | Linked call-to-action                                                              | Dynamic PHP               | Internal composition block; primary or secondary; Button, Phone Button, Email Button and WhatsApp Button variations (`linkType`); optional pre-filled email or WhatsApp message; direct inserter disabled; see [Buttons](#buttons) |
 | `jmc/buttons`         | Group of one or more `jmc/button` blocks                                           | Dynamic PHP               | Allows only `jmc/button`; unlocked inside locked sections; adds buttons from its own **+** menu; renders nothing when every button is omitted; direct inserter disabled |
 | `jmc/column`          | Groups related inner content within a section                                      | Dynamic PHP               | Structural composition block; direct inserter disabled                                                                 |
+| `jmc/contact-details` | Business phone, WhatsApp, email, opening hours, and service area                   | Dynamic PHP               | Restricted to `jmc/column`; values come from the [business contact settings](#business-contact-settings), the block only chooses which to show; renders nothing when nothing is set; see [Contact details](#contact-details) |
 | `jmc/footer`          | Site footer container with a selectable palette                                    | Dynamic PHP               | Site chrome; direct inserter disabled; single instance; allows only footer blocks, each rendered as a column, with the legal row spanning the bottom; inverse and locked in the footer part |
 | `jmc/footer-business` | Business name, address, telephone, email, and service area                          | Dynamic PHP               | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
 | `jmc/footer-navigation` | A column of links from a selected `wp_navigation` menu                          | Dynamic PHP               | Restricted to `jmc/footer`; insertable there, multiple allowed (one column each); no toggle or view script            |
@@ -34,7 +35,7 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jmc/variant` context; level defaults to `2`; direct inserter disabled                                            |
 | `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; direct inserter disabled                                         |
 | `jmc/service-list`    | Linked cards for the published child pages of the Services page                    | Dynamic PHP               | Restricted to `jmc/service-grid`; direct inserter disabled; card heading level `2`–`6`, default `3`; previewed in the editor with `ServerSideRender`; see [Services grid](#services-grid) |
-| `jmc/cta-banner`      | Call-to-action section with a heading, supporting copy, and one or more buttons     | Dynamic PHP               | Columns and Stacked variations (`layout`); palettes; left/right order (columns only); defaults to inverse/right/columns; see [Call-to-action banner](#call-to-action-banner) |
+| `jmc/cta-banner`      | Call-to-action section with a heading, supporting copy, and one or more buttons     | Dynamic PHP               | Columns, Stacked and Contact Details variations (`layout`); palettes; left/right order (not stacked); defaults to inverse/right/columns; see [Call-to-action banner](#call-to-action-banner) |
 | `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default |
 | `jmc/service-grid`    | Introductory content and the published services in one responsive grid              | Dynamic PHP               | Two locked Column children: the intro and `jmc/service-list`; palettes; defaults to default; the `order` attribute is currently unused |
 | `jmc/text-with-image` | Composable text content paired with an image                                       | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; contains legacy-looking attributes that need contract review |
@@ -115,17 +116,29 @@ jmc/cta-banner
 
 Authors edit the text and buttons but cannot add, remove, or move the columns, heading, or paragraph. `jmc/buttons` is unlocked, so buttons can be added, removed, and reordered inside it.
 
+The **CTA Banner (Contact Details)** variation uses a different locked template, with no buttons:
+
+```text
+jmc/cta-banner (layout: contact)
+├── jmc/column
+│   ├── jmc/heading (level 2)
+│   └── jmc/paragraph
+└── jmc/column
+    └── jmc/contact-details
+```
+
 ### Attributes
 
 | Attribute | Values | Default | Output |
 | --- | --- | --- | --- |
-| `layout` | `columns`, `stacked` | `columns` | `stacked` adds `jmc-cta--stacked` |
+| `layout` | `columns`, `stacked`, `contact` | `columns` | `stacked` adds `jmc-cta--stacked`; `contact` adds `jmc-cta--contact` |
 | `palette` | `default`, `secondary`, `inverse` | `inverse` | No class, `jmc-palette--secondary`, or `jmc-palette--inverse` |
-| `order` | `left`, `right` | `right` | `jmc-column-left` or `jmc-column-right` on the container; columns layout only |
+| `order` | `left`, `right` | `right` | `jmc-column-left` or `jmc-column-right` on the container; not used by the stacked layout |
 
-Unknown or malformed values fall back to the default. The `layout` attribute is exposed as two block variations, **CTA Banner** (columns, the default) and **CTA Banner (Stacked)**, which can be chosen in the inserter or switched from the block's variation control.
+Unknown or malformed values fall back to the default. The `layout` attribute is exposed as three block variations, **CTA Banner** (columns, the default), **CTA Banner (Stacked)** and **CTA Banner (Contact Details)**, which can be chosen in the inserter or switched from the block's variation control.
 
 - **Columns** stacks the two columns on narrow screens and places them side by side from the `$tablet` width. `order` decides which side the copy and buttons sit on; the editor labels it **Buttons Left** / **Buttons Right**.
+- **Contact Details** stacks on narrow screens. From `$tablet` it gives the heading and copy two-thirds of the width and the contact details one-third, and bottom-aligns the details with the copy. `order` places the details column; the editor labels it **Contact Details Left** / **Contact Details Right**, and the default puts the details on the right. Fractions are used rather than content sizing, because section columns are `inline-size` containers and report no content width to the grid. Switching an existing banner to or from this variation resets its columns to the new template.
 - **Stacked** keeps one centred column at every width, limited to `--jmc-container-sm`, with the heading above the copy and centred buttons. `order` has no effect and its control is hidden.
 
 ### Empty content
@@ -138,19 +151,38 @@ Banners saved before `jmc/buttons` was introduced hold `jmc/button` directly in 
 
 ## Buttons
 
-`jmc/button` renders a single `.jmc-button` link through the `button-link` component. It is hidden from the inserter, so inside `jmc/buttons` new buttons are added from the group's **+** menu (**Button**, **Phone button**, or **Email button**). Its `buttonType` attribute selects `primary` (default) or `secondary` (`jmc-button__secondary`).
+`jmc/button` renders a single `.jmc-button` link through the `button-link` component. It is hidden from the inserter, so inside `jmc/buttons` new buttons are added from the group's **+** menu (**Button**, **Phone button**, **Email button**, or **WhatsApp button**). Its `buttonType` attribute selects `primary` (default) or `secondary` (`jmc-button__secondary`).
 
 ### Link types
 
-`linkType` decides where the button links. It is exposed as three block variations that can be switched from the block's variation control:
+`linkType` decides where the button links. It is exposed as four block variations that can be switched from the block's variation control:
 
 | `linkType` | Variation | Destination |
 | --- | --- | --- |
 | `link` (default) | Button | The button's own `link` (`{ url, opensInNewTab }`), edited from the toolbar |
 | `phone` | Phone Button | The site-wide business phone number |
 | `email` | Email Button | The site-wide business email address |
+| `whatsapp` | WhatsApp Button | A WhatsApp chat (`https://wa.me/<digits>`) with the site-wide WhatsApp number |
 
-Unknown values fall back to `link`. Phone and email buttons have no link toolbar; their sidebar shows the shared detail instead (see [Business contact settings](#business-contact-settings)). New phone and email buttons start with the labels "Call us" and "Email us".
+Unknown values fall back to `link`. Phone, email and WhatsApp buttons have no link toolbar; their sidebar shows the shared detail instead (see [Business contact settings](#business-contact-settings)). New phone, email and WhatsApp buttons start with the labels "Call us", "Email us" and "Message us on WhatsApp".
+
+WhatsApp buttons show the WhatsApp logo (`jmc/whatsapp`) before their label, through the `button-link` component's optional `icon` argument. It is decorative and takes the button's text colour; see [Brand icons](#brand-icons). In the editor the variation and the **+** menu use the same logo (`src/components/WhatsAppIcon.tsx`), because `block.json` icons can only name a Dashicon.
+
+### Pre-filled messages
+
+Email and WhatsApp buttons can carry their own optional message, set in the button's **Pre-filled Message** panel. The visitor can change it before sending.
+
+| Attribute | Used by | Added to the link as |
+| --- | --- | --- |
+| `emailSubject` | Email buttons | `subject=` (single line) |
+| `emailBody` | Email buttons | `body=`, line breaks as `%0D%0A` (RFC 6068) |
+| `whatsappMessage` | WhatsApp buttons | `text=`, line breaks as `%0A` |
+
+`jmc_contact_url_with_message()` builds the query: it keeps line breaks (at most one blank line in a row), collapses other whitespace, encodes with `rawurlencode()` (spaces as `%20`, since `+` is literal in `mailto:`), and leaves out empty parts. Phone buttons and plain link buttons ignore these attributes.
+
+### Link escaping
+
+`jmc_the_attributes()` escapes every `href` with `jmc_esc_href()`. It is `esc_url()`, except that encoded line breaks survive inside the `body` of a `mailto:` link and the `text` of a `https://wa.me/` link. `esc_url()` strips them everywhere to prevent header injection; inside a message they are harmless and needed. Line breaks in any other part, including mail header fields such as `subject` or `bcc`, are stripped as usual, field names are matched case-insensitively, and a link that already contains the internal placeholder falls back to plain `esc_url()`. Every other link is escaped exactly as before.
 
 ### Link validation
 
@@ -173,16 +205,53 @@ The button renders nothing when its label is empty or its destination is missing
 
 ## Business contact settings
 
-The business phone number and email address used by Phone and Email buttons are site-wide options, registered in `inc/contact.php` with helpers in `inc/helpers/contact.php`:
+The business contact details are site-wide options, registered in `inc/contact.php` with helpers in `inc/helpers/contact.php`. They are the single source of truth for Phone, Email and WhatsApp buttons and the Contact Details block:
 
 | Option | Edited in | Stored value |
 | --- | --- | --- |
-| `jmc_business_phone` | **Settings → General → Business phone number**, or a Phone button's sidebar | The number as written, with whitespace collapsed, only when it is a valid `tel:` number; otherwise empty |
-| `jmc_business_email` | **Settings → General → Business email address**, or an Email button's sidebar | One valid address; otherwise empty |
+| `jmc_business_phone` | **Settings → General → Business phone number**, a Phone button's sidebar, or the Contact Details sidebar | The number as written, with whitespace collapsed, only when it is a valid `tel:` number; otherwise empty |
+| `jmc_business_whatsapp` | **Settings → General → WhatsApp number**, a WhatsApp button's sidebar, or the Contact Details sidebar | The number as written, only when it is in international format (optional `+`, 8–15 digits, no leading `0`); otherwise empty |
+| `jmc_business_email` | **Settings → General → Business email address**, an Email button's sidebar, or the Contact Details sidebar | One valid address; otherwise empty |
+| `jmc_business_hours` | **Settings → General → Opening hours**, or the Contact Details sidebar | `{ monday: { opens: "08:00", closes: "17:30" }, … }` in week order; a day is kept only with two valid 24-hour `HH:MM` times and a closing time after the opening time, otherwise it counts as closed |
+| `jmc_business_service_area` | **Settings → General → Service area** (one place per line), or the Contact Details sidebar | A list of place names: trimmed, whitespace collapsed, de-duplicated case-insensitively, and without blank entries, entries containing `<` or `>`, or entries over 100 characters |
 
-Both are registered with `show_in_rest`, so the block editor edits them through the site entity and they are saved with the site settings: changing one updates every button of that type. Users who cannot manage options cannot read them, so the button sidebar shows a notice instead of the field. An invalid value is saved as empty, which hides those buttons.
+All are registered with `show_in_rest` and a REST schema, so the block editor edits them through the site entity (`src/components/SiteSetting.tsx`) and they are saved with the site settings when the post is saved: changing one updates every block that uses it. Users who cannot manage options cannot read them, so the sidebars show a notice instead of the fields. The editor removes a cleared time rather than storing an empty one, which the schema would reject, and warns when a day will be saved as closed.
 
-`jmc_business_contact_url( 'phone' | 'email' )` re-validates the stored value and returns a `tel:` or `mailto:` URL, or an empty string. `jmc/footer-business` does not use these settings yet; see #115.
+`jmc_business_contact_url( 'phone' | 'email' | 'whatsapp' )` re-validates the stored value and returns a `tel:`, `mailto:` or `https://wa.me/` URL, or an empty string. `jmc_business_contact_details()` returns every detail re-validated for display: a phone, email or WhatsApp value only with a working link, and opening hours for all seven days (`null` when closed) once any day is open. `jmc/footer-business` does not use these settings yet; see #115.
+
+## Contact details
+
+`jmc/contact-details` shows the [business contact settings](#business-contact-settings) as a description list. It has no values of its own, so the details are the same everywhere; five `show*` toggles (`showPhone`, `showWhatsApp`, `showEmail`, `showHours`, `showServiceArea`, all on by default, malformed values counting as on) choose which fields to show. Its sidebar also edits the settings themselves.
+
+It is restricted to `jmc/column` (`parent`) and is placed by the [CTA Banner (Contact Details)](#call-to-action-banner) variation. The block has no heading; the banner's heading introduces it.
+
+```html
+<address class="jmc-contact-details">
+  <dl class="jmc-contact-details__list">
+    <div class="jmc-contact-details__item jmc-contact-details__item--phone">
+      <dt class="jmc-contact-details__label">[icon]<span class="jmc-contact-details__label-text">Phone</span></dt>
+      <dd class="jmc-contact-details__value"><a href="tel:01234567890">01234 567890</a></dd>
+    </div>
+    …
+  </dl>
+</address>
+```
+
+- Each item pairs a `<dt>` label with a `<dd>` value. The label text is visually hidden (`sr-only`), so each value sits beside its icon as in the footer, but screen readers still announce it, and it reads as "Phone: 01234 567890" without styles.
+- Phone, WhatsApp and email values link with the value as written as the link text.
+- Opening hours list every day in week order with `<time datetime="08:00">8:00 am</time> to <time …>` in the site's time format, or "Closed". Service areas are a list. Both lists carry `role="list"` because their bullets are removed.
+- Icons are decorative and in the footer's style: `jmc/phone`, `jmc/whatsapp`, `jmc/mail`, `jmc/clock`, and `jmc/house`.
+- A missing, invalid or hidden field is left out entirely, and the block renders nothing when no field is left.
+
+In the editor the block previews `render.php` with `ServerSideRender`, re-rendering once the settings are saved; see [Editor previews](#editor-previews).
+
+### Structured data
+
+The block outputs no schema.org data, and the theme adds none centrally. Yoast is planned to own structured data, so a theme `LocalBusiness` object would duplicate or conflict with it. The settings are stored in structured form (per-day hours, a list of places) so an integration can use them later.
+
+## Editor previews
+
+Blocks that preview their server render (`jmc/contact-details`, `jmc/service-list`, `jmc/navigation`, and `jmc/footer-navigation`) wrap `ServerSideRender` in `Disabled`. The preview is inert, so clicking a link, phone number or email address selects the block instead of leaving the editor or opening another app. Other blocks edit their text directly and render no live links in the editor.
 
 ## Services grid
 
@@ -295,7 +364,7 @@ Values are saved by formatless `RichText`, so render code converts them with `jm
 
 ### Footer icons
 
-Footer icons come from the core icon registry through `wp_get_icon()`; see [Icons](#icons). They are decorative (`aria-hidden`), because each line's text already says what it is. Core's library has no telephone handset, so the theme registers `jmc/phone`, the WordPress Dashicons handset. Footer icons are filled, so their styles set `fill: currentcolor`, and they use `--jmc-text-highlight`.
+Footer icons come from the core icon registry through `wp_get_icon()`; see [Icons](#icons). They are decorative (`aria-hidden`), because each line's text already says what it is. They are Lucide outlines (`jmc/map-pin`, `jmc/phone`, `jmc/mail`, `jmc/house`) and use `--jmc-text-highlight`; the Contact Details block uses the same set.
 
 ### Footer navigation
 
@@ -345,8 +414,8 @@ Theme icons are registered with the core Icons API in the `jmc` collection (`inc
 
 | Source | Icons | Used by |
 | --- | --- | --- |
-| [Lucide](https://lucide.dev) | Listed in `src/icons/lucide.json` | Service icons, the service card arrow |
-| WordPress Dashicons | `jmc/phone` | Footer business details (#106 tracks moving the footer to Lucide) |
+| [Lucide](https://lucide.dev) | Listed in `src/icons/lucide.json` | Service icons, the service card arrow, footer and contact details icons |
+| [Simple Icons](https://simpleicons.org) | Listed in `src/icons/simple-icons.json` | Brand logos: `jmc/whatsapp` on WhatsApp buttons and contact details |
 
 Icons are decorative (`aria-hidden`) unless they carry meaning that the surrounding text does not.
 
@@ -362,9 +431,15 @@ It also writes `manifest.json` and copies Lucide's `LICENSE` into that directory
 
 To add an icon, find its name on lucide.dev, add `"<name>": "<Label>"` to `src/icons/lucide.json`, and run `npm run build`. It then appears in the Service icon picker. If it is an interface icon rather than a service icon, also add it to `INTERFACE_ICONS` in `src/editor/service-icon/utils.ts`. To update Lucide, bump `lucide-static`, rebuild, and check the icons in use.
 
+### Brand icons
+
+Brand logos come from Simple Icons, a development dependency (`simple-icons`), the same way as Lucide. For each slug in `src/icons/simple-icons.json`, `scripts/icons/build.js` reads `simple-icons/icons/<slug>.svg`, keeps its single path (the registry would strip the `<title>`), and writes `build/assets/icons/simple-icons/<slug>.svg` with the class `simple-icon`, plus `manifest.json` and Simple Icons' `LICENSE.md`. `inc/icons.php` registers both sets in the `jmc` collection. The build fails if a slug does not exist or is not a single path. Brand icons are interface icons, so add them to `INTERFACE_ICONS` too.
+
+Simple Icons is CC0, but each logo remains its owner's trademark and is subject to that brand's guidelines, linked from the icon's entry in `simple-icons/data/simple-icons.json`. The WhatsApp logo is used to link to WhatsApp chats and is shown in the theme's colours (the surrounding text or button colour) rather than WhatsApp green: a deliberate decision, because green would clash with the brand palette.
+
 ### Styling icons
 
-Lucide icons are outlines: `svg.lucide` in `src/scss/components/_icons.scss` sets `fill: none` and a `currentcolor` stroke (width 2, round caps and joins), so they follow `color`. Filled icons (core icons and `jmc/phone`) lose their `fill` attribute in the registry, so their styles must set `fill: currentcolor`.
+Lucide icons are outlines: `svg.lucide` in `src/scss/components/_icons.scss` sets `fill: none` and a `currentcolor` stroke (width 2, round caps and joins), so they follow `color`. Brand icons are filled: `svg.simple-icon` sets `fill: currentcolor`. Core icons lose their `fill` attribute in the registry, so their styles must set `fill: currentcolor`.
 
 Two WordPress styles sit outside the theme's cascade layers and therefore beat any layered rule, whatever its specificity:
 
