@@ -1,0 +1,24 @@
+// Editor-only rules sit outside the cascade layers on purpose: WordPress's
+// editor styles are unlayered and would otherwise override them.
+
+// Chosen pages in the block sidebar: one row per page, title then controls.
+.jmc-page-list-input__items {
+	margin: 0 0 16px;
+	padding: 0;
+	list-style: none;
+}
+
+.jmc-page-list-input__item {
+	display: flex;
+	gap: 4px;
+	align-items: center;
+	margin: 0;
+	padding: 4px 0;
+	border-bottom: 1px solid #ddd;
+}
+
+.jmc-page-list-input__title {
+	flex: 1;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}

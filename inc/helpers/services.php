@@ -218,8 +218,17 @@ function jmc_sanitize_service_icon( mixed $value ): string {
  * @return array<int, array{id:int,title:string,url:string,summary:string,icon:string}> Service cards in display order.
  */
 function jmc_get_services( int $parent_id ): array {
-	$args = jmc_services_query_args( $parent_id );
+	return jmc_service_cards( jmc_services_query_args( $parent_id ) );
+}
 
+/**
+ * Query service pages and normalise them into card data.
+ *
+ * @param array<string, mixed> $args WP_Query arguments; empty yields no cards.
+ *
+ * @return array<int, array{id:int,title:string,url:string,summary:string,icon:string}> Service cards in query order.
+ */
+function jmc_service_cards( array $args ): array {
 	if ( [] === $args ) {
 		return [];
 	}
@@ -241,6 +250,137 @@ function jmc_get_services( int $parent_id ): array {
 	}
 
 	return $cards;
+}
+
+/**
+ * Normalise chosen page IDs: positive integers, de-duplicated, in the order given.
+ *
+ * Whole-number floats are accepted because the REST block renderer, which
+ * draws the editor preview, casts `number` attributes to floats.
+ *
+ * @param mixed $value Stored page IDs.
+ *
+ * @return array<int, int> Page IDs.
+ */
+function jmc_service_page_ids( mixed $value ): array {
+	if ( ! is_array( $value ) ) {
+		return [];
+	}
+
+	$ids = [];
+
+	foreach ( $value as $id ) {
+		$id = is_int( $id )
+			|| ( is_float( $id ) && floor( $id ) === $id )
+			|| ( is_string( $id ) && ctype_digit( $id ) )
+			? (int) $id
+			: 0;
+
+		if ( $id > 0 && ! in_array( $id, $ids, true ) ) {
+			$ids[] = $id;
+		}
+	}
+
+	return $ids;
+}
+
+/**
+ * Build the query arguments for a list of chosen service pages.
+ *
+ * Returns the published, unprotected pages among the IDs, in the order chosen.
+ * No IDs yields no arguments, so an empty choice never lists every page.
+ *
+ * @param array<int, int> $page_ids Chosen page IDs, from jmc_service_page_ids().
+ *
+ * @return array<string, mixed> WP_Query arguments, or an empty array when nothing is chosen.
+ */
+function jmc_chosen_services_query_args( array $page_ids ): array {
+	if ( [] === $page_ids ) {
+		return [];
+	}
+
+	return [
+		'post_type'           => 'page',
+		'post_status'         => 'publish',
+		'post__in'            => $page_ids,
+		'has_password'        => false,
+		'orderby'             => 'post__in',
+		'posts_per_page'      => -1,
+		'no_found_rows'       => true,
+		'ignore_sticky_posts' => true,
+	];
+}
+
+/**
+ * Retrieve card data for chosen service pages.
+ *
+ * @param mixed $page_ids Stored page IDs.
+ *
+ * @return array<int, array{id:int,title:string,url:string,summary:string,icon:string}> Service cards in the chosen order.
+ */
+function jmc_get_chosen_services( mixed $page_ids ): array {
+	return jmc_service_cards( jmc_chosen_services_query_args( jmc_service_page_ids( $page_ids ) ) );
+}
+
+/**
+ * Resolve the page whose children a service list shows.
+ *
+ * An explicit parent page wins, and an invalid one resolves to nothing rather
+ * than falling back, so the misconfiguration stays visible. Otherwise the page
+ * the list is rendered on is the parent; without one, the Services page is.
+ *
+ * @param int                                                              $parent_id     Parent chosen on the block; 0 when unset.
+ * @param object|null                                                      $parent_page   Page record for the chosen parent.
+ * @param object|null                                                      $current_page  Page record the list is rendered on.
+ * @param array{id:int,status:'configured'|'resolved'|'invalid'|'missing'} $services_page Resolved Services page.
+ *
+ * @return array{id:int,status:'parent'|'invalid-parent'|'current'|'configured'|'resolved'|'invalid'|'missing'} Resolved parent ID (0 when unresolved) and how it was resolved.
+ */
+function jmc_resolve_service_list_parent(
+	int $parent_id,
+	?object $parent_page,
+	?object $current_page,
+	array $services_page
+): array {
+	if ( $parent_id > 0 ) {
+		return jmc_is_services_parent( $parent_page ) && $parent_page->ID === $parent_id
+			? [
+				'id'     => $parent_id,
+				'status' => 'parent',
+			]
+			: [
+				'id'     => 0,
+				'status' => 'invalid-parent',
+			];
+	}
+
+	$current_id = $current_page->ID ?? null;
+
+	if ( is_int( $current_id ) && $current_id > 0 && 'page' === ( $current_page->post_type ?? null ) ) {
+		return [
+			'id'     => $current_id,
+			'status' => 'current',
+		];
+	}
+
+	return $services_page;
+}
+
+/**
+ * Resolve the parent page for a service list on the current site.
+ *
+ * @param int $parent_id       Parent chosen on the block; 0 when unset.
+ * @param int $current_page_id Page the list is rendered on; 0 when there is no page context.
+ *
+ * @return array{id:int,status:'parent'|'invalid-parent'|'current'|'configured'|'resolved'|'invalid'|'missing'} Resolved parent ID (0 when unresolved) and how it was resolved.
+ */
+function jmc_get_service_list_parent( int $parent_id, int $current_page_id ): array {
+	return jmc_resolve_service_list_parent(
+		parent_id: $parent_id,
+		parent_page: $parent_id > 0 ? get_post( $parent_id ) : null,
+		current_page: $parent_id <= 0 && $current_page_id > 0 ? get_post( $current_page_id ) : null,
+		services_page: jmc_get_services_page()
+	);
 }
 
 /**
