@@ -28,6 +28,7 @@ All notable changes will be documented here. The project follows semantic versio
 - Hero, Service introduction and Why choose us patterns in new Heroes, Services and Trust pattern categories, with lorem ipsum placeholder copy until client copy is supplied.
 - Switchable colour palettes (Appearance → Editor → Styles → Colors): the default navy and copper, Alternate palette 1 (black and red on light grey) and Alternate palette 2 (graphite and verdigris on concrete). Includes a contrast report (`npm run test:contrast`) and tests covering every palette, section palette and logo colour.
 - Call to action and Contact details patterns in new Calls to action and Contact pattern categories. Service listings use the Service Grid block rather than a pattern.
+- Front-page and page templates: the shared header and footer parts around one `<main>` landmark holding the page title (H1) and content. The title is omitted when the page contains a hero, whose heading is the H1.
 
 ### Changed
 

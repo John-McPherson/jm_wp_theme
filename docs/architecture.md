@@ -27,6 +27,7 @@ flowchart TD
 - `inc/setup.php` declares theme support and editor styles.
 - `inc/enqueue.php` loads the compiled shared stylesheet when it exists and uses its modification time for cache busting. It also prints the cascade-layer order (see Styling and tokens) at the top of the frontend `<head>` and as a dependency of the shared stylesheet in the editor.
 - `inc/blocks.php` recursively registers compiled block metadata, registers the section category, and applies the current editor allowlist.
+- `inc/templates.php` keeps one H1 in the page templates by omitting the page title when the content contains a hero (see [Page templates](blocks.md#page-templates)).
 - `inc/contact.php` registers the site-wide business settings (name, address, phone, WhatsApp, email, opening hours, service area) and the **Settings → Business** admin page that edits them (`manage_options` only), and copies the footer's legacy block attributes into them once (see [Business contact settings](blocks.md#business-contact-settings)).
 - `inc/helpers/svg.php` reads a theme SVG file and filters it through an SVG allow-list for inline output (used by the site logo).
 - `inc/icons.php` registers the theme's `jmc` icon collection with the core icon registry: the Lucide icons and Simple Icons brand logos generated at build time (see [Icons](blocks.md#icons)).
@@ -93,7 +94,7 @@ The `style.css` header currently uses `jmc-custom-theme`; align it before releas
 - The global block allowlist exposes only `jmc/` blocks and must become context-aware before header, navigation, query, and broader FSE workflows are completed.
 - Some internal block metadata still uses legacy, unregistered categories.
 - TypeScript strict mode is disabled and existing contracts contain weak typing.
-- Header and footer template parts and the first theme patterns exist; full template coverage is not implemented.
+- Header and footer template parts, the front-page and page templates, and the first theme patterns exist; other templates still fall back to `index.html`.
 - Automated behavioural and accessibility tests are not configured.
 - Packaging uses Unix-specific shell tools and is not clean-install tested.
 - Production hosting, deployment, health-check, and rollback commands are undecided.

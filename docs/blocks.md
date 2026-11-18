@@ -76,6 +76,34 @@ Theme patterns are unsynced starting points built from the blocks above, one PHP
 - WordPress caches the list of pattern files. Set `WP_DEVELOPMENT_MODE` to `theme` locally so new or renamed patterns appear without bumping the theme version (see [development](development.md#debugging)).
 - `tests/phpunit/Unit/PatternsTest.php` checks every pattern's header, categories and markup against each block's `block.json`; see [testing](testing.md#php-regression-tests).
 
+## Page templates
+
+`templates/front-page.html` and `templates/page.html` render pages. WordPress uses the front-page template for the page set as the homepage in **Settings → Reading** (choose **A static page**; the theme has no blog listing, so a "latest posts" homepage is not supported), and the page template for every other page. Anything else still falls back to `templates/index.html` until its own template exists.
+
+Both templates have the same structure:
+
+```text
+header template part   <header class="jmc-header">
+<main class="site-main">
+  page title           <h1 class="jmc-page-title">  (core Post Title, level 1)
+  page content         core Post Content: the page's sections
+</main>
+footer template part   <footer class="jmc-footer">
+```
+
+They are separate files so the homepage can be changed in the Site Editor (its front-page template, under **Appearance → Editor → Templates**) without changing every other page. Neither template holds copy: the page's own title and content fill them.
+
+- **One main landmark.** `<main>` is the only main landmark, so WordPress's automatic skip link targets it.
+- **One H1.** The page title is the H1, and sections in the content start at H2. A `jmc/hero` section locks its heading to H1, so on a page whose content contains a hero, `inc/templates.php` omits the template's title and the hero's heading names the page instead (`jmc_filter_page_title()` on `render_block_core/post-title`; only level-one titles are affected). Start a homepage, or any page that needs a visual introduction, with the **Hero** pattern.
+- **Content widths.** Sections in the content are full width and centre their own containers, so the content wrapper adds no width constraint. The title uses the same width as section content: the page margin on narrow screens, and the section container width (`--jmc-container-l`) centred on wide ones. Long titles wrap rather than overflow.
+- **Missing content.** A page without a title or content renders the parts that exist. When a page has no sections (empty or plain content), the main landmark keeps space above the footer. A page with no title and no hero has no H1, so always give pages a title.
+
+To build the homepage, edit the page set as the homepage and insert patterns in order, for example **Hero**, a **Service Grid** block, **Why choose us** and **Call to action**, then replace the placeholder copy. Patterns are copied into the page, so the homepage's content stays in the page record rather than the template.
+
+Once a template has been saved in the Site Editor, the saved copy overrides the theme file. Reset the template to pick up later changes to the theme file.
+
+`tests/phpunit/Unit/PageTemplatesTest.php` and `PageTitleTest.php` cover these contracts; see [testing](testing.md#php-regression-tests).
+
 ## Adding a block
 
 1. Create the source directory and `block.json`.
