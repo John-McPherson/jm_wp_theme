@@ -68,6 +68,7 @@ Theme patterns are unsynced starting points built from the blocks above, one PHP
 | `jmc/why-choose-us`         | Trust    | `jmc/text-with-image` (secondary, image left): label, H2, paragraph, a ticked `jmc/list` and a Phone Button |
 | `jmc/call-to-action`        | Calls to action | `jmc/cta-banner`: H2 beside a paragraph, a Phone Button and a secondary button linking to `/services/` |
 | `jmc/contact-details`       | Contact, Calls to action | `jmc/cta-banner` (Contact Details): H2 and paragraph beside `jmc/contact-details` |
+| `jmc/home-page`             | Heroes, Services | Starter content for the homepage: hero, service introduction, `jmc/service-grid`, why choose us and contact details, each locked; see [Page templates](#page-templates) |
 
 - Copy is lorem ipsum until client copy replaces it ([#135](https://github.com/John-McPherson/jm_wp_theme/issues/135)).
 - Buttons use the Phone Button variation, so numbers come from [Settings → Business](#business-contact-settings) and a button renders nothing until a phone number is set. Contact details follow the same settings and the block's [empty state](#contact-details); the only fixed link is the canonical `/services/` page.
@@ -98,7 +99,7 @@ They are separate files so the homepage can be changed in the Site Editor (its f
 - **Content widths.** Sections in the content are full width and centre their own containers, so the content wrapper adds no width constraint. The title uses the same width as section content: the page margin on narrow screens, and the section container width (`--jmc-container-l`) centred on wide ones. Long titles wrap rather than overflow.
 - **Missing content.** A page without a title or content renders the parts that exist. When a page has no sections (empty or plain content), the main landmark keeps space above the footer. A page with no title and no hero has no H1, so always give pages a title.
 
-To build the homepage, edit the page set as the homepage and insert patterns in order, for example **Hero**, a **Service Grid** block, **Why choose us** and **Call to action**, then replace the placeholder copy. Patterns are copied into the page, so the homepage's content stays in the page record rather than the template.
+To build the homepage, create the page you will set as the homepage and choose the **Home page** starter pattern (`jmc/home-page`) when WordPress offers patterns for the new page (`Block Types: core/post-content`, `Post Types: page`). It seeds the standard sections in order: **Hero** (the page's H1), a service introduction, the **Service Grid**, **Why choose us** and **Contact details**. Each section is locked against moving and removal; all copy is editable. Replace the lorem ipsum placeholder copy before publishing. The pattern is copied into the page, so the homepage's content stays in the page record rather than the template. For an existing homepage, insert the sections from the pattern inserter instead.
 
 Once a template has been saved in the Site Editor, the saved copy overrides the theme file. Reset the template to pick up later changes to the theme file.
 
