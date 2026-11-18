@@ -9,6 +9,11 @@
 		stroke-linecap: round;
 		stroke-linejoin: round;
 	}
+
+	// Simple Icons brand logos are filled shapes in the current text colour.
+	svg.simple-icon {
+		fill: currentcolor;
+	}
 }
 
 // Core's Icon block sets `fill: currentColor` on its SVGs outside any cascade

@@ -9,6 +9,8 @@ import { useDispatch, useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { button, envelope, mobile, plus } from '@wordpress/icons';
 
+import WhatsAppIcon from '../../../components/WhatsAppIcon';
+
 const ALLOWED_BLOCKS = [ 'jmc/button' ];
 
 const TEMPLATE: [ string ][] = [ [ 'jmc/button' ] ];
@@ -32,6 +34,12 @@ const NEW_BUTTONS = [
 		label: __( 'Email button', 'jmc-theme' ),
 		icon: envelope,
 		text: __( 'Email us', 'jmc-theme' ),
+	},
+	{
+		linkType: 'whatsapp',
+		label: __( 'WhatsApp button', 'jmc-theme' ),
+		icon: WhatsAppIcon,
+		text: __( 'Message us on WhatsApp', 'jmc-theme' ),
 	},
 ] as const;
 

@@ -35,6 +35,31 @@
 			}
 		}
 
+		// Contact variation: two-thirds copy, one-third details, instead of an
+		// even split. Fixed fractions, because columns are inline-size
+		// containers and so can't be sized to their content.
+		&.jmc-cta--contact {
+			--jmc-cta-columns: minmax(0, 2fr) minmax(0, 1fr);
+
+			@include min($tablet) {
+
+				.jmc-section__container {
+					grid-template-columns: var(--jmc-cta-columns);
+				}
+
+				// Details on the left: swap the column sizes to match.
+				.jmc-column-left {
+					--jmc-cta-columns: minmax(0, 1fr) minmax(0, 2fr);
+				}
+
+				// The details end level with the copy, leaving the heading to
+				// lead on its own.
+				.jmc-section__column:nth-of-type(2) {
+					justify-content: flex-end;
+				}
+			}
+		}
+
 		// Stacked variation: one centred column at every width.
 		&.jmc-cta--stacked {
 

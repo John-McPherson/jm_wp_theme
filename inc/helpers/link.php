@@ -82,3 +82,58 @@ function jmc_safe_link_url( mixed $url, bool $allow_mailto = false ): string {
 
 	return $url;
 }
+
+/**
+ * Escape a link for an `href` attribute.
+ *
+ * Uses `esc_url()`, which also strips encoded line breaks (`%0D`, `%0A`) to stop
+ * header injection. Pre-filled messages need them, and inside the message they
+ * are harmless, so they are kept in the `body` of `mailto:` links and the `text`
+ * of `https://wa.me/` links only. Line breaks anywhere else, including mailto
+ * header fields such as `subject` or `bcc`, are stripped as usual, and every
+ * other link is escaped by `esc_url()` unchanged.
+ *
+ * @param string $url Validated link destination.
+ *
+ * @return string The escaped URL.
+ */
+function jmc_esc_href( string $url ): string {
+	$message_parameter = match ( true ) {
+		str_starts_with( $url, 'mailto:' )        => 'body',
+		str_starts_with( $url, 'https://wa.me/' ) => 'text',
+		default                                   => '',
+	};
+
+	// esc_url() keeps `!`, and rawurlencode()d message text never contains it.
+	$placeholder = '!jmc-line-break!';
+
+	// A link that already contains the placeholder could smuggle line breaks into
+	// other fields, so it gets plain esc_url().
+	if (
+		'' === $message_parameter
+		|| ! str_contains( $url, '?' )
+		|| 1 !== preg_match( '/%0[ad]/i', $url )
+		|| false !== stripos( $url, $placeholder )
+	) {
+		return esc_url( $url );
+	}
+
+	[ $base, $query ] = explode( '?', $url, 2 );
+
+	// Protect line breaks in the message parameter only; esc_url() strips the rest.
+	$fields = array_map(
+		static function ( string $field ) use ( $message_parameter, $placeholder ): string {
+			[ $name ] = explode( '=', $field, 2 );
+
+			// Mailto field names are case-insensitive (RFC 6068).
+			return 0 === strcasecmp( $name, $message_parameter )
+				? (string) preg_replace( '/%0([ad])/i', $placeholder . '$1', $field )
+				: $field;
+		},
+		explode( '&', $query )
+	);
+
+	$escaped = esc_url( $base . '?' . implode( '&', $fields ) );
+
+	return (string) preg_replace( '/' . preg_quote( $placeholder, '/' ) . '([ad])/i', '%0$1', $escaped );
+}

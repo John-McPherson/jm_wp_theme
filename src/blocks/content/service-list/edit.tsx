@@ -1,5 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { useBlockProps } from '@wordpress/block-editor';
+import { Disabled } from '@wordpress/components';
 import ServerSideRender from '@wordpress/server-side-render';
 
 import bindFields from '../../../utils/bindFields';
@@ -42,10 +43,13 @@ export default function Edit( { attributes, setAttributes }: Props ) {
 
 			{ /* Preview render.php output so cards always match the page data. */ }
 			<div { ...blockProps }>
-				<ServerSideRender
-					block="jmc/service-list"
-					attributes={ attributes }
-				/>
+				{ /* Disabled keeps the card links from leaving the editor. */ }
+				<Disabled>
+					<ServerSideRender
+						block="jmc/service-list"
+						attributes={ attributes }
+					/>
+				</Disabled>
 			</div>
 		</>
 	);

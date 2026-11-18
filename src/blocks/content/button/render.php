@@ -14,6 +14,9 @@ declare(strict_types=1);
  *     text?: string,
  *     buttonType?: string,
  *     linkType?: string,
+ *     emailSubject?: string,
+ *     emailBody?: string,
+ *     whatsappMessage?: string,
  *     link?: array{
  *         url?: string,
  *         opensInNewTab?: bool,
@@ -36,17 +39,26 @@ $link_type = jmc_html_allowed_value(
 		'link',
 		'phone',
 		'email',
+		'whatsapp',
 	],
 	fallback_value: 'link'
 );
 
-// Phone and email buttons use the site-wide business details, not their own link.
+// Phone, email and WhatsApp buttons use the site-wide business details, not their own link.
+// Email and WhatsApp buttons can add their own pre-filled message.
 $url = 'link' === $link_type
 	? jmc_safe_link_url(
 		url: $button_link['url'] ?? null,
 		allow_mailto: true
 	)
-	: jmc_business_contact_url( $link_type );
+	: jmc_contact_url_with_message(
+		url: jmc_business_contact_url( $link_type ),
+		message: [
+			'subject' => $attributes['emailSubject'] ?? null,
+			'body'    => $attributes['emailBody'] ?? null,
+			'text'    => $attributes['whatsappMessage'] ?? null,
+		]
+	);
 
 if ( '' === $url ) {
 	return;
@@ -87,5 +99,6 @@ jmc_component(
 			$variant_classes[ $variant ],
 		],
 		'id'      => $attributes['anchor'] ?? '',
+		'icon'    => 'whatsapp' === $link_type ? 'jmc/whatsapp' : '',
 	]
 );

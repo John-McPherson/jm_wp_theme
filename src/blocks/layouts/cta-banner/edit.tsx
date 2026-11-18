@@ -32,6 +32,20 @@ const TEMPLATE = [
 	],
 ];
 
+// Contact variation: a heading and supporting text beside the business contact
+// details, which `order` places on the chosen side (right by default).
+const CONTACT_TEMPLATE = [
+	[
+		'jmc/column',
+		{},
+		[
+			[ 'jmc/heading', { level: '2' } ],
+			[ 'jmc/paragraph', {} ],
+		],
+	],
+	[ 'jmc/column', {}, [ [ 'jmc/contact-details', {} ] ] ],
+];
+
 const VARIANT_CLASSES = {
 	default: '',
 	inverse: 'jmc-palette--inverse',
@@ -48,6 +62,11 @@ const ORDER_OPTIONS = [
 	{ label: __( 'Buttons Right', 'jmc-theme' ), value: 'right' },
 ];
 
+const CONTACT_ORDER_OPTIONS = [
+	{ label: __( 'Contact Details Left', 'jmc-theme' ), value: 'left' },
+	{ label: __( 'Contact Details Right', 'jmc-theme' ), value: 'right' },
+];
+
 export default function Edit( { attributes, setAttributes } ) {
 	const bind = bindFields( attributes, setAttributes );
 
@@ -59,6 +78,7 @@ export default function Edit( { attributes, setAttributes } ) {
 			'jmc-section',
 			'jmc-cta',
 			isStacked && 'jmc-cta--stacked',
+			'contact' === layout && 'jmc-cta--contact',
 			VARIANT_CLASSES[ palette ],
 		]
 			.filter( Boolean )
@@ -77,7 +97,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		},
 		{
 			allowedBlocks: ALLOWED_BLOCKS,
-			template: TEMPLATE,
+			template: 'contact' === layout ? CONTACT_TEMPLATE : TEMPLATE,
 			templateLock: true,
 		}
 	);
@@ -100,7 +120,11 @@ export default function Edit( { attributes, setAttributes } ) {
 						<SelectInput
 							{ ...bind.select( 'order' ) }
 							type="order"
-							options={ ORDER_OPTIONS }
+							options={
+								'contact' === layout
+									? CONTACT_ORDER_OPTIONS
+									: ORDER_OPTIONS
+							}
 						/>
 					</Sidebar.Section>
 				) }

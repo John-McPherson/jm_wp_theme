@@ -56,6 +56,7 @@ $layout = jmc_html_allowed_value(
 	allowed: [
 		'columns',
 		'stacked',
+		'contact',
 	],
 	fallback_value: 'columns'
 );
@@ -82,6 +83,7 @@ $section_attributes = [
 			'jmc-section',
 			'jmc-cta',
 			'stacked' === $layout ? 'jmc-cta--stacked' : null,
+			'contact' === $layout ? 'jmc-cta--contact' : null,
 			$palette_classes[ $palette ],
 			...$custom_classes,
 		]
@@ -93,7 +95,7 @@ $container_attributes = [
 		[
 			'jmc-section__container',
 			// Column order only applies side by side.
-			'columns' === $layout ? $order_classes[ $col_order ] : null,
+			'stacked' !== $layout ? $order_classes[ $col_order ] : null,
 		]
 	),
 
