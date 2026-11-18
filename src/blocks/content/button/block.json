@@ -105,11 +105,12 @@
     }
   },
 
+  "ancestor": ["jmc/text-with-image", "jmc/hero", "jmc/buttons"],
+
   "supports": {
     "anchor": true,
     "className": true,
-    "html": false,
-    "inserter": false
+    "html": false
   },
 
   "editorScript": "file:./index.js",

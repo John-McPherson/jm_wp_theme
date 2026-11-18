@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/list",
+  "version": "0.1.0",
+  "title": "List",
+  "category": "jmc-blocks",
+  "icon": "editor-ul",
+  "description": "A styled list of short points, marked with an icon, a bullet or a number.",
+  "keywords": [ "bullet", "checklist", "numbered", "ticks" ],
+  "attributes": {
+    "listStyle": {
+      "type": "string",
+      "enum": [ "icon", "bullet", "number" ],
+      "default": "icon"
+    },
+    "icon": {
+      "type": "string",
+      "enum": [ "check", "circle-check", "shield-check", "plus", "zap", "arrow-right" ],
+      "default": "check"
+    }
+  },
+  "providesContext": {
+    "jmc/listStyle": "listStyle",
+    "jmc/listIcon": "icon"
+  },
+  "allowedBlocks": [ "jmc/list-item" ],
+  "ancestor": [ "jmc/text-with-image", "jmc/cta-banner" ],
+  "example": {
+    "attributes": {
+      "listStyle": "icon",
+      "icon": "check"
+    },
+    "innerBlocks": [
+      {
+        "name": "jmc/list-item",
+        "attributes": { "text": "Fully qualified and insured" }
+      },
+      {
+        "name": "jmc/list-item",
+        "attributes": { "text": "Free, no-obligation quotes" }
+      },
+      {
+        "name": "jmc/list-item",
+        "attributes": { "text": "All work certified and guaranteed" }
+      }
+    ]
+  },
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false,
+    "reusable": false
+  },
+  "textdomain": "jmc-theme",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}
