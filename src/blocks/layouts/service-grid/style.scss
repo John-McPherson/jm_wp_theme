@@ -32,6 +32,21 @@
 			}
 		}
 
+		// In two columns the intro shares the first row with a card, so an even
+		// number of cards leaves the last one alone on its row. Give the intro
+		// the whole first row instead, so the cards pair up. Three columns
+		// already sit cleanly, so the intro rejoins the grid there.
+		&:has(.jmc-service-card:last-child:nth-child(even)) .jmc-section__column:not(:has(.jmc-service-list)) {
+
+			@include min($tablet) {
+				grid-column: 1 / -1;
+			}
+
+			@include min($laptop) {
+				grid-column: auto;
+			}
+		}
+
 		@include min($tablet) {
 			--jmc-service-grid-cols: 2;
 		}
