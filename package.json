@@ -19,6 +19,7 @@
     "lint:styles:fix": "wp-scripts lint-style --fix",
     "lint:phpcs": "vendor/bin/phpcs",
     "test:unit": "wp-scripts test-unit-js",
+    "test:contrast": "node scripts/palettes/contrast.js",
     "env:start": "wp-env start",
     "env:stop": "wp-env stop",
     "test:e2e": "playwright test",
