@@ -2,6 +2,11 @@
 /**
  * Render the footer business details block.
  *
+ * The business name and address are the block's own attributes. The phone,
+ * WhatsApp, email and service-area lines come from the site-wide business
+ * contact settings (see inc/contact.php), so they match every contact button
+ * and Contact Details block.
+ *
  * @package JMC_Theme
  */
 
@@ -10,12 +15,12 @@ declare(strict_types=1);
 /**
  * Block attributes for the footer business details block.
  *
+ * `phone`, `email` and `serviceArea` are legacy attributes, kept only so the
+ * one-time upgrade can copy them into the settings; they are not rendered.
+ *
  * @var array{
  *     companyName?: string,
  *     address?: string,
- *     phone?: string,
- *     email?: string,
- *     serviceArea?: string,
  *     className?: string
  * } $attributes
  * @var WP_Block $block
@@ -23,28 +28,33 @@ declare(strict_types=1);
 
 $company_name = jmc_plain_text( $attributes['companyName'] ?? null );
 $address      = jmc_plain_text( $attributes['address'] ?? null );
-$phone        = jmc_plain_text( $attributes['phone'] ?? null );
-$email        = jmc_plain_text( $attributes['email'] ?? null );
-$service_area = jmc_plain_text( $attributes['serviceArea'] ?? null );
 
-// A number the dialler can't use is still shown, just not linked.
-$phone_url = '' === $phone
-	? ''
-	: jmc_safe_link_url( 'tel:' . $phone );
+// Re-validated for display: a phone, WhatsApp or email value only comes with a working link.
+$details      = jmc_business_contact_details();
+$phone        = $details['phone'];
+$whatsapp     = $details['whatsapp'];
+$email        = $details['email'];
+$service_area = $details['service_area'];
 
-// An invalid email address is dropped rather than shown as broken contact info.
-if ( false === filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
-	$email = '';
-}
+$has_contact = '' !== $address || '' !== $phone || '' !== $whatsapp || '' !== $email;
 
-$has_contact = '' !== $address || '' !== $phone || '' !== $email;
-
-if ( '' === $company_name && ! $has_contact && '' === $service_area ) {
+if ( '' === $company_name && ! $has_contact && [] === $service_area ) {
 	return;
 }
 
+// Read the places as one phrase: "Pudsey, Leeds and Bradford".
+$last_place  = (string) array_pop( $service_area );
+$places_text = [] === $service_area
+	? $last_place
+	: sprintf(
+		/* translators: 1: comma-separated list of places, 2: the last place. */
+		__( '%1$s and %2$s', 'jmc-theme' ),
+		implode( ', ', $service_area ),
+		$last_place
+	);
+
 /*
- * Output a theme Lucide icon from the core icon registry (see inc/icons.php).
+ * Output a theme icon from the core icon registry (see inc/icons.php).
  * Icons are decorative, so wp_get_icon() marks them aria-hidden: each line's text
  * already says what it is.
  */
@@ -77,27 +87,31 @@ $wrapper_attributes = [
 			<?php if ( '' !== $phone ) : ?>
 				<p class="jmc-footer-business__line jmc-footer-business__phone">
 					<?php $the_icon( 'jmc/phone' ); ?>
-					<?php if ( '' !== $phone_url ) : ?>
-						<a href="<?php echo esc_url( $phone_url ); ?>"><?php echo esc_html( $phone ); ?></a>
-					<?php else : ?>
-						<span><?php echo esc_html( $phone ); ?></span>
-					<?php endif; ?>
+					<a href="<?php echo esc_url( $details['phone_url'] ); ?>"><?php echo esc_html( $phone ); ?></a>
+				</p>
+			<?php endif; ?>
+
+			<?php if ( '' !== $whatsapp ) : ?>
+				<p class="jmc-footer-business__line jmc-footer-business__whatsapp">
+					<?php $the_icon( 'jmc/whatsapp' ); ?>
+					<?php // The number reads like a phone number, so screen readers are told it's WhatsApp. ?>
+					<a href="<?php echo esc_url( $details['whatsapp_url'] ); ?>"><span class="jmc-footer-business__hidden-label"><?php esc_html_e( 'WhatsApp:', 'jmc-theme' ); ?> </span><?php echo esc_html( $whatsapp ); ?></a>
 				</p>
 			<?php endif; ?>
 
 			<?php if ( '' !== $email ) : ?>
 				<p class="jmc-footer-business__line jmc-footer-business__email">
 					<?php $the_icon( 'jmc/mail' ); ?>
-					<a href="<?php echo esc_url( 'mailto:' . $email ); ?>"><?php echo esc_html( $email ); ?></a>
+					<a href="<?php echo esc_url( $details['email_url'] ); ?>"><?php echo esc_html( $email ); ?></a>
 				</p>
 			<?php endif; ?>
 		</address>
 	<?php endif; ?>
 
-	<?php if ( '' !== $service_area ) : ?>
+	<?php if ( '' !== $places_text ) : ?>
 		<p class="jmc-footer-business__line jmc-footer-business__service-area">
 			<?php $the_icon( 'jmc/house' ); ?>
-			<span><span class="jmc-footer-business__label"><?php esc_html_e( 'Areas covered:', 'jmc-theme' ); ?></span> <?php echo esc_html( $service_area ); ?></span>
+			<span><span class="jmc-footer-business__label"><?php esc_html_e( 'Areas covered:', 'jmc-theme' ); ?></span> <?php echo esc_html( $places_text ); ?></span>
 		</p>
 	<?php endif; ?>
 </div>

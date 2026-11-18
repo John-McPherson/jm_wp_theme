@@ -615,4 +615,15 @@ function tag_escape( string $tag_name ): string {
 	return strtolower( (string) preg_replace( '/[^a-zA-Z0-9-_:]/', '', $tag_name ) );
 }
 
+/**
+ * Retrieve the active theme's directory name.
+ *
+ * Test double that reads `$GLOBALS['jmc_test_stylesheet']`, defaulting to the theme's own.
+ *
+ * @return string Theme directory name.
+ */
+function get_stylesheet(): string {
+	return (string) ( $GLOBALS['jmc_test_stylesheet'] ?? 'amc_electrical' );
+}
+
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
