@@ -23,7 +23,7 @@ function jmc_business_contact_settings(): array {
 		JMC_BUSINESS_EMAIL_OPTION => [
 			'label'       => __( 'Business email address', 'jmc-theme' ),
 			'type'        => 'email',
-			'description' => __( 'Used by Email buttons.', 'jmc-theme' ),
+			'description' => __( 'Used by Email buttons, and where enquiries from the enquiry form are sent.', 'jmc-theme' ),
 			'sanitize'    => 'jmc_sanitize_business_email',
 		],
 	];
