@@ -1,8 +1,8 @@
 import { TextControl, TextareaControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
-import Sidebar from '../../../components/Sidebar';
-import SiteSetting from '../../../components/SiteSetting';
+import Sidebar from './Sidebar';
+import SiteSetting from './SiteSetting';
 
 type Time = 'opens' | 'closes';
 
@@ -160,7 +160,7 @@ const HoursControl = ( { value, setValue }: HoursControlProps ) => {
  * Sidebar controls for the site-wide business contact details.
  *
  * Changes are saved with the site settings when the page is saved, so they
- * update every contact details block, phone, email and WhatsApp button.
+ * update the footer, every contact details block, phone, email and WhatsApp button.
  */
 export default function ContactSettings() {
 	return (
