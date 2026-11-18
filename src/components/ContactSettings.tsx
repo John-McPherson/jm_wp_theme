@@ -156,13 +156,22 @@ const HoursControl = ( { value, setValue }: HoursControlProps ) => {
 	);
 };
 
+type ContactSettingsProps = {
+	showNameAndAddress?: boolean;
+};
+
 /**
  * Sidebar controls for the site-wide business contact details.
  *
  * Changes are saved with the site settings when the page is saved, so they
  * update the footer, every contact details block, phone, email and WhatsApp button.
+ *
+ * @param props                    Component props.
+ * @param props.showNameAndAddress Whether to include the business name and address, for blocks that show them.
  */
-export default function ContactSettings() {
+export default function ContactSettings( {
+	showNameAndAddress = false,
+}: ContactSettingsProps ) {
 	return (
 		<Sidebar.Section
 			title={ __( 'Business details', 'jmc-theme' ) }
@@ -174,6 +183,35 @@ export default function ContactSettings() {
 					'jmc-theme'
 				) }
 			</p>
+
+			{ showNameAndAddress && (
+				<>
+					<SiteSetting< string > option="jmc_business_name">
+						{ ( value, setValue ) => (
+							<TextControl
+								__next40pxDefaultSize
+								label={ __( 'Business name', 'jmc-theme' ) }
+								value={ value ?? '' }
+								onChange={ setValue }
+							/>
+						) }
+					</SiteSetting>
+					<SiteSetting< string > option="jmc_business_address">
+						{ ( value, setValue ) => (
+							<TextareaControl
+								label={ __( 'Business address', 'jmc-theme' ) }
+								help={ __(
+									'Put each line of the address on its own line.',
+									'jmc-theme'
+								) }
+								value={ value ?? '' }
+								onChange={ setValue }
+								__nextHasNoMarginBottom
+							/>
+						) }
+					</SiteSetting>
+				</>
+			) }
 
 			{ TEXT_SETTINGS.map( ( setting ) => (
 				<SiteSetting< string >

@@ -23,7 +23,6 @@
       {
         "name": "jmc/footer-business",
         "attributes": {
-          "companyName": "Example Electrical Ltd",
           "phone": "01234 567890"
         }
       }

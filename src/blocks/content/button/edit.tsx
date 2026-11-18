@@ -16,7 +16,7 @@ const VARIANT_CLASSES = {
 	secondary: 'jmc-button__secondary',
 };
 
-// Site-wide business details (Settings → General) used by phone, email and WhatsApp buttons.
+// Site-wide business details (Settings → Business) used by phone, email and WhatsApp buttons.
 const CONTACT_SETTINGS = {
 	phone: {
 		option: 'jmc_business_phone',
@@ -98,7 +98,7 @@ const ContactSetting = ( { type }: ContactSettingProps ) => {
 		<SiteSetting< string >
 			option={ setting.option }
 			notice={ __(
-				'This button uses the business details in Settings → General. Ask an administrator to change them.',
+				'This button uses the business details in Settings → Business. Ask an administrator to change them.',
 				'jmc-theme'
 			) }
 		>

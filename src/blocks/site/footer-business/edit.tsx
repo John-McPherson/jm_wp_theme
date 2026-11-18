@@ -2,24 +2,11 @@ import { useBlockProps } from '@wordpress/block-editor';
 import { store as coreStore } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import { __, sprintf } from '@wordpress/i18n';
-import { MouseEvent, ReactNode } from 'react';
+import { Fragment, MouseEvent, ReactNode } from 'react';
 
-import bindFields from '../../../utils/bindFields';
 import ContactSettings from '../../../components/ContactSettings';
 import Sidebar from '../../../components/Sidebar';
-import TextInput from '../../../components/TextInput';
 import useThemeIcons from '../../../utils/useThemeIcons';
-
-type FooterBusinessAttributes = {
-	companyName: string;
-	address: string;
-	className?: string;
-};
-
-type EditProps = {
-	attributes: FooterBusinessAttributes;
-	setAttributes: ( attributes: Partial< FooterBusinessAttributes > ) => void;
-};
 
 // The one core-data selector used here; the store's own types don't expose it.
 type CoreSelectors = {
@@ -30,6 +17,8 @@ type CoreSelectors = {
 };
 
 type ContactDetails = {
+	name: string;
+	address: string[];
 	phone: string;
 	whatsapp: string;
 	email: string;
@@ -42,7 +31,7 @@ const text = ( value: unknown ): string =>
 	typeof value === 'string' ? value.trim() : '';
 
 /**
- * Read the saved (not draft) business contact settings.
+ * Read the saved (not draft) business settings.
  *
  * The REST API sanitises settings on save, so these are the values render.php
  * shows; edits in the sidebar appear once they're saved, as in the Contact
@@ -57,6 +46,11 @@ const useContactDetails = (): ContactDetails =>
 		const places = site.jmc_business_service_area;
 
 		return {
+			name: text( site.jmc_business_name ),
+			address: text( site.jmc_business_address )
+				.split( '\n' )
+				.map( text )
+				.filter( Boolean ),
 			phone: text( site.jmc_business_phone ),
 			whatsapp: text( site.jmc_business_whatsapp ),
 			email: text( site.jmc_business_email ),
@@ -115,14 +109,15 @@ const ContactLine = ( { name, icon, children }: ContactLineProps ) => (
 	</p>
 );
 
-export default function Edit( { attributes, setAttributes }: EditProps ) {
+export default function Edit() {
 	const blockProps = useBlockProps( { className: 'jmc-footer-business' } );
 
-	const bind = bindFields( attributes, setAttributes );
 	const icons = useThemeIcons();
-	const { phone, whatsapp, email, serviceArea } = useContactDetails();
+	const { name, address, phone, whatsapp, email, serviceArea } =
+		useContactDetails();
 	const places = joinPlaces( serviceArea );
-	const hasShared = !! ( phone || whatsapp || email || places );
+	const hasContact = !! ( address.length || phone || whatsapp || email );
+	const hasDetails = !! ( name || hasContact || places );
 
 	return (
 		<>
@@ -130,62 +125,79 @@ export default function Edit( { attributes, setAttributes }: EditProps ) {
 				<Sidebar.Section title={ __( 'Footer details', 'jmc-theme' ) }>
 					<p>
 						{ __(
-							'The business name and address are edited here, on the block. Empty fields are hidden on the site; use Shift+Enter for a new line in the address.',
-							'jmc-theme'
-						) }
-					</p>
-					<p>
-						{ __(
-							'The phone, WhatsApp, email and service area come from the shared business details below, so they match the contact buttons and Contact Details blocks.',
+							'Every line comes from the shared business details below, so the footer matches the contact buttons and Contact Details blocks. Empty details are hidden on the site.',
 							'jmc-theme'
 						) }
 					</p>
 				</Sidebar.Section>
-				<ContactSettings />
+				<ContactSettings showNameAndAddress />
 			</Sidebar>
 			<div { ...blockProps }>
-				<TextInput
-					{ ...bind.text( 'companyName' ) }
-					className="jmc-footer-business__name"
-					placeholder={ __( 'Business name', 'jmc-theme' ) }
-				/>
-				<address className="jmc-footer-business__contact">
-					<div className="jmc-footer-business__line jmc-footer-business__address">
-						<LineIcon content={ icons[ 'jmc/map-pin' ] } />
-						<TextInput
-							{ ...bind.text( 'address' ) }
-							tagName="span"
-							placeholder={ __( 'Address', 'jmc-theme' ) }
-						/>
-					</div>
-					{ phone && (
-						<ContactLine name="phone" icon={ icons[ 'jmc/phone' ] }>
-							<a href="#phone" onClick={ preventNavigation }>
-								{ phone }
-							</a>
-						</ContactLine>
-					) }
-					{ whatsapp && (
-						<ContactLine
-							name="whatsapp"
-							icon={ icons[ 'jmc/whatsapp' ] }
-						>
-							<a href="#whatsapp" onClick={ preventNavigation }>
-								<span className="jmc-footer-business__hidden-label">
-									{ __( 'WhatsApp:', 'jmc-theme' ) }{ ' ' }
+				{ name && (
+					<p className="jmc-footer-business__name">
+						<a href="#home" onClick={ preventNavigation }>
+							{ name }
+						</a>
+					</p>
+				) }
+				{ hasContact && (
+					<address className="jmc-footer-business__contact">
+						{ address.length > 0 && (
+							<ContactLine
+								name="address"
+								icon={ icons[ 'jmc/map-pin' ] }
+							>
+								<span>
+									{ address.map( ( line, index ) => (
+										<Fragment key={ index }>
+											{ index > 0 && <br /> }
+											{ line }
+										</Fragment>
+									) ) }
 								</span>
-								{ whatsapp }
-							</a>
-						</ContactLine>
-					) }
-					{ email && (
-						<ContactLine name="email" icon={ icons[ 'jmc/mail' ] }>
-							<a href="#email" onClick={ preventNavigation }>
-								{ email }
-							</a>
-						</ContactLine>
-					) }
-				</address>
+							</ContactLine>
+						) }
+						{ phone && (
+							<ContactLine
+								name="phone"
+								icon={ icons[ 'jmc/phone' ] }
+							>
+								<a href="#phone" onClick={ preventNavigation }>
+									{ phone }
+								</a>
+							</ContactLine>
+						) }
+						{ whatsapp && (
+							<ContactLine
+								name="whatsapp"
+								icon={ icons[ 'jmc/whatsapp' ] }
+							>
+								<a
+									href="#whatsapp"
+									onClick={ preventNavigation }
+								>
+									<span className="jmc-footer-business__hidden-label">
+										{ __(
+											'WhatsApp:',
+											'jmc-theme'
+										) }{ ' ' }
+									</span>
+									{ whatsapp }
+								</a>
+							</ContactLine>
+						) }
+						{ email && (
+							<ContactLine
+								name="email"
+								icon={ icons[ 'jmc/mail' ] }
+							>
+								<a href="#email" onClick={ preventNavigation }>
+									{ email }
+								</a>
+							</ContactLine>
+						) }
+					</address>
+				) }
 				{ places && (
 					<ContactLine
 						name="service-area"
@@ -199,10 +211,10 @@ export default function Edit( { attributes, setAttributes }: EditProps ) {
 						</span>
 					</ContactLine>
 				) }
-				{ ! hasShared && (
+				{ ! hasDetails && (
 					<p className="jmc-footer-business__empty">
 						{ __(
-							'Add a phone number, WhatsApp number, email address or service area under Business details in the block settings.',
+							'Add a business name, address, phone number, WhatsApp number, email address or service area under Business details in the block settings.',
 							'jmc-theme'
 						) }
 					</p>

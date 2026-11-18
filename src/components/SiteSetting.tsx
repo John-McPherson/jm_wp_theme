@@ -10,7 +10,7 @@ type SiteSettingProps< Value > = {
 };
 
 /**
- * Read and edit a site setting (Settings → General) from a block.
+ * Read and edit a site setting (Settings → Business) from a block.
  *
  * Edits are saved with the site settings when the post is saved, so they
  * change everywhere the setting is used. Users who can't manage options can't
@@ -33,7 +33,7 @@ export default function SiteSetting< Value >( {
 			<Notice status="info" isDismissible={ false }>
 				{ notice ??
 					__(
-						'These details come from Settings → General. Ask an administrator to change them.',
+						'These details come from Settings → Business. Ask an administrator to change them.',
 						'jmc-theme'
 					) }
 			</Notice>

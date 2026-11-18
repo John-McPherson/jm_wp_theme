@@ -29,19 +29,12 @@ final class FooterBusinessRenderTest extends TestCase {
 	}
 
 	/**
-	 * Fully configured details render every line in order: the name and address
-	 * from the block, the contact lines from the site-wide settings.
+	 * Fully configured settings render every line in order.
 	 */
 	public function test_renders_all_fields(): void {
 		$this->set_contact_settings();
 
-		$html = $this->render_business(
-			[
-				'companyName' => 'Example Electrical Ltd',
-				'address'     => '1 High Street<br>Example Town',
-				'className'   => 'is-custom',
-			]
-		);
+		$html = $this->render_business( [ 'className' => 'is-custom' ] );
 
 		self::assertStringContainsString( 'class="jmc-footer-business is-custom"', $html );
 		self::assertStringContainsString( '<p class="jmc-footer-business__name"><a href="https://example.com/">Example Electrical Ltd</a></p>', $html );
@@ -100,12 +93,7 @@ final class FooterBusinessRenderTest extends TestCase {
 	public function test_lines_use_theme_icons(): void {
 		$this->set_contact_settings();
 
-		$html = $this->render_business(
-			[
-				'companyName' => 'Example Electrical Ltd',
-				'address'     => '1 High Street',
-			]
-		);
+		$html = $this->render_business( [] );
 
 		foreach (
 			[
@@ -192,11 +180,10 @@ final class FooterBusinessRenderTest extends TestCase {
 		return [
 			'omitted'           => [ [], [] ],
 			'defaults'          => [
+				[],
 				[
-					'companyName' => '',
-					'address'     => '',
-				],
-				[
+					JMC_BUSINESS_NAME_OPTION         => '',
+					JMC_BUSINESS_ADDRESS_OPTION      => '',
 					JMC_BUSINESS_PHONE_OPTION        => '',
 					JMC_BUSINESS_WHATSAPP_OPTION     => '',
 					JMC_BUSINESS_EMAIL_OPTION        => '',
@@ -204,22 +191,29 @@ final class FooterBusinessRenderTest extends TestCase {
 				],
 			],
 			'whitespace/markup' => [
+				[],
 				[
-					'companyName' => '  ',
-					'address'     => '<br><br>',
+					JMC_BUSINESS_NAME_OPTION         => " <br>\n ",
+					JMC_BUSINESS_ADDRESS_OPTION      => '<br><br>',
+					JMC_BUSINESS_SERVICE_AREA_OPTION => [ '  ', '<b>' ],
 				],
-				[ JMC_BUSINESS_SERVICE_AREA_OPTION => [ '  ', '<b>' ] ],
 			],
 			'wrong types'       => [
+				[],
 				[
-					'companyName' => [ 'x' ],
-					'address'     => 12345,
-				],
-				[
+					JMC_BUSINESS_NAME_OPTION         => [ 'x' ],
+					JMC_BUSINESS_ADDRESS_OPTION      => 12345,
 					JMC_BUSINESS_PHONE_OPTION        => 12345,
 					JMC_BUSINESS_EMAIL_OPTION        => [ 'hello@example.com' ],
 					JMC_BUSINESS_SERVICE_AREA_OPTION => 42,
 				],
+			],
+			'legacy attributes' => [
+				[
+					'companyName' => 'Example Electrical Ltd',
+					'address'     => '1 High Street',
+				],
+				[],
 			],
 			'invalid settings'  => [
 				[],
@@ -236,9 +230,12 @@ final class FooterBusinessRenderTest extends TestCase {
 	 * The address wrapper is omitted when there are no contact details.
 	 */
 	public function test_omits_contact_wrapper_without_contact_details(): void {
-		$GLOBALS['jmc_test_options'][ JMC_BUSINESS_SERVICE_AREA_OPTION ] = [ 'Pudsey' ];
+		$GLOBALS['jmc_test_options'] = [
+			JMC_BUSINESS_NAME_OPTION         => 'Example Electrical Ltd',
+			JMC_BUSINESS_SERVICE_AREA_OPTION => [ 'Pudsey' ],
+		];
 
-		$html = $this->render_business( [ 'companyName' => 'Example Electrical Ltd' ] );
+		$html = $this->render_business( [] );
 
 		self::assertStringContainsString( 'Example Electrical Ltd', $html );
 		self::assertStringContainsString( '__service-area', $html );
@@ -262,7 +259,7 @@ final class FooterBusinessRenderTest extends TestCase {
 
 		self::assertStringNotContainsString( 'jmc-footer-business__' . $line . '"', $html );
 		self::assertStringContainsString( '__service-area', $html );
-		self::assertSame( 2, substr_count( $html, '<a ' ) );
+		self::assertSame( 3, substr_count( $html, '<a ' ) );
 	}
 
 	/**
@@ -282,14 +279,14 @@ final class FooterBusinessRenderTest extends TestCase {
 	 * Rich-text markup is stripped, entities decoded once and output escaped.
 	 */
 	public function test_values_are_plain_text_and_escaped(): void {
-		$html = $this->render_business(
-			[
-				'companyName' => 'Smith &amp; Sons <script>alert(1)</script>',
-				'address'     => '<strong>1</strong> &lt;High&gt; St<br />  <br>Town',
-			]
-		);
+		$GLOBALS['jmc_test_options'] = [
+			JMC_BUSINESS_NAME_OPTION    => "Smith &amp; Sons <script>alert(1)</script>\n Ltd",
+			JMC_BUSINESS_ADDRESS_OPTION => '<strong>1</strong> &lt;High&gt; St<br />  <br>Town',
+		];
 
-		self::assertStringContainsString( 'Smith &amp; Sons alert(1)', $html );
+		$html = $this->render_business( [] );
+
+		self::assertStringContainsString( '>Smith &amp; Sons alert(1) Ltd</a>', $html );
 		self::assertStringNotContainsString( '<script', $html );
 		self::assertStringNotContainsString( '<strong', $html );
 		self::assertStringContainsString( '1 &lt;High&gt; St<br>Town', $html );
@@ -300,6 +297,8 @@ final class FooterBusinessRenderTest extends TestCase {
 	 */
 	private function set_contact_settings(): void {
 		$GLOBALS['jmc_test_options'] = [
+			JMC_BUSINESS_NAME_OPTION         => 'Example Electrical Ltd',
+			JMC_BUSINESS_ADDRESS_OPTION      => "1 High Street\nExample Town",
 			JMC_BUSINESS_PHONE_OPTION        => '01234 567 890',
 			JMC_BUSINESS_WHATSAPP_OPTION     => '+44 7700 900123',
 			JMC_BUSINESS_EMAIL_OPTION        => 'hello@example.com',

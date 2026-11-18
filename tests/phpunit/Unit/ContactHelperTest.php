@@ -24,6 +24,65 @@ final class ContactHelperTest extends TestCase {
 	}
 
 	/**
+	 * The business name is stored as one line of plain text.
+	 *
+	 * @dataProvider name_provider
+	 *
+	 * @param mixed  $value    Submitted value.
+	 * @param string $expected Stored value.
+	 */
+	public function test_sanitize_business_name( mixed $value, string $expected ): void {
+		self::assertSame( $expected, jmc_sanitize_business_name( $value ) );
+	}
+
+	/**
+	 * Submitted business names and their stored values.
+	 *
+	 * @return array<string, array{mixed, string}>
+	 */
+	public function name_provider(): array {
+		return [
+			'plain'            => [ 'Example Electrical Ltd', 'Example Electrical Ltd' ],
+			'extra whitespace' => [ "  Example \t Electrical\n Ltd ", 'Example Electrical Ltd' ],
+			'line break'       => [ 'Example<br>Electrical', 'Example Electrical' ],
+			'markup'           => [ '<b>Smith</b> &amp; Sons', 'Smith & Sons' ],
+			'blank'            => [ " <br>\n ", '' ],
+			'empty'            => [ '', '' ],
+			'non-string'       => [ [ 'Example' ], '' ],
+			'null'             => [ null, '' ],
+		];
+	}
+
+	/**
+	 * The business address is stored as plain-text lines.
+	 *
+	 * @dataProvider address_provider
+	 *
+	 * @param mixed  $value    Submitted value.
+	 * @param string $expected Stored value.
+	 */
+	public function test_sanitize_business_address( mixed $value, string $expected ): void {
+		self::assertSame( $expected, jmc_sanitize_business_address( $value ) );
+	}
+
+	/**
+	 * Submitted business addresses and their stored values.
+	 *
+	 * @return array<string, array{mixed, string}>
+	 */
+	public function address_provider(): array {
+		return [
+			'lines'            => [ "1 High Street\nExample Town\nAB1 2CD", "1 High Street\nExample Town\nAB1 2CD" ],
+			'windows newlines' => [ "1 High Street\r\nExample Town", "1 High Street\nExample Town" ],
+			'extra whitespace' => [ "  1  High\tStreet \n\n\n Example Town ", "1 High Street\nExample Town" ],
+			'rich text'        => [ '<strong>1</strong> High Street<br />Smith &amp; Sons', "1 High Street\nSmith & Sons" ],
+			'blank'            => [ " <br>\n ", '' ],
+			'non-string'       => [ 12345, '' ],
+			'null'             => [ null, '' ],
+		];
+	}
+
+	/**
 	 * Diallable numbers are kept as written, with whitespace collapsed.
 	 *
 	 * @dataProvider phone_provider
