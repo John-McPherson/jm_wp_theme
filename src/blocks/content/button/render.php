@@ -52,14 +52,6 @@ if ( '' === $url ) {
 	return;
 }
 
-// `opensInNewTab` is saved by the editor; `target` is kept for content saved before it.
-// Telephone and email links hand off to the dialler or mail app, so never open them in a new tab.
-$opens_in_new_tab = (
-	true === ( $button_link['opensInNewTab'] ?? false )
-	|| '_blank' === ( $button_link['target'] ?? '' )
-) && ! str_starts_with( $url, 'tel:' )
-	&& ! str_starts_with( $url, 'mailto:' );
-
 $variant = jmc_html_allowed_value(
 	value: $attributes['buttonType'] ?? null,
 	allowed: [
@@ -78,10 +70,8 @@ jmc_component(
 	name: 'button-link',
 	args: [
 		'text'    => $attributes['text'] ?? '',
-		'link'    => [
-			'url'    => $url,
-			'target' => $opens_in_new_tab ? '_blank' : '',
-		],
+		// The component decides whether the stored link opens in a new tab.
+		'link'    => [ 'url' => $url ] + $button_link,
 		'classes' => [
 			$attributes['className'] ?? null,
 			$variant_classes[ $variant ],

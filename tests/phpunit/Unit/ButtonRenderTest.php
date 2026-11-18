@@ -233,6 +233,48 @@ final class ButtonRenderTest extends TestCase {
 	}
 
 	/**
+	 * A disabled, missing or malformed new-tab setting keeps the link in the same tab.
+	 *
+	 * @dataProvider same_tab_provider
+	 *
+	 * @param mixed $opens_in_new_tab Stored `opensInNewTab` value, or null to omit it.
+	 */
+	public function test_stays_in_same_tab( mixed $opens_in_new_tab ): void {
+		$link = [ 'url' => 'https://example.com/' ];
+
+		if ( null !== $opens_in_new_tab ) {
+			$link['opensInNewTab'] = $opens_in_new_tab;
+		}
+
+		$html = $this->render_button(
+			[
+				'text' => 'Get a quote',
+				'link' => $link,
+			]
+		);
+
+		self::assertStringContainsString( 'href="https://example.com/"', $html );
+		self::assertStringNotContainsString( 'target=', $html );
+		self::assertStringNotContainsString( 'rel=', $html );
+		self::assertStringNotContainsString( '(opens in a new tab)', $html );
+	}
+
+	/**
+	 * New-tab values that must not open a new tab.
+	 *
+	 * @return array<string, array{mixed}>
+	 */
+	public function same_tab_provider(): array {
+		return [
+			'missing' => [ null ],
+			'false'   => [ false ],
+			'string'  => [ 'true' ],
+			'integer' => [ 1 ],
+			'array'   => [ [ true ] ],
+		];
+	}
+
+	/**
 	 * Telephone links never open in a new tab, even when requested.
 	 */
 	public function test_telephone_link_ignores_new_tab(): void {

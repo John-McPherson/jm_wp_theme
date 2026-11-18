@@ -34,9 +34,7 @@
       "type": "object",
       "default": {
         "url": "",
-        "label": "",
-        "target": "",
-        "rel": ""
+        "opensInNewTab": false
       }
     },
     "linkText": {
