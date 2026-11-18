@@ -34,10 +34,8 @@ html {
 		}
 	}
 
-	.jmc-logo .wp-block-site-logo img {
-
+	.jmc-logo .jmc-site-logo__svg {
 		width: clamp(8rem, 20vw, 13rem);
-		height: auto;
 	}
 
 	.jmc-logo {
@@ -47,10 +45,10 @@ html {
 		margin-inline-end: auto;
 
 		/*
-		 * Keep the site title as a fallback until an actual logo image
-		 * has been configured.
+		 * Keep the site title as a fallback for when the logo block renders
+		 * nothing (its artwork is missing from the build).
 		 */
-		&:has(.wp-block-site-logo img) {
+		&:has(.jmc-site-logo) {
 
 			.wp-block-site-title {
 				display: none;
