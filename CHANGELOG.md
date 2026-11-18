@@ -55,6 +55,7 @@ All notable changes will be documented here. The project follows semantic versio
 - Server-rendered editor previews (contact details, services list, navigation, footer navigation) are inert, so links in them no longer leave the editor.
 - Development tooling upgraded to the latest `@wordpress/*` majors (`scripts` 37, `env` 12), Playwright 1.65 and PHPUnit 9.6.39, clearing every critical `npm audit` advisory; the remaining upstream-only advisories are documented in `docs/development.md`. Tooling now needs Node 22.13 or later (`.nvmrc` stays on 24).
 - JavaScript unit tests run on Vitest instead of Jest.
+- Breadcrumbs moved from a strip between the header and the hero into the hero (#145). On child pages the trail replaces the hero's label, starts with a home icon, and marks the current page in the highlight colour; a **Show breadcrumbs** setting (on by default) turns it off. The Services templates no longer include a breadcrumbs block.
 
 ### Known issues
 

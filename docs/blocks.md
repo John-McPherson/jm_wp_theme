@@ -42,7 +42,7 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/site-logo`       | The theme's inline SVG logo, linked to the homepage                                | Dynamic PHP               | Site chrome; direct inserter disabled; locked against removal in the header part; colour variants are block styles (Follow palette, Brand, Mono dark, Mono light); see [Site logo](#site-logo) |
 | `jmc/cta-banner`      | Call-to-action section with a heading, supporting copy, and one or more buttons     | Dynamic PHP               | Columns, Stacked and Contact Details variations (`layout`); palettes; left/right order (not stacked); defaults to inverse/right/columns; its two columns are fixed but their content is editable; see [Call-to-action banner](#call-to-action-banner) |
 | `jmc/enquiry-form`    | Enquiry form section                                                               | Dynamic PHP + view script | Palettes; single instance; submits without reloading the page and works without JavaScript; stores and emails each enquiry; see [Enquiry form](#enquiry-form) |
-| `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default |
+| `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default; on child pages shows breadcrumbs in place of its label (`showBreadcrumbs`); see [Hero breadcrumbs](#hero-breadcrumbs) |
 | `jmc/service-grid`    | Introductory content and service cards in one responsive grid              | Dynamic PHP               | Two locked Column children: the intro and `jmc/service-list`; palettes; defaults to default; the `order` attribute is currently unused |
 | `jmc/trust-credentials` | Strip of credential logos at the top of the site footer                        | Dynamic PHP               | Direct inserter disabled; allows only `jmc/credential-list`; placed and locked in the footer part; palettes, defaulting to the surrounding palette; renders nothing without logos |
 | `jmc/text-with-image` | Composable text content paired with an image                                       | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; unlocked: allows `jmc/heading`, `jmc/paragraph`, `jmc/list` and `jmc/button`; contains legacy-looking attributes that need contract review |
@@ -158,6 +158,19 @@ The Hero block uses the same palette vocabulary in `block.json`, editor controls
 | `inverse` | `jmc-palette--inverse` |
 
 The omitted and declared default value is `default`. PHP treats unexpected palette input as `default`, so malformed or legacy content renders without an undefined-key notice and without an additional palette class. When changing this contract, verify the omitted value, every supported value, and malformed input under WordPress debug mode in both the editor and frontend.
+
+### Hero breadcrumbs
+
+On a page with a parent, the Hero shows the core Breadcrumbs trail at the top of `.jmc-hero__text`, in place of its label. It is the page's only breadcrumb trail: templates add none of their own.
+
+| | |
+| --- | --- |
+| Setting | **Breadcrumbs → Show breadcrumbs** in the block sidebar (`showBreadcrumbs`, boolean, default `true`). Only `false` turns it off; malformed values count as on. |
+| Where it shows | Pages with a parent (`wp_get_post_parent_id()`), read from the `postId` and `postType` block context. Top-level pages, the front page, templates and patterns show no trail. When core renders no trail, the hero renders unchanged. |
+| Trail | Core Breadcrumbs with `showHomeItem: false` and the `jmc-hero__breadcrumbs` class, built from the native page ancestry with `aria-current="page"` on the current item. `inc/breadcrumbs.php` (`jmc_breadcrumbs_home_icon()` on `render_block_core/breadcrumbs`) adds the home link back as the first item: the `jmc/house` icon, hidden from assistive technology, in a link named "Home". The filter only changes trails with that class. |
+| Label | The first `jmc/paragraph` with the `label` variant is not rendered while the trail shows. It stays saved, so it returns when breadcrumbs are off. |
+| Presentation | Set like the label (H5, uppercase). Ancestors use `--jmc-text-color` and underline on hover; the current page uses `--jmc-text-highlight` and is not a link. Both follow the hero palette and reach 4.5:1 on default, secondary and inverse. Links are at least 24px tall (the home link a 24px square) and show a 2px highlight outline on focus. |
+| Editor | The sidebar toggle, and a server-rendered preview of the same trail (including the home icon) for the page being edited, inert so its links stay in the editor. The label is hidden while the preview shows. The preview follows the saved parent, so a changed parent shows after saving. |
 
 Variants change structural presentation. If descendants require the value, provide it through block context with a namespaced key such as `jmc/variant` rather than copying attributes through unrelated blocks.
 
@@ -567,7 +580,7 @@ The Services page and its direct children are laid out by two block templates, r
 | Services landing page | `templates/services-landing.html` | The resolved Services page (see [Choosing the Services page](#choosing-the-services-page)) |
 | Service page | `templates/service.html` | Every direct child of the Services page, whatever its status, so drafts preview with the template they will publish with |
 
-Both hold only layout: the header, one `<main>` landmark containing the core Breadcrumbs block and the page content, then the footer. Breadcrumbs and post content are locked against moving and removal. The templates contain no titles, excerpts, images, links or copy; everything a visitor reads comes from the page record or a dynamic block.
+Both hold only layout: the header, one `<main>` landmark containing the page content (locked against moving and removal), then the footer. They add no breadcrumbs: the hero shows the trail (see [Hero breadcrumbs](#hero-breadcrumbs)). The templates contain no titles, excerpts, images, links or copy; everything a visitor reads comes from the page record or a dynamic block.
 
 Routing is automatic, so editors never pick these templates. `inc/services.php` filters `page_template_hierarchy` with `jmc_service_template_hierarchy()` (`inc/helpers/services.php`), which puts the template for the page's role first, ahead of any template assigned in the editor, and removes both services templates from every other page. A page's role comes from `jmc_service_page_role()`: `landing` for the Services page, `service` for its direct children, and `none` for everything else, including deeper descendants, which stay ordinary pages laid out by the normal page template. When the Services page is unresolved (`invalid` or `missing`), no page has a role. The `theme_page_templates` filter likewise offers each services template only on the page it governs, so the template picker cannot assign one elsewhere. To change a layout, edit the template in **Appearance → Editor → Templates**.
 
@@ -580,7 +593,7 @@ Page content is the page's own. Two starter patterns, offered when a new page is
 
 Only the landing page lists services, always through `jmc/service-grid`, so its cards follow [the empty states above](#empty-states): with no published services, visitors see the grid's intro without cards. Trust credentials also appear on every page in the footer. Related content is not part of the service template: no relationship between services is defined beyond their shared parent.
 
-Breadcrumbs and canonical URLs come from the native page hierarchy: core Breadcrumbs renders Home → Services → Service from the page's ancestors, and the canonical URL is the page permalink, built from its slug and parent. Front-end site search is turned off (see [Site search](#site-search)), so service pages are found through navigation and the Services page. The theme outputs no structured data (JSON-LD): schema is deferred to Yoast SEO, which builds it from the same page record and site settings; see [Structured data](architecture/services-content-model.md#structured-data).
+Breadcrumbs and canonical URLs come from the native page hierarchy: the hero's core Breadcrumbs trail renders Home (as an icon) → Services → Service from the page's ancestors on service pages, and the canonical URL is the page permalink, built from its slug and parent. Front-end site search is turned off (see [Site search](#site-search)), so service pages are found through navigation and the Services page. The theme outputs no structured data (JSON-LD): schema is deferred to Yoast SEO, which builds it from the same page record and site settings; see [Structured data](architecture/services-content-model.md#structured-data).
 
 ### Publishing a service
 
