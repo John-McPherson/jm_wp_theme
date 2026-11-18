@@ -59,15 +59,17 @@ function wp_get_attachment_image_url(
 /**
  * Escape a URL for output.
  *
- * Test double that returns the supplied URL unchanged because URL escaping is
- * outside the scope of the isolated render tests.
+ * Test double that strips encoded line breaks, as core does, and otherwise
+ * returns the URL unchanged because the rest of URL escaping is outside the
+ * scope of the isolated render tests.
  *
  * @param string $url URL supplied by the render callback.
  *
- * @return string The supplied URL without modification.
+ * @return string The URL without encoded line breaks.
  */
 function esc_url( string $url ): string {
-	return $url;
+	// Like core, strip encoded line breaks.
+	return str_ireplace( [ '%0d', '%0a' ], '', $url );
 }
 
 /**
@@ -223,7 +225,7 @@ function __( string $text, string $domain = 'default' ): string {
  * @return string Placeholder SVG markup, or an empty string.
  */
 function wp_get_icon( string $name, array $args = [] ): string {
-	if ( ! in_array( $name, [ 'jmc/house', 'jmc/mail', 'jmc/map-pin', 'jmc/phone' ], true ) ) {
+	if ( ! in_array( $name, [ 'jmc/clock', 'jmc/house', 'jmc/mail', 'jmc/map-pin', 'jmc/phone', 'jmc/whatsapp' ], true ) ) {
 		return '';
 	}
 
