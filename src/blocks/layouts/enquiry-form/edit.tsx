@@ -1,7 +1,7 @@
 import { __ } from '@wordpress/i18n';
 
 import type { BlockEditProps } from '@wordpress/blocks';
-import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
+import { useBlockProps } from '@wordpress/block-editor';
 
 import bindFields from '../../../utils/bindFields';
 
@@ -13,10 +13,6 @@ type Attributes = {
 	palette: 'default' | 'secondary' | 'inverse';
 	submitText: string;
 };
-
-const TEMPLATE = [ [ 'jmc/paragraph' ] ];
-
-const ALLOWED_BLOCKS = [ 'jmc/paragraph' ];
 
 const VARIANT_CLASSES = {
 	default: '',
@@ -53,15 +49,6 @@ export default function Edit( {
 			.join( ' ' ),
 	} );
 
-	const innerBlocksProps = useInnerBlocksProps(
-		{ className: 'jmc-section__column jmc-enquiry-form__intro' },
-		{
-			allowedBlocks: ALLOWED_BLOCKS,
-			template: TEMPLATE,
-			templateLock: false,
-		}
-	);
-
 	return (
 		<>
 			<Sidebar>
@@ -77,8 +64,6 @@ export default function Edit( {
 
 			<section { ...blockProps }>
 				<div className="jmc-section__container">
-					<div { ...innerBlocksProps } />
-
 					<div className="jmc-section__column jmc-enquiry-form__body">
 						<div className="jmc-enquiry-form__form">
 							{ PREVIEW_FIELDS.map( ( field ) => (

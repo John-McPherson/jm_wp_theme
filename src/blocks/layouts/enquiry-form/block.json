@@ -23,14 +23,6 @@
     "attributes": {
       "palette": "default"
     },
-    "innerBlocks": [
-      {
-        "name": "jmc/paragraph",
-        "attributes": {
-          "text": "Tell us about the work you need and we’ll get back to you."
-        }
-      }
-    ],
     "viewportWidth": 1200
   },
   "supports": {

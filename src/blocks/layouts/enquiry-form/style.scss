@@ -7,17 +7,11 @@
 		--jmc-enquiry-form-input-background: var(--jmc-card-background);
 		--jmc-enquiry-form-error-color: var(--jmc-error-color);
 
-		// A long form reads best as one centred, comfortably narrow column,
-		// with the introduction above it.
+		// A long form reads best as one centred, comfortably narrow column.
 		.jmc-section__container {
 			grid-template-columns: minmax(0, 1fr);
 			max-width: var(--jmc-container-sm);
 			align-items: start;
-		}
-
-		&__intro {
-			align-items: center;
-			text-align: center;
 		}
 
 		&__form:not([hidden]) {
