@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/site-logo",
+  "version": "0.1.0",
+  "title": "Site Logo",
+  "category": "jmc-site",
+  "icon": "admin-home",
+  "description": "The theme's logo, drawn inline in colours that follow the surrounding palette and linked to the homepage.",
+  "attributes": {},
+  "styles": [
+    { "name": "default", "label": "Follow palette", "isDefault": true },
+    { "name": "brand", "label": "Brand" },
+    { "name": "mono-dark", "label": "Mono dark" },
+    { "name": "mono-light", "label": "Mono light" }
+  ],
+  "example": {},
+  "supports": {
+    "className": true,
+    "html": false,
+    "inserter": false
+  },
+  "textdomain": "jmc-theme",
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "render": "file:./render.php"
+}

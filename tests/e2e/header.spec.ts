@@ -1,14 +1,9 @@
 import { expect, test } from './fixtures/test';
 import {
-	deleteAttachment,
 	deletePost,
 	createNavigationRecord,
 	createNavigationTestPage,
 	getOption,
-	getThemeMod,
-	importTestLogo,
-	removeThemeMod,
-	setThemeMod,
 	updateNavigationRecord,
 	updateOption,
 } from './helpers/wp-cli';
@@ -289,75 +284,57 @@ test.describe( 'theme navigation', () => {
 } );
 
 test.describe( 'site identity', () => {
-	let originalLogoId: string | null = null;
-	let importedLogoId: number | null = null;
 	let originalSiteTitle = '';
 
 	test.beforeEach( async () => {
-		originalLogoId = await getThemeMod( 'custom_logo' );
 		originalSiteTitle = await getOption( 'blogname' );
-		importedLogoId = null;
 	} );
 
 	test.afterEach( async () => {
 		await updateOption( 'blogname', originalSiteTitle );
-
-		if ( originalLogoId !== null ) {
-			await setThemeMod( 'custom_logo', originalLogoId );
-		} else {
-			await removeThemeMod( 'custom_logo' );
-		}
-
-		if ( importedLogoId !== null ) {
-			await deleteAttachment( importedLogoId );
-			importedLogoId = null;
-		}
 	} );
 
-	test( 'shows the site title when no custom logo exists', async ( {
+	test( 'shows the inline theme logo instead of the site title', async ( {
 		page,
 	} ) => {
-		await removeThemeMod( 'custom_logo' );
-		await updateOption( 'blogname', 'AMC Electrical E2E' );
-
 		await page.goto( '/' );
 
-		const siteTitle = page.locator( '.jmc-logo .wp-block-site-title' );
+		const logo = page.locator( '.jmc-logo .jmc-site-logo' );
 
-		await expect( siteTitle ).toBeVisible();
-		await expect( siteTitle ).toContainText( 'AMC Electrical E2E' );
-
-		await expect(
-			page.locator( '.jmc-logo .wp-block-site-logo img' )
-		).toHaveCount( 0 );
-	} );
-	test( 'shows the logo and hides the title when a custom logo exists', async ( {
-		page,
-	} ) => {
-		importedLogoId = await importTestLogo();
-
-		await setThemeMod( 'custom_logo', importedLogoId );
-
-		await page.goto( '/' );
-
-		await expect(
-			page.locator( '.jmc-logo .wp-block-site-logo img' )
-		).toBeVisible();
+		await expect( logo.locator( 'svg.jmc-site-logo__svg' ) ).toBeVisible();
+		await expect( page.locator( '.jmc-logo img' ) ).toHaveCount( 0 );
 
 		await expect(
 			page.locator( '.jmc-logo .wp-block-site-title' )
 		).toBeHidden();
 	} );
-	test( 'links the configured logo to the homepage', async ( { page } ) => {
-		importedLogoId = await importTestLogo();
 
-		await setThemeMod( 'custom_logo', importedLogoId );
+	test( 'names the logo link with the site title and hides the SVG', async ( {
+		page,
+	} ) => {
+		await updateOption( 'blogname', 'AMC Electrical E2E' );
 
 		await page.goto( '/' );
 
-		const logoLink = page.locator( '.jmc-logo .wp-block-site-logo a' );
+		const logoLink = page
+			.locator( '.jmc-logo' )
+			.getByRole( 'link', { name: 'AMC Electrical E2E', exact: true } );
 
 		await expect( logoLink ).toBeVisible();
+
+		const svg = logoLink.locator( 'svg' );
+
+		await expect( svg ).toHaveAttribute( 'aria-hidden', 'true' );
+		await expect( svg ).toHaveAttribute( 'focusable', 'false' );
+		await expect( svg.locator( 'title' ) ).toHaveCount( 0 );
+	} );
+
+	test( 'links the logo to the homepage', async ( { page } ) => {
+		await page.goto( '/' );
+
+		const logoLink = page.locator( '.jmc-logo a.jmc-site-logo' );
+
+		await expect( logoLink ).toHaveAttribute( 'rel', 'home' );
 
 		const href = await logoLink.getAttribute( 'href' );
 
@@ -372,6 +349,60 @@ test.describe( 'site identity', () => {
 		expect( actualUrl.origin + actualUrl.pathname ).toBe(
 			expectedUrl.origin + expectedUrl.pathname
 		);
+	} );
+
+	test( 'reserves the logo size before it paints', async ( { page } ) => {
+		await page.goto( '/' );
+
+		const box = await page
+			.locator( '.jmc-logo .jmc-site-logo__svg' )
+			.boundingBox();
+
+		expect( box ).not.toBeNull();
+		// The artwork's viewBox is 1375 × 457.
+		expect( ( box?.width ?? 0 ) / ( box?.height ?? 1 ) ).toBeCloseTo(
+			1375 / 457,
+			1
+		);
+	} );
+
+	test( 'follows the surrounding palette without extra markup', async ( {
+		page,
+	} ) => {
+		await page.goto( '/' );
+
+		const fills = () =>
+			page
+				.locator( '.jmc-logo .jmc-site-logo' )
+				.evaluate( ( logo ) =>
+					[ 'primary', 'accent', 'secondary' ].map(
+						( part ) =>
+							getComputedStyle(
+								logo.querySelector(
+									`.jmc-site-logo__${ part }`
+								) as Element
+							).fill
+					)
+				);
+
+		const defaultFills = await fills();
+
+		for ( const palette of [ 'secondary', 'inverse' ] ) {
+			await page.locator( '.jmc-header' ).evaluate( ( header, name ) => {
+				header.classList.remove(
+					'jmc-palette--secondary',
+					'jmc-palette--inverse'
+				);
+				header.classList.add( `jmc-palette--${ name }` );
+			}, palette );
+
+			const paletteFills = await fills();
+
+			expect( paletteFills ).not.toEqual( defaultFills );
+		}
+
+		// The inverse palette draws the letters in light base-50.
+		expect( ( await fills() )[ 0 ] ).toBe( 'rgb(250, 250, 249)' );
 	} );
 } );
 

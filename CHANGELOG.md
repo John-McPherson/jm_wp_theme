@@ -24,9 +24,11 @@ All notable changes will be documented here. The project follows semantic versio
 - CTA Banner (Contact Details) variation: a heading and text beside the contact details.
 - WhatsApp Button variation with the WhatsApp logo, and optional pre-filled email subjects and bodies and WhatsApp messages, keeping line breaks.
 - Simple Icons brand logos in the theme's icon collection, starting with WhatsApp.
+- Site Logo block (`jmc/site-logo`): the theme's logo as an inline SVG in the header, coloured by `--jmc-logo-*` tokens that follow the surrounding palette, with Brand, Mono dark and Mono light styles.
 
 ### Changed
 
+- The header uses the theme's inline SVG logo instead of the core Site Logo block's uploaded image.
 - The business settings moved from Settings → General to Settings → Business; stored values are unchanged.
 - The footer's business name and address are now site-wide settings, edited on Settings → Business or in the footer's Business details sidebar instead of on the block. Existing footer values are copied into the settings once.
 - The opening-hours fields on the settings page line up in columns.

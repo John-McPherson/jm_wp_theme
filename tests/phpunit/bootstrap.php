@@ -19,6 +19,7 @@ require_once dirname( __DIR__, 2 ) . '/inc/helpers/navigation.php';
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/text.php';
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/contact.php';
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/enquiry.php';
+require_once dirname( __DIR__, 2 ) . '/inc/helpers/svg.php';
 
 /**
  * Render a theme component.
@@ -614,6 +615,22 @@ function wp_strip_all_tags( string $text ): string {
  */
 function tag_escape( string $tag_name ): string {
 	return strtolower( (string) preg_replace( '/[^a-zA-Z0-9-_:]/', '', $tag_name ) );
+}
+
+/**
+ * Retrieve the path of a file in the theme.
+ *
+ * Test double that resolves against `$GLOBALS['jmc_test_theme_root']`,
+ * defaulting to the theme's own directory, so tests can supply build files.
+ *
+ * @param string $file File to search for in the theme directory.
+ *
+ * @return string The file path.
+ */
+function get_theme_file_path( string $file = '' ): string {
+	$root = (string) ( $GLOBALS['jmc_test_theme_root'] ?? dirname( __DIR__, 2 ) );
+
+	return rtrim( $root, '/' ) . '/' . ltrim( $file, '/' );
 }
 
 /**

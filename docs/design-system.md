@@ -31,6 +31,8 @@ Current section palettes are `default`, `secondary`, and `inverse`. Store the un
 
 Surfaces raised above a section, such as service cards, use `--jmc-card-background`, which each palette sets to a colour distinct from its section background: `base-50` in `default` and `secondary`, `brand-800` in `inverse`.
 
+The site logo fills its three parts from `--jmc-logo-primary`, `--jmc-logo-accent` and `--jmc-logo-secondary`. Like every role they alias `--jmc-color-*` tokens, never literal colours; they default in the semantic tokens and each palette reassigns them. The mappings and their contrast ratios are in [Site logo](blocks.md#site-logo).
+
 Required contrast targets are documented in [Accessibility](accessibility.md).
 
 ## Typography

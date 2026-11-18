@@ -63,7 +63,7 @@ For each new or changed user-facing feature:
 - Global list resets currently remove visible bullets and numbering.
 - No deliberate shared `:focus-visible` system has been demonstrated.
 - Global smooth scrolling does not yet include a reduced-motion override.
-- Palette combinations do not yet have recorded contrast evidence.
+- Palette combinations do not yet have recorded contrast evidence, except the site logo's (see [Site logo](blocks.md#site-logo)).
 - Skip-link, landmark, navigation, and template behaviour remain unverified.
 - No automated accessibility check currently runs in CI.
 

@@ -39,6 +39,7 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/list-item`       | One point in a `jmc/list`                                                          | Dynamic PHP               | Restricted to `jmc/list`; bold, italic and links only; Enter starts the next item; renders nothing without visible text |
 | `jmc/paragraph`       | Paragraph or small label text                                                      | Dynamic PHP               | `default` and `label` variations; uses `jmc/variant`; insertable only inside `jmc/text-with-image`, `jmc/hero` and `jmc/cta-banner` (`ancestor`) |
 | `jmc/service-list`    | Linked cards for the published child pages of the Services page                    | Dynamic PHP               | Restricted to `jmc/service-grid`; direct inserter disabled; card heading level `2`–`6`, default `3`; previewed in the editor with `ServerSideRender`; see [Services grid](#services-grid) |
+| `jmc/site-logo`       | The theme's inline SVG logo, linked to the homepage                                | Dynamic PHP               | Site chrome; direct inserter disabled; locked against removal in the header part; colour variants are block styles (Follow palette, Brand, Mono dark, Mono light); see [Site logo](#site-logo) |
 | `jmc/cta-banner`      | Call-to-action section with a heading, supporting copy, and one or more buttons     | Dynamic PHP               | Columns, Stacked and Contact Details variations (`layout`); palettes; left/right order (not stacked); defaults to inverse/right/columns; its two columns are fixed but their content is editable; see [Call-to-action banner](#call-to-action-banner) |
 | `jmc/enquiry-form`    | Enquiry form section with an optional introduction                                 | Dynamic PHP + view script | Palettes; single instance; submits without reloading the page and works without JavaScript; stores and emails each enquiry; see [Enquiry form](#enquiry-form) |
 | `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default |
@@ -105,6 +106,48 @@ The link is validated by `jmc_safe_link_url()` (`inc/helpers/link.php`):
 The block renders nothing when the label is empty or the link is missing, malformed, or rejected. Output uses the `button-link` component with the `jmc-button--small` size modifier, so new-tab handling follows [Button links](#button-links): telephone links never open in a new tab.
 
 The block is not insertable, so a site whose header template part has been customised in the Site Editor does not pick it up from `parts/header.html`. Either reset the header template part, or add `<!-- wp:jmc/header-cta {"lock":{"remove":true}} /-->` inside the `jmc/navigation` block of the saved part.
+
+## Site logo
+
+`jmc/site-logo` prints the theme's logo artwork inline, so its colours come from theme tokens and follow the surrounding palette. It replaces the core Site Logo block in `parts/header.html`; no logo is uploaded and SVG uploads stay disabled.
+
+**Artwork.** The source is `src/assets/svgs/logo.svg`, copied to `build/assets/svgs/logo.svg` by `npm run build:assets`. It holds three groups of paths, each with a class and no colour: `jmc-site-logo__primary` (the A, M and C letters), `jmc-site-logo__accent` (the A's crossbar and the two rules beside the wordmark) and `jmc-site-logo__secondary` (the ELECTRICAL wordmark). Its `viewBox` is cropped to the artwork, and its `width` and `height` give the browser the aspect ratio before the CSS loads, so the header does not shift. When replacing the artwork, keep the three classes, keep the root's `class`, `aria-hidden` and `focusable` attributes, and remove any `<style>`, `fill`, `style` or hex colours.
+
+**Escaping.** `render.php` reads the file through `jmc_get_inline_svg()` (`inc/helpers/svg.php`), which filters it with `wp_kses()` and `jmc_svg_allowed_html()`: only `<svg>`, `<g>` and `<path>`, with only sizing, class, path-data and ARIA attributes. Scripts, styles, event handlers, links, `<use>` and presentation colours are removed.
+
+**Accessibility.** The link is named by the Site Title in a visually hidden span (or "Home" when the title is empty); the SVG is `aria-hidden="true"` and `focusable="false"` with no `<title>`, so the name is announced once. The link has `rel="home"` and a 2px `--jmc-text-highlight` focus outline.
+
+**Fallback.** When the artwork is missing from the build the block renders nothing, and the header shows the core Site Title instead (`.jmc-logo:has(.jmc-site-logo)` hides the title only while the logo renders).
+
+**Colours.** Each group fills from a token: `--jmc-logo-primary`, `--jmc-logo-accent` and `--jmc-logo-secondary`. They default in the semantic tokens and are reassigned in each palette, so a logo inside `jmc-palette--secondary` or `jmc-palette--inverse` changes with no extra markup. Every value aliases a `--jmc-color-*` token, which aliases the `theme.json` palette, so palette edits and global style variations reach the logo. Choose a variant in the Site Editor under the block's **Styles**:
+
+| Style | Primary (letters) | Accent | Secondary (wordmark) | Use on |
+| --- | --- | --- | --- | --- |
+| Follow palette (default), `default` palette | `brand-900` | `accent-500` | `base-600` | Any palette |
+| Follow palette, `secondary` palette | `brand-900` | `accent-600` | `base-600` | |
+| Follow palette, `inverse` palette | `base-50` | `accent-300` | `base-300` | |
+| Brand (`is-style-brand`) | `brand-900` | `accent-500` | `base-600` | Light palettes (`default`, `secondary`) |
+| Mono dark (`is-style-mono-dark`) | `brand-900` | `brand-900` | `brand-900` | Light palettes |
+| Mono light (`is-style-mono-light`) | `base-50` | `base-50` | `base-50` | Dark palettes (`inverse`) |
+
+Non-text contrast (WCAG 1.4.11, minimum 3:1) of each part against the palette background, from the `theme.json` colours (`base-100` default, `accent-100` secondary, `brand-900` inverse):
+
+| Style | Background | Primary | Accent | Secondary |
+| --- | --- | --- | --- | --- |
+| Follow palette | default | 14.67 | 3.65 | 6.24 |
+| Follow palette | secondary | 13.43 | 4.92 | 5.71 |
+| Follow palette | inverse | 15.47 | 8.35 | 10.69 |
+| Brand | default | 14.67 | 3.65 | 6.24 |
+| Brand | secondary | 13.43 | 3.35 | 5.71 |
+| Mono dark | default | 14.67 | 14.67 | 14.67 |
+| Mono dark | secondary | 13.43 | 13.43 | 13.43 |
+| Mono light | inverse | 15.47 | 15.47 | 15.47 |
+
+Brand and Mono dark fail on `inverse` (the letters are 1.00:1), and Mono light fails on light palettes (1.05:1 on `default`), so use them only where the table says. The artwork's original gold (`accent-400`) is 2.65:1 on `base-100`, which is why the light palettes use `accent-500` and `accent-600`. Recheck these ratios when the palette changes.
+
+**Sizing.** The header sets the logo's width to a fixed `9.5rem`; elsewhere it is `13rem`, capped at its container. The logo always keeps `--jmc-padding-xs` of clear space above and below.
+
+**Editor.** The editor previews the server render (see [Editor previews](#editor-previews)), so the Site Editor shows the same artwork and colours. A header part customised in the Site Editor before this block existed keeps the core Site Logo block; reset the part, or replace `<!-- wp:site-logo /-->` with `<!-- wp:jmc/site-logo {"lock":{"remove":true}} /-->`.
 
 ## Call-to-action banner
 
@@ -303,7 +346,7 @@ The block outputs no schema.org data, and the theme adds none centrally. Yoast i
 
 ## Editor previews
 
-Blocks that preview their server render (`jmc/contact-details`, `jmc/service-list`, `jmc/navigation`, and `jmc/footer-navigation`) wrap `ServerSideRender` in `Disabled`. The preview is inert, so clicking a link, phone number or email address selects the block instead of leaving the editor or opening another app. Other blocks edit their text directly and render no live links in the editor.
+Blocks that preview their server render (`jmc/contact-details`, `jmc/service-list`, `jmc/navigation`, `jmc/footer-navigation`, and `jmc/site-logo`) wrap `ServerSideRender` in `Disabled`. The preview is inert, so clicking a link, phone number or email address selects the block instead of leaving the editor or opening another app. Other blocks edit their text directly and render no live links in the editor.
 
 ## Enquiry form
 
