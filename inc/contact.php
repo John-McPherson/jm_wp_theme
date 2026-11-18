@@ -207,3 +207,118 @@ add_action(
 		}
 	}
 );
+
+/**
+ * Option recording that the footer's contact details were copied into the settings.
+ */
+const JMC_FOOTER_CONTACT_MIGRATED_OPTION = 'jmc_footer_contact_migrated';
+
+/**
+ * Split the footer's old free-text service area into places.
+ *
+ * Places are separated by new lines, commas, semicolons, `&` or the word
+ * "and", so "Pudsey, Leeds and Bradford" becomes three places. The result is
+ * sanitised like any submitted service area (a failed split counts as none).
+ *
+ * @param string $text Plain-text service area.
+ *
+ * @return list<string> Place names in the order given.
+ */
+function jmc_split_service_area_text( string $text ): array {
+	return jmc_sanitize_business_service_area(
+		preg_split( '/\s*(?:[\n,;&]|\band\b)\s*/iu', $text )
+	);
+}
+
+/**
+ * Find the attributes of the first block with a given name.
+ *
+ * @param array<int,array<string,mixed>> $blocks Parsed blocks, searched depth first.
+ * @param string                         $name   Block name, e.g. `jmc/footer-business`.
+ *
+ * @return array<string,mixed>|null The block's attributes, or null when it isn't found.
+ */
+function jmc_find_block_attributes( array $blocks, string $name ): ?array {
+	foreach ( $blocks as $block ) {
+		if ( ! is_array( $block ) ) {
+			continue;
+		}
+
+		if ( ( $block['blockName'] ?? null ) === $name ) {
+			return is_array( $block['attrs'] ?? null ) ? $block['attrs'] : [];
+		}
+
+		$inner = jmc_find_block_attributes( is_array( $block['innerBlocks'] ?? null ) ? $block['innerBlocks'] : [], $name );
+
+		if ( null !== $inner ) {
+			return $inner;
+		}
+	}
+
+	return null;
+}
+
+/**
+ * Copy the footer business block's old phone, email and service area into the settings.
+ *
+ * Before #115 the footer stored these as block attributes. This runs once,
+ * recorded in the `jmc_footer_contact_migrated` option. It reads the
+ * customised footer template part for the active theme (the theme's own
+ * `parts/footer.html` has no values) and fills only settings that are still
+ * empty, so details already entered in the settings win. Values are sanitised
+ * as if submitted; a value the settings reject (such as a phone number that
+ * can't be dialled) is not copied, but stays in the block's attributes, so no
+ * content is deleted.
+ *
+ * @return void
+ */
+function jmc_migrate_footer_contact_details(): void {
+	if ( '1' === get_option( JMC_FOOTER_CONTACT_MIGRATED_OPTION ) ) {
+		return;
+	}
+
+	$parts = get_posts(
+		[
+			'post_type'      => 'wp_template_part',
+			'name'           => 'footer',
+			'post_status'    => [ 'publish' ],
+			'posts_per_page' => 1,
+			'no_found_rows'  => true,
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- One indexed lookup, run once.
+			'tax_query'      => [
+				[
+					'taxonomy' => 'wp_theme',
+					'field'    => 'name',
+					'terms'    => get_stylesheet(),
+				],
+			],
+		]
+	);
+
+	$attributes = [] === $parts
+		? null
+		: jmc_find_block_attributes( parse_blocks( (string) $parts[0]->post_content ), 'jmc/footer-business' );
+
+	if ( null !== $attributes ) {
+		$legacy = [
+			JMC_BUSINESS_PHONE_OPTION        => jmc_sanitize_business_phone( jmc_plain_text( $attributes['phone'] ?? null ) ),
+			JMC_BUSINESS_EMAIL_OPTION        => jmc_sanitize_business_email( jmc_plain_text( $attributes['email'] ?? null ) ),
+			JMC_BUSINESS_SERVICE_AREA_OPTION => jmc_split_service_area_text( jmc_plain_text( $attributes['serviceArea'] ?? null ) ),
+		];
+
+		$settings = jmc_business_contact_settings();
+
+		foreach ( $legacy as $option => $value ) {
+			$current = call_user_func( $settings[ $option ]['sanitize'], get_option( $option, $settings[ $option ]['schema']['default'] ) );
+
+			if ( '' !== $value && [] !== $value && ( '' === $current || [] === $current ) ) {
+				update_option( $option, $value );
+			}
+		}
+	}
+
+	// Autoloaded, so later requests check the flag without a query.
+	update_option( JMC_FOOTER_CONTACT_MIGRATED_OPTION, '1', true );
+}
+
+add_action( 'init', 'jmc_migrate_footer_contact_details', 20 );

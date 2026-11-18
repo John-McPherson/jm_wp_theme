@@ -496,4 +496,15 @@ function wp_get_attachment_image( int $attachment_id, string $size = 'thumbnail'
 	return $html . ' />';
 }
 
+/**
+ * Retrieve the active theme's directory name.
+ *
+ * Test double that reads `$GLOBALS['jmc_test_stylesheet']`, defaulting to the theme's own.
+ *
+ * @return string Theme directory name.
+ */
+function get_stylesheet(): string {
+	return (string) ( $GLOBALS['jmc_test_stylesheet'] ?? 'amc_electrical' );
+}
+
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
