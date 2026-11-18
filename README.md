@@ -61,13 +61,14 @@ npm start
 | `inc/` | Setup, asset loading, block registration, and helpers |
 | `components/` | Reusable server-rendered PHP components |
 | `src/` | Authoring sources: SCSS, TypeScript, blocks, editor plugins, icon lists, and static assets |
-| `scripts/` | Build scripts, such as the Lucide icon generator |
+| `scripts/` | Build and check scripts, such as the Lucide icon generator and the palette contrast report |
 | `build/` | Generated runtime assets used by WordPress |
 | `templates/` | FSE templates; currently the minimal `index.html` fallback |
 | `parts/` | Registered FSE template parts, including the editable site header |
 | `tests/e2e/` | Playwright browser tests, helpers, and committed fixtures |
 | `artifacts/e2e/` | Ignored Playwright reports, traces, videos, screenshots, and failure output |
 | `theme.json` | WordPress settings, design primitives, and template-part registration |
+| `styles/colors/` | Colour palette style variations, switchable in Appearance → Editor → Styles |
 | `docs/` | Architecture and operational documentation |
 
 ## Engineering documentation
