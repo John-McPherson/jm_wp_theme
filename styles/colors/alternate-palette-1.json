@@ -1,0 +1,182 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "title": "Alternate palette 1",
+  "slug": "alternate-palette-1",
+  "settings": {
+    "color": {
+      "palette": [
+        {
+          "slug": "white",
+          "name": "White",
+          "color": "#FFFFFF"
+        },
+        {
+          "slug": "base-50",
+          "name": "Base 50",
+          "color": "#FAFAFA"
+        },
+        {
+          "slug": "base-100",
+          "name": "Base 100",
+          "color": "#ECECEC"
+        },
+        {
+          "slug": "base-200",
+          "name": "Base 200",
+          "color": "#DCDCDC"
+        },
+        {
+          "slug": "base-300",
+          "name": "Base 300",
+          "color": "#C2C2C2"
+        },
+        {
+          "slug": "base-400",
+          "name": "Base 400",
+          "color": "#999999"
+        },
+        {
+          "slug": "base-500",
+          "name": "Base 500",
+          "color": "#6F6F6F"
+        },
+        {
+          "slug": "base-600",
+          "name": "Base 600",
+          "color": "#565656"
+        },
+        {
+          "slug": "base-700",
+          "name": "Base 700",
+          "color": "#3B3B3B"
+        },
+        {
+          "slug": "base-800",
+          "name": "Base 800",
+          "color": "#262626"
+        },
+        {
+          "slug": "base-900",
+          "name": "Base 900",
+          "color": "#141414"
+        },
+        {
+          "slug": "brand-50",
+          "name": "Brand 50",
+          "color": "#FBEDEF"
+        },
+        {
+          "slug": "brand-100",
+          "name": "Brand 100",
+          "color": "#F4D3D8"
+        },
+        {
+          "slug": "brand-200",
+          "name": "Brand 200",
+          "color": "#E8A9B3"
+        },
+        {
+          "slug": "brand-300",
+          "name": "Brand 300",
+          "color": "#D77584"
+        },
+        {
+          "slug": "brand-400",
+          "name": "Brand 400",
+          "color": "#C1415A"
+        },
+        {
+          "slug": "brand-500",
+          "name": "Brand 500",
+          "color": "#AE2A40"
+        },
+        {
+          "slug": "brand-600",
+          "name": "Brand 600",
+          "color": "#8E1426"
+        },
+        {
+          "slug": "brand-700",
+          "name": "Brand 700",
+          "color": "#A6192E"
+        },
+        {
+          "slug": "brand-800",
+          "name": "Brand 800",
+          "color": "#3A0A12"
+        },
+        {
+          "slug": "brand-900",
+          "name": "Brand 900",
+          "color": "#0E0E0E"
+        },
+        {
+          "slug": "accent-50",
+          "name": "Accent 50",
+          "color": "#F7F8FA"
+        },
+        {
+          "slug": "accent-100",
+          "name": "Accent 100",
+          "color": "#EEF1F4"
+        },
+        {
+          "slug": "accent-200",
+          "name": "Accent 200",
+          "color": "#F2C4C0"
+        },
+        {
+          "slug": "accent-300",
+          "name": "Accent 300",
+          "color": "#EC4A3E"
+        },
+        {
+          "slug": "accent-400",
+          "name": "Accent 400",
+          "color": "#E6493E"
+        },
+        {
+          "slug": "accent-500",
+          "name": "Accent 500",
+          "color": "#D22B20"
+        },
+        {
+          "slug": "accent-600",
+          "name": "Accent 600",
+          "color": "#9A1010"
+        },
+        {
+          "slug": "accent-700",
+          "name": "Accent 700",
+          "color": "#7C0D0D"
+        },
+        {
+          "slug": "accent-800",
+          "name": "Accent 800",
+          "color": "#5A0909"
+        },
+        {
+          "slug": "accent-900",
+          "name": "Accent 900",
+          "color": "#3A0606"
+        },
+        {
+          "slug": "success",
+          "name": "Success",
+          "color": "#3F8C58"
+        },
+        {
+          "slug": "warning",
+          "name": "Warning",
+          "color": "#D39B2D"
+        },
+        {
+          "slug": "error",
+          "name": "Error",
+          "color": "#B33A3A"
+        }
+      ]
+    }
+  }
+}

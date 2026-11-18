@@ -162,7 +162,7 @@ Non-text contrast (WCAG 1.4.11, minimum 3:1) of each part against the palette ba
 | Mono dark | secondary | 13.43 | 13.43 | 13.43 |
 | Mono light | inverse | 15.47 | 15.47 | 15.47 |
 
-Brand and Mono dark fail on `inverse` (the letters are 1.00:1), and Mono light fails on light palettes (1.05:1 on `default`), so use them only where the table says. The artwork's original gold (`accent-400`) is 2.65:1 on `base-100`, which is why the light palettes use `accent-500` and `accent-600`. Recheck these ratios when the palette changes.
+Brand and Mono dark fail on `inverse` (the letters are 1.00:1), and Mono light fails on light palettes (1.05:1 on `default`), so use them only where the table says. The artwork's original gold (`accent-400`) is 2.65:1 on `base-100`, which is why the light palettes use `accent-500` and `accent-600`. The ratios above are for palette 1; `npm run test:contrast` checks the Follow palette mapping in every colour palette.
 
 **Sizing.** The header sets the logo's width to a fixed `9.5rem`; elsewhere it is `13rem`, capped at its container. The logo always keeps `--jmc-padding-xs` of clear space above and below.
 
@@ -671,7 +671,7 @@ No deprecation is needed: `jmc/button` and `jmc/header-cta` are dynamic, so exis
 
 `.jmc-button` is the default size. Add `.jmc-button--small` for dense UI such as the header; it changes only padding, type size, and border width, never colours, so it combines with `.jmc-button__secondary` and every palette.
 
-Keyboard focus (`:focus-visible`) uses the hover colours plus a 2px `--jmc-text-highlight` outline offset by 2px. Every button colour pair meets WCAG AA in the default, secondary, and inverse palettes (lowest text pair 8.15:1), and the focus outline is at least 3:1 against each palette background (lowest 3.65:1, default palette).
+Keyboard focus (`:focus-visible`) uses the hover colours plus a 2px `--jmc-text-highlight` outline offset by 2px. Every button colour pair meets WCAG AA in the default, secondary, and inverse palettes (lowest text pair 8.15:1), and the focus outline is at least 3:1 against each palette background (lowest 4.92:1, secondary palette).
 
 ## Images
 

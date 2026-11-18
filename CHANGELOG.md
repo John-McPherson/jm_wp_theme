@@ -26,14 +26,18 @@ All notable changes will be documented here. The project follows semantic versio
 - Simple Icons brand logos in the theme's icon collection, starting with WhatsApp.
 - Site Logo block (`jmc/site-logo`): the theme's logo as an inline SVG in the header, coloured by `--jmc-logo-*` tokens that follow the surrounding palette, with Brand, Mono dark and Mono light styles.
 - Hero, Service introduction and Why choose us patterns in new Heroes, Services and Trust pattern categories, with lorem ipsum placeholder copy until client copy is supplied.
+- Switchable colour palettes (Appearance → Editor → Styles → Colors): the default navy and copper, Alternate palette 1 (black and red on light grey) and Alternate palette 2 (graphite and verdigris on concrete). Includes a contrast report (`npm run test:contrast`) and tests covering every palette, section palette and logo colour.
 - Call to action and Contact details patterns in new Calls to action and Contact pattern categories. Service listings use the Service Grid block rather than a pattern.
 
 ### Changed
 
+- Primary buttons on light and secondary sections hover to `brand-800` instead of `brand-900`, a slightly softer dark that each palette can tune.
 - The header uses the theme's inline SVG logo instead of the core Site Logo block's uploaded image.
 - The business settings moved from Settings → General to Settings → Business; stored values are unchanged.
 - The footer's business name and address are now site-wide settings, edited on Settings → Business or in the footer's Business details sidebar instead of on the block. Existing footer values are copied into the settings once.
 - The opening-hours fields on the settings page line up in columns.
+- Highlight text, icons and focus rings in the default section palette use `accent-600` (5.37:1 on `base-100`) instead of `accent-500` (3.65:1).
+- The `error` colour is darker (#B33A3A) so error messages reach 4.5:1 on light sections, and the inverse palette uses a lightened error colour (`--jmc-error-color`) so errors stay readable on dark sections.
 - Server-rendered editor previews (contact details, services list, navigation, footer navigation) are inert, so links in them no longer leave the editor.
 - Development tooling upgraded to the latest `@wordpress/*` majors (`scripts` 37, `env` 12), Playwright 1.65 and PHPUnit 9.6.39, clearing every critical `npm audit` advisory; the remaining upstream-only advisories are documented in `docs/development.md`. Tooling now needs Node 22.13 or later (`.nvmrc` stays on 24).
 - JavaScript unit tests run on Vitest instead of Jest.

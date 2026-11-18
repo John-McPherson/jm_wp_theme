@@ -39,6 +39,7 @@ The installable theme must include:
 - `templates/`
 - `parts/`
 - `patterns/`
+- `styles/` (colour palette style variations)
 - `languages/` when introduced
 - `functions.php`
 - `style.css`
