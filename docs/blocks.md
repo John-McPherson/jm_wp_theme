@@ -65,9 +65,11 @@ Theme patterns are unsynced starting points built from the blocks above, one PHP
 | `jmc/hero`                  | Heroes   | `jmc/hero`: label, the page's H1, a paragraph and a Phone Button                              |
 | `jmc/service-introduction`  | Services | `jmc/text-with-image`: label, H2, two paragraphs and a Phone Button beside an image           |
 | `jmc/why-choose-us`         | Trust    | `jmc/text-with-image` (secondary, image left): label, H2, paragraph, a ticked `jmc/list` and a Phone Button |
+| `jmc/call-to-action`        | Calls to action | `jmc/cta-banner`: H2 beside a paragraph, a Phone Button and a secondary button linking to `/services/` |
+| `jmc/contact-details`       | Contact, Calls to action | `jmc/cta-banner` (Contact Details): H2 and paragraph beside `jmc/contact-details` |
 
 - Copy is lorem ipsum until client copy replaces it ([#135](https://github.com/John-McPherson/jm_wp_theme/issues/135)).
-- Buttons use the Phone Button variation, so numbers come from [Settings → Business](#business-contact-settings) and a button renders nothing until a phone number is set.
+- Buttons use the Phone Button variation, so numbers come from [Settings → Business](#business-contact-settings) and a button renders nothing until a phone number is set. Contact details follow the same settings and the block's [empty state](#contact-details); the only fixed link is the canonical `/services/` page.
 - Patterns ship without images; editors choose one after inserting.
 - There is no services listing pattern: insert `jmc/service-grid`, whose layout is locked and whose cards come from the service pages (see [Services grid](#services-grid)).
 - WordPress caches the list of pattern files. Set `WP_DEVELOPMENT_MODE` to `theme` locally so new or renamed patterns appear without bumping the theme version (see [development](development.md#debugging)).
