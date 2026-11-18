@@ -7,7 +7,7 @@
 	"category": "jmc-site",
 	"icon": "building",
 	"parent": ["jmc/footer"],
-	"description": "The business name and address, with the shared phone, WhatsApp, email and service area, shown in the site footer.",
+	"description": "The shared business name, address, phone, WhatsApp, email and service area, shown in the site footer.",
 	"attributes": {
 		"companyName": {
 			"type": "string",
@@ -30,12 +30,7 @@
 			"default": ""
 		}
 	},
-	"example": {
-		"attributes": {
-			"companyName": "Example Electrical Ltd",
-			"address": "1 High Street<br>Example Town<br>AB1 2CD"
-		}
-	},
+	"example": {},
 	"supports": {
 		"className": true,
 		"html": false,

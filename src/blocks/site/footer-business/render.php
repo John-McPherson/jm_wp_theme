@@ -2,10 +2,9 @@
 /**
  * Render the footer business details block.
  *
- * The business name and address are the block's own attributes. The phone,
- * WhatsApp, email and service-area lines come from the site-wide business
- * contact settings (see inc/contact.php), so they match every contact button
- * and Contact Details block.
+ * Every line comes from the site-wide business settings (see
+ * inc/contact.php), so the footer matches every contact button and Contact
+ * Details block.
  *
  * @package JMC_Theme
  */
@@ -15,19 +14,18 @@ declare(strict_types=1);
 /**
  * Block attributes for the footer business details block.
  *
- * `phone`, `email` and `serviceArea` are legacy attributes, kept only so the
- * one-time upgrade can copy them into the settings; they are not rendered.
+ * `companyName`, `address`, `phone`, `email` and `serviceArea` are legacy
+ * attributes, kept only so the one-time upgrades can copy them into the
+ * settings; they are not rendered.
  *
  * @var array{
- *     companyName?: string,
- *     address?: string,
  *     className?: string
  * } $attributes
  * @var WP_Block $block
  */
 
-$company_name = jmc_plain_text( $attributes['companyName'] ?? null );
-$address      = jmc_plain_text( $attributes['address'] ?? null );
+$company_name = jmc_sanitize_business_name( get_option( JMC_BUSINESS_NAME_OPTION, '' ) );
+$address      = jmc_sanitize_business_address( get_option( JMC_BUSINESS_ADDRESS_OPTION, '' ) );
 
 // Re-validated for display: a phone, WhatsApp or email value only comes with a working link.
 $details      = jmc_business_contact_details();

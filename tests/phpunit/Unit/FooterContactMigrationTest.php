@@ -214,6 +214,84 @@ final class FooterContactMigrationTest extends TestCase {
 	}
 
 	/**
+	 * The name and address migration is hooked to run on every request until it has completed.
+	 */
+	public function test_hooks_name_migration(): void {
+		self::assertContains(
+			[ 'jmc_migrate_footer_business_identity', 20 ],
+			$GLOBALS['jmc_test_actions']['init'] ?? []
+		);
+	}
+
+	/**
+	 * The footer's company name and address fill empty settings as plain text, and the run is recorded.
+	 */
+	public function test_copies_company_name_and_address_into_empty_settings(): void {
+		$this->add_footer_part(
+			[
+				'companyName' => 'Smith &amp; Sons<br>Electrical',
+				'address'     => '<strong>1</strong>  High Street<br><br>Example Town',
+			]
+		);
+
+		jmc_migrate_footer_business_identity();
+
+		self::assertSame( 'Smith & Sons Electrical', get_option( JMC_BUSINESS_NAME_OPTION ) );
+		self::assertSame( "1 High Street\nExample Town", get_option( JMC_BUSINESS_ADDRESS_OPTION ) );
+		self::assertSame( '1', get_option( JMC_FOOTER_IDENTITY_MIGRATED_OPTION ) );
+	}
+
+	/**
+	 * A name already in the settings is never overwritten; a blank one is not copied.
+	 *
+	 * @dataProvider kept_name_provider
+	 *
+	 * @param mixed  $stored   Stored name setting.
+	 * @param string $company  Footer `companyName` attribute.
+	 * @param mixed  $expected Name setting after the migration.
+	 */
+	public function test_keeps_name_setting( mixed $stored, string $company, mixed $expected ): void {
+		$GLOBALS['jmc_test_options'][ JMC_BUSINESS_NAME_OPTION ] = $stored;
+		$this->add_footer_part( [ 'companyName' => $company ] );
+
+		jmc_migrate_footer_business_identity();
+
+		self::assertSame( $expected, get_option( JMC_BUSINESS_NAME_OPTION ) );
+	}
+
+	/**
+	 * Stored names and footer names that leave the setting unchanged.
+	 *
+	 * @return array<string,array{0:mixed,1:string,2:mixed}>
+	 */
+	public function kept_name_provider(): array {
+		return [
+			'existing setting' => [ 'Example Electrical Ltd', 'Old Name Ltd', 'Example Electrical Ltd' ],
+			'blank footer'     => [ '', ' <br> ', '' ],
+		];
+	}
+
+	/**
+	 * The name and address migration runs independently of the contact migration, and only once.
+	 */
+	public function test_name_migration_runs_only_once(): void {
+		$GLOBALS['jmc_test_options'][ JMC_FOOTER_CONTACT_MIGRATED_OPTION ] = '1';
+		$this->add_footer_part( [ 'companyName' => 'Example Electrical Ltd' ] );
+
+		jmc_migrate_footer_business_identity();
+
+		self::assertSame( 'Example Electrical Ltd', get_option( JMC_BUSINESS_NAME_OPTION ) );
+
+		$GLOBALS['jmc_test_options'][ JMC_BUSINESS_NAME_OPTION ] = '';
+		unset( $GLOBALS['jmc_test_get_posts_queries'] );
+
+		jmc_migrate_footer_business_identity();
+
+		self::assertSame( '', get_option( JMC_BUSINESS_NAME_OPTION ) );
+		self::assertArrayNotHasKey( 'jmc_test_get_posts_queries', $GLOBALS );
+	}
+
+	/**
 	 * Old service-area text splits into places.
 	 *
 	 * @dataProvider service_area_text_provider
