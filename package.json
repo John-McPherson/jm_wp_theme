@@ -3,6 +3,9 @@
   "version": "0.2.0",
   "description": "Custom Full Site Editing WordPress theme for AMC Electrical.",
   "private": true,
+  "engines": {
+    "node": ">=24.18.0 <25"
+  },
   "scripts": {
     "build:assets": "mkdir -p build/assets && rsync -av --delete --exclude icons/ src/assets/ build/assets/",
     "build:icons": "node scripts/icons/build.js",
