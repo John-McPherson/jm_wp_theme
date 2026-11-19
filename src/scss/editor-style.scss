@@ -14,3 +14,21 @@
 		container-type: inline-size;
 	}
 }
+
+@layer layout {
+
+	/*
+	 * Editor only: sections sit flush on the frontend, but the editor's
+	 * in-between inserter ("+") only appears while the pointer is over the
+	 * block list itself, not a block. A small gap between top-level blocks
+	 * gives it somewhere to show, and bottom padding leaves room for the
+	 * appender after the last section.
+	 */
+	.editor-styles-wrapper .is-root-container {
+		padding-block-end: var(--jmc-padding-xl);
+
+		> * + * {
+			margin-block-start: var(--jmc-padding-m);
+		}
+	}
+}
