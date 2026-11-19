@@ -19,3 +19,17 @@ if ( typeof window !== 'undefined' && ! window.matchMedia ) {
 		} ),
 	} );
 }
+
+// Editor components such as ComboboxControl scroll the highlighted suggestion into view.
+if ( typeof Element !== 'undefined' && ! Element.prototype.scrollIntoView ) {
+	Element.prototype.scrollIntoView = () => {};
+}
+
+// Components such as Placeholder measure themselves with a ResizeObserver.
+if ( typeof window !== 'undefined' && ! window.ResizeObserver ) {
+	window.ResizeObserver = class {
+		observe() {}
+		unobserve() {}
+		disconnect() {}
+	};
+}

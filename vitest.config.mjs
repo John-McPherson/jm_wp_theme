@@ -16,5 +16,13 @@ export default defineConfig( {
 			'tests/unit/**/*.test.{js,jsx,ts,tsx}',
 			'scripts/**/*.test.{js,jsx,ts,tsx}',
 		],
+		// Reported with `npm run test:unit:coverage`; no threshold yet (#100).
+		coverage: {
+			provider: 'v8',
+			include: [ 'src/**/*.{js,jsx,ts,tsx}', 'scripts/**/*.js' ],
+			exclude: [ '**/*.test.*', '**/*.d.ts' ],
+			reporter: [ 'text', 'text-summary', 'json-summary', 'html' ],
+			reportsDirectory: './artifacts/coverage',
+		},
 	},
 } );
