@@ -1,0 +1,88 @@
+name: Deploy to development
+
+# Every push to `dev` (including a merged pull request) builds the release
+# package and deploys it to the WP Engine development environment.
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Deploy one commit at a time and never cancel a deploy part-way through.
+concurrency:
+  group: deploy-development
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Holds the deploy key and WP Engine install name; see docs/releasing.md.
+    environment:
+      name: development
+      url: ${{ vars.WPE_SITE_URL }}
+
+    env:
+      # Theme directory on the server: wp-content/themes/<THEME_DIR>.
+      THEME_DIR: amc_electrical
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      # `package` generates the translation template with WP-CLI's i18n command.
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+
+      - name: Install locked Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Build release package
+        run: npm run package
+
+      - name: Verify packaged theme
+        run: |
+          test -f dist/functions.php
+          test -f dist/style.css
+          test -f dist/theme.json
+          test -f dist/build/css/style.css
+          test -d dist/build/js
+
+      # Keep the exact files that were deployed, named by commit.
+      - name: Upload deployed package
+        uses: actions/upload-artifact@v4
+        with:
+          name: theme-dev-${{ github.sha }}
+          path: dist/
+          retention-days: 30
+
+      - name: Deploy to WP Engine
+        uses: wpengine/github-action-wpe-site-deploy@v3
+        with:
+          WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }}
+          WPE_ENV: ${{ vars.WPE_ENV }}
+          SRC_PATH: dist/
+          REMOTE_PATH: wp-content/themes/${{ env.THEME_DIR }}/
+          # --delete removes files dropped from the package; it is limited to
+          # the theme directory by REMOTE_PATH.
+          FLAGS: -azvr --inplace --delete --exclude=".*"
+          PHP_LINT: TRUE
+          CACHE_CLEAR: TRUE
