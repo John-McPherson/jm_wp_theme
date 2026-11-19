@@ -57,7 +57,7 @@ Exclude `node_modules/`, `vendor/` unless runtime dependencies require it, `src/
 5. Run `npm run package` and inspect `dist/`.
 6. Install and activate the package in a clean supported WordPress environment.
 7. Complete block, template, navigation, accessibility, and compatibility smoke tests.
-8. Update `Tested up to` only when supported by evidence.
+8. Update `Tested up to` only when supported by evidence, and review the [Platform support](support.md) matrix, recording the review date.
 9. Open and review a `dev` to `main` release PR.
 10. Tag the exact release commit and retain the tested package.
 11. Deploy with the hosting-specific runbook and verify production health.
