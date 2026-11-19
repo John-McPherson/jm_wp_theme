@@ -660,13 +660,20 @@ add_action(
 			return;
 		}
 
+		$days = absint( apply_filters( 'jmc_enquiry_retention_days', JMC_ENQUIRY_RETENTION_DAYS ) );
+
 		wp_add_privacy_policy_content(
 			__( 'Enquiry form', 'jmc-theme' ),
 			'<p>' . esc_html(
 				sprintf(
 					/* translators: %d: retention period in days. */
-					__( 'When you send an enquiry we collect your name, email address, phone number (if you give it), postcode, the service you are interested in and your message. We use them only to reply to your enquiry. They are stored on this website and emailed to us, and are deleted automatically after %d days. No tracking or third-party spam-protection service is used on the form.', 'jmc-theme' ),
-					absint( apply_filters( 'jmc_enquiry_retention_days', JMC_ENQUIRY_RETENTION_DAYS ) )
+					_n(
+						'When you send an enquiry we collect your name, email address, phone number (if you give it), postcode, the service you are interested in and your message. We use them only to reply to your enquiry. They are stored on this website and emailed to us, and are deleted automatically after %d day. No tracking or third-party spam-protection service is used on the form.',
+						'When you send an enquiry we collect your name, email address, phone number (if you give it), postcode, the service you are interested in and your message. We use them only to reply to your enquiry. They are stored on this website and emailed to us, and are deleted automatically after %d days. No tracking or third-party spam-protection service is used on the form.',
+						$days,
+						'jmc-theme'
+					),
+					$days
 				)
 			) . '</p>'
 		);
