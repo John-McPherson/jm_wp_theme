@@ -4,6 +4,8 @@ All notable changes will be documented here. The project follows semantic versio
 
 ## Unreleased
 
+## [0.2.0] – 2026-11-19
+
 ### Added
 
 - Initial engineering documentation for architecture, development, blocks, design system, accessibility, testing, releases, contributions, and security.
@@ -38,6 +40,7 @@ All notable changes will be documented here. The project follows semantic versio
 - Reusable `PageSelect` and `PageListInput` editor controls (#141).
 - Primary navigation submenus: one level of submenus from the Site Editor menu. On desktop each opens as a dropdown on mouse hover or from its own disclosure button (keyboard and touch), one at a time, closing on Escape, focus leaving or a click outside; on mobile they are always expanded in the menu. Every link stays reachable without JavaScript, and deeper nesting is flattened into the submenu (#85).
 - The header call-to-action uses the Button block's types (#148): a primary or secondary style, and Phone, Email and WhatsApp variations, switched like the Button block's, that read Settings → Business, with optional pre-filled email and WhatsApp messages. Existing header buttons render as before. Like other buttons, a header button's own link may now be a `mailto:` link.
+- Footer navigation submenus: a top-level menu item with children renders as a group, its label an `h2` (linked when it has a URL) and its links a list labelled by that heading. Flat menus render as before, and deeper nesting is flattened into the group (#152).
 
 ### Changed
 
@@ -58,6 +61,13 @@ All notable changes will be documented here. The project follows semantic versio
 - Development tooling upgraded to the latest `@wordpress/*` majors (`scripts` 37, `env` 12), Playwright 1.65 and PHPUnit 9.6.39, clearing every critical `npm audit` advisory; the remaining upstream-only advisories are documented in `docs/development.md`. Tooling now needs Node 22.13 or later (`.nvmrc` stays on 24).
 - JavaScript unit tests run on Vitest instead of Jest.
 - Breadcrumbs moved from a strip between the header and the hero into the hero (#145). On child pages the trail replaces the hero's label, starts with a home icon, and marks the current page in the highlight colour; a **Show breadcrumbs** setting (on by default) turns it off. The Services templates no longer include a breadcrumbs block.
+- JavaScript unit tests cover the shared utilities, every block editor, the shared editor components and block registration, with coverage reported in CI (`npm run test:unit:coverage`). A front page E2E spec checks the hero heading, hero button link, landmarks and narrow-viewport overflow (#100).
+- The Playwright E2E workflow caches the browsers' system packages instead of installing them from Ubuntu's mirrors on every run. It runs Chromium, Firefox and WebKit on pull requests into `dev` and `main`, plus the nightly run, and no longer runs on pushes (#164).
+
+### Fixed
+
+- The Heading block's level control is hidden for locked headings (the hero and page H1s) and shown for every other heading, offering H2–H6. It was previously shown only for locked headings (#157).
+- Top-level blocks in the editor are spaced so the in-between block inserter can appear between theme sections (#149).
 
 ### Known issues
 
@@ -66,5 +76,5 @@ All notable changes will be documented here. The project follows semantic versio
 - The npm audit excludes all development/build dependencies.
 - `style.css` declares `jmc-custom-theme` while code and block metadata use `jmc-theme`.
 - Internal content-block categories retain legacy `jm` and `jmc-blocks` values.
-- Automated unit, integration, browser, visual, and accessibility tests are not yet established.
+- Integration, visual, and automated accessibility tests are not yet established.
 - Only a minimal `templates/index.html` FSE template exists.
