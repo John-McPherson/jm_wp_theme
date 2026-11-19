@@ -1,9 +1,36 @@
 @use "../../../scss/abstracts/index" as *;
+@use "../../../scss/base/typography" as typography;
 
 @layer blocks {
 
 	// Content-level styles only; jmc/footer sets the column layout and type size.
 	.jmc-footer-navigation {
+		display: flex;
+		flex-direction: column;
+		gap: var(--jmc-padding-s);
+
+		&__group {
+			display: flex;
+			flex-direction: column;
+			gap: var(--jmc-padding-2xs);
+		}
+
+		// Group titles use the smallest heading style in the palette's heading
+		// colour. A linked title takes the footer's shared link hover.
+		&__heading {
+
+			@include typography.h6;
+
+			margin: 0;
+		}
+
+		&__heading-link {
+			color: inherit;
+
+			&[aria-current="page"] {
+				font-weight: 700;
+			}
+		}
 
 		&__list {
 			display: flex;

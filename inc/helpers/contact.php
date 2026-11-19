@@ -295,6 +295,30 @@ function jmc_sanitize_business_service_area( mixed $value ): array {
 }
 
 /**
+ * Read a list of places as one phrase, as the footer and Contact Details show it.
+ *
+ * One place reads "Pudsey", two read "Pudsey and Leeds", and three or more read
+ * "Pudsey, Leeds and Bradford". The "and" is translatable. The phrase is not
+ * escaped; escape it at output.
+ *
+ * @param string[] $places Place names, e.g. from jmc_business_contact_details().
+ *
+ * @return string The phrase, or an empty string when there are no places.
+ */
+function jmc_service_area_phrase( array $places ): string {
+	$last_place = (string) array_pop( $places );
+
+	return [] === $places
+		? $last_place
+		: sprintf(
+			/* translators: 1: comma-separated list of places, 2: the last place. */
+			__( '%1$s and %2$s', 'jmc-theme' ),
+			implode( ', ', $places ),
+			$last_place
+		);
+}
+
+/**
  * Read the site-wide business contact details, validated for display.
  *
  * Stored values are re-sanitised in case they were written around the

@@ -209,6 +209,7 @@ The current page's link gets `aria-current="page"` at either level; custom links
 - **Crossing the breakpoint** resets submenus: closed on desktop, expanded on mobile.
 - **Without JavaScript:** submenus are not hidden in the server markup, so every link stays visible and reachable. The toggles are hidden and the labels shown; on desktop the submenus sit under their parents in the header.
 - Closed submenus are `hidden`, so focus never moves into them.
+- **Hover and focus:** primary links, submenu links (in the dropdown and the mobile menu) and submenu toggles share the footer's link hover and keyboard-focus treatment (the `link-hover` mixin): `--jmc-text-highlight` and an underline, with no transition under reduced motion. The toggle's chevron is drawn in `currentcolor`, so it changes with the label. The current page stays bold and ignores the pointer, so it never looks hovered. The highlight meets 4.5:1 on every palette background the header and dropdown use (lowest 4.73:1).
 
 ## Header call-to-action
 
@@ -459,9 +460,10 @@ It is restricted to `jmc/column` (`parent`) and is placed by the [CTA Banner (Co
 </address>
 ```
 
-- Each item pairs a `<dt>` label with a `<dd>` value. The label text is visually hidden (`sr-only`), so each value sits beside its icon as in the footer, but screen readers still announce it, and it reads as "Phone: 01234 567890" without styles.
+- Each item pairs a `<dt>` label with a `<dd>` value. The label text is visually hidden (`sr-only`), except for the service area, so each value sits beside its icon as in the footer, but screen readers still announce it, and it reads as "Phone: 01234 567890" without styles.
 - Phone, WhatsApp and email values link with the value as written as the link text.
-- Opening hours list every day in week order with `<time datetime="08:00">8:00 am</time> to <time …>` in the site's time format, or "Closed". Service areas are a list. Both lists carry `role="list"` because their bullets are removed.
+- Opening hours list every day in week order with `<time datetime="08:00">8:00 am</time> to <time …>` in the site's time format, or "Closed", in a list with `role="list"` because its bullets are removed. The service area is the one visible label: a bold, translatable "Areas covered:" on the same line as the places, as in the footer. The places read as one phrase, worded like the footer by `jmc_service_area_phrase()`: "Pudsey", "Pudsey and Leeds", "Pudsey, Leeds and Bradford" (the "and" is translatable).
+- Phone, WhatsApp and email links share the footer's hover and keyboard-focus treatment (the `link-hover` mixin): the highlight colour, which matches the icons, and an underline.
 - Icons are decorative and in the footer's style: `jmc/phone`, `jmc/whatsapp`, `jmc/mail`, `jmc/clock`, and `jmc/house`.
 - A missing, invalid or hidden field is left out entirely, and the block renders nothing when no field is left.
 
@@ -674,7 +676,7 @@ wp eval 'global $wpdb; print_r( $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} W
 
 ### Footer container
 
-`jmc/footer` paints its palette across the full width and centres its content in a `--jmc-container-xl` container. Each child block is one column: stacked on narrow screens, then side by side from the `$mobile` container width, at least `12rem` wide, sharing the width equally (so fewer columns spread further apart) and wrapping as space runs out. The credential logos (`jmc/trust-credentials`) and the legal row are the exceptions: the logos always take a full-width row along the top, and the legal row a full-width row along the bottom. The layout is a wrapping flexbox rather than an `auto-fit` grid, because a full-width item stops `auto-fit` from collapsing empty tracks and squeezes the columns to the left. The footer sets the smaller `p4` type style, and every footer link shares one hover and keyboard-focus treatment (highlight colour and underline). It renders nothing when its inner blocks produce no markup.
+`jmc/footer` paints its palette across the full width and centres its content in a `--jmc-container-xl` container. Each child block is one column: stacked on narrow screens, then side by side from the `$mobile` container width, at least `12rem` wide, sharing the width equally (so fewer columns spread further apart) and wrapping as space runs out. The credential logos (`jmc/trust-credentials`) and the legal row are the exceptions: the logos always take a full-width row along the top, and the legal row a full-width row along the bottom. The layout is a wrapping flexbox rather than an `auto-fit` grid, because a full-width item stops `auto-fit` from collapsing empty tracks and squeezes the columns to the left. The footer sets the smaller `p4` type style, and every footer link shares one hover and keyboard-focus treatment (highlight colour and underline). That treatment is the `link-hover` mixin (`src/scss/abstracts/_mixins.scss`), shared with the header navigation and Contact Details; its transitions are off under reduced motion. It renders nothing when its inner blocks produce no markup.
 
 Its palette follows the Hero contract: `default` (no class), `secondary` (`jmc-palette--secondary`), and `inverse` (`jmc-palette--inverse`). The attribute default is `default`; the footer part sets `inverse`. Unknown or malformed values fall back to `default`.
 
@@ -710,7 +712,7 @@ The section's `palette` attribute (`default`, `secondary`, `inverse`) follows th
 | Phone | `jmc_business_phone` | Inside `<address>`; a `tel:` link | `jmc/phone` | Omitted when missing or not diallable |
 | WhatsApp | `jmc_business_whatsapp` | Inside `<address>`; a `wa.me` link, with a visually hidden "WhatsApp:" label so screen readers don't hear a second phone number | `jmc/whatsapp` | Omitted when missing or not international |
 | Email | `jmc_business_email` | Inside `<address>`; a `mailto:` link | `jmc/mail` | Omitted when missing or invalid |
-| Service area | `jmc_business_service_area` | After `<address>`: a bold, translatable "Areas covered:" label and the places as one phrase, "Pudsey, Leeds and Bradford" (the "and" is translatable) | `jmc/house` | Omitted when the list is empty |
+| Service area | `jmc_business_service_area` | After `<address>`: a bold, translatable "Areas covered:" label and the places as one phrase, "Pudsey, Leeds and Bradford" (the "and" is translatable), built by `jmc_service_area_phrase()`, which Contact Details shares | `jmc/house` | Omitted when the list is empty |
 
 The phone, WhatsApp, email and service area are read through `jmc_business_contact_details()`, so a value is only shown with a working link. Opening hours are not shown in the footer; use the Contact Details block for them. The name and address are re-sanitised on render with `jmc_sanitize_business_name()` and `jmc_sanitize_business_address()`, and output is escaped afterwards. Empty lines are omitted, `<address>` is omitted when there is no address, phone, WhatsApp or email, and the block renders nothing when every line is empty.
 
@@ -726,7 +728,25 @@ Footer icons come from the core icon registry through `wp_get_icon()`; see [Icon
 
 ### Footer navigation
 
-Each `jmc/footer-navigation` block renders a flat list of links from the published `wp_navigation` menu chosen in its sidebar. Unlike `jmc/navigation`, it does not pick a menu automatically, has no mobile toggle, and loads no script. Submenu links are flattened into the list. The `<nav>` is labelled with the menu title, or "Footer" when the menu has none, so give each menu a meaningful title. The current page's link gets `aria-current="page"`; custom links never do. The block renders nothing when no menu is selected, the post is not a menu, or the menu has no links.
+Each `jmc/footer-navigation` block renders the published `wp_navigation` menu chosen in its sidebar. Unlike `jmc/navigation`, it does not pick a menu automatically, has no mobile toggle, and loads no script. The `<nav>` is labelled with the menu title, or "Footer" when the menu has none, so give each menu a meaningful title. The current page's link gets `aria-current="page"`; custom links never do. The block renders nothing when no menu is selected, the post is not a menu, or the menu has no links.
+
+The menu is read with `jmc_get_navigation_tree()`, like the header. A top-level submenu becomes a **group**: its parent is an `<h2>` heading and its links a list under it, with `aria-labelledby` pointing at the heading's unique ID so screen readers announce the group. A parent with a URL is a linked heading (and can be the current page); a parent without one is plain heading text. Groups are always expanded. Top-level plain links render as before, in menu order around the groups; consecutive links share one list.
+
+```html
+<nav class="jmc-footer-navigation" aria-label="Services">
+  <div class="jmc-footer-navigation__group">
+    <h2 id="jmc-footer-navigation__heading-1" class="jmc-footer-navigation__heading">
+      <a href="/domestic/" class="jmc-footer-navigation__heading-link">Domestic Services</a>
+    </h2>
+    <ul class="jmc-footer-navigation__list" aria-labelledby="jmc-footer-navigation__heading-1">
+      <li class="jmc-footer-navigation__item"><a href="/rewires/" class="jmc-footer-navigation__link">Rewires</a></li>
+    </ul>
+  </div>
+  <ul class="jmc-footer-navigation__list">…plain links…</ul>
+</nav>
+```
+
+The footer has no other headings, so groups use `h2`, the first level below the page's `h1`. Group headings use the `h6` type style in `--jmc-heading-color`, which is `base-50` on the footer's inverse palette. Heading links share the footer's link hover and focus treatment. Unsupported content follows the header's rules: links nested deeper than one level move up into their group, items without a label or URL are skipped, and a submenu with no usable links renders as a plain link (or is skipped when it has no URL either). To build a group, add a submenu to the footer menu in **Appearance → Editor → Navigation** and put its links inside it.
 
 Add a column by inserting another Footer Navigation block inside the footer; remove one with the block toolbar. Create menus in **Appearance → Editor → Navigation**, or with WP-CLI:
 

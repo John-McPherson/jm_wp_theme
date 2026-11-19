@@ -4,7 +4,8 @@
  *
  * The caller supplies the BEM block class, so the list, items and links get
  * `<block>__list`, `<block>__item` and `<block>__link`. The link to the
- * current page is marked with `aria-current="page"`.
+ * current page is marked with `aria-current="page"`. Pass `labelled_by` with
+ * a heading's ID to name the list after it.
  *
  * @package JMC_Theme
  */
@@ -16,7 +17,8 @@ declare(strict_types=1);
  *
  * @var array{
  *     links?: array<int, array{id:int,title:string,url:string}>,
- *     block_class?: string
+ *     block_class?: string,
+ *     labelled_by?: string
  * } $args
  */
 
@@ -31,8 +33,13 @@ $block_class = jmc_args_string(
 if ( [] === $links || '' === $block_class ) {
 	return;
 }
+
+$list_attributes = [
+	'class'           => $block_class . '__list',
+	'aria-labelledby' => jmc_args_string( args: $args, key: 'labelled_by' ),
+];
 ?>
-<ul class="<?php echo esc_attr( $block_class . '__list' ); ?>">
+<ul<?php jmc_the_attributes( $list_attributes ); ?>>
 	<?php
 	foreach ( $links as $link_item ) :
 		$link_attributes = [
