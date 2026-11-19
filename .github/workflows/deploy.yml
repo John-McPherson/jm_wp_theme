@@ -5,14 +5,17 @@ name: Deploy
 #
 #   dev     -> GitHub environment `development` (WP Engine dev install)
 #   staging -> GitHub environment `staging`     (WP Engine staging install)
+#   main    -> GitHub environment `production`  (WP Engine production install)
 #
 # A push includes a merged pull request. Each GitHub environment holds its own
 # deploy key and WP Engine install name, and only allows its own branch.
+# `production` also requires a reviewer to approve each deploy.
 on:
   push:
     branches:
       - dev
       - staging
+      - main
   workflow_dispatch:
 
 permissions:
@@ -26,14 +29,14 @@ concurrency:
 
 jobs:
   deploy:
-    name: Build and deploy to ${{ github.ref_name == 'staging' && 'staging' || 'development' }}
+    name: Build and deploy to ${{ github.ref_name == 'main' && 'production' || github.ref_name == 'staging' && 'staging' || 'development' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
     # Any other branch falls through to `development`, whose branch rule
     # rejects it.
     environment:
-      name: ${{ github.ref_name == 'staging' && 'staging' || 'development' }}
+      name: ${{ github.ref_name == 'main' && 'production' || github.ref_name == 'staging' && 'staging' || 'development' }}
       url: ${{ vars.WPE_SITE_URL }}
 
     env:
@@ -76,12 +79,14 @@ jobs:
           test -d dist/build/js
 
       # Keep the exact files that were deployed, named by branch and commit.
+      # Production packages are kept longer so a previous release can be
+      # redeployed.
       - name: Upload deployed package
         uses: actions/upload-artifact@v4
         with:
           name: theme-${{ github.ref_name }}-${{ github.sha }}
           path: dist/
-          retention-days: 30
+          retention-days: ${{ github.ref_name == 'main' && 90 || 30 }}
 
       - name: Deploy to WP Engine
         uses: wpengine/github-action-wpe-site-deploy@v3
