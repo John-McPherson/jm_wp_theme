@@ -172,6 +172,36 @@ export async function createNavigationTestPage(
 	return Number( stdout );
 }
 
+type PostFields = {
+	type: string;
+	title: string;
+	content: string;
+};
+
+export async function createPost( {
+	type,
+	title,
+	content,
+}: PostFields ): Promise< number > {
+	const { stdout } = await runWpCli( [
+		'post',
+		'create',
+		`--post_type=${ type }`,
+		'--post_status=publish',
+		`--post_title=${ title }`,
+		`--post_content=${ content }`,
+		'--porcelain',
+	] );
+
+	const postId = Number( stdout );
+
+	if ( ! Number.isInteger( postId ) || postId <= 0 ) {
+		throw new Error( `Could not determine created post ID: ${ stdout }` );
+	}
+
+	return postId;
+}
+
 export async function deletePost( postId: number ): Promise< void > {
 	await runWpCli( [ 'post', 'delete', String( postId ), '--force' ] );
 }
