@@ -9,14 +9,12 @@ vi.mock(
 	() => import( '../../../../tests/unit/mocks/block-editor' )
 );
 
-const renderEdit = (
-	attributes: { palette?: string; order?: string } = {}
-) => {
+const renderEdit = ( attributes: { palette?: string } = {} ) => {
 	const setAttributes = vi.fn();
 
 	render(
 		<Edit
-			attributes={ { palette: 'default', order: 'left', ...attributes } }
+			attributes={ { palette: 'default', ...attributes } }
 			setAttributes={ setAttributes }
 		/>
 	);

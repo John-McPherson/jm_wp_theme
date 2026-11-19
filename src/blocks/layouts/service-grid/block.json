@@ -13,18 +13,12 @@
       "type": "string",
       "enum": ["default", "secondary", "inverse"],
       "default": "default"
-    },
-    "order": {
-      "type": "string",
-      "enum": ["left", "right"],
-      "default": "left"
     }
   },
   "allowedBlocks": ["jmc/column"],
   "example": {
     "attributes": {
-      "palette": "default",
-      "order": "left"
+      "palette": "default"
     },
     "innerBlocks": [
       {
@@ -54,7 +48,6 @@
   },
   "supports": {
     "anchor": true,
-    "customClassName": true,
     "html": false
   },
   "textdomain": "jmc-theme",

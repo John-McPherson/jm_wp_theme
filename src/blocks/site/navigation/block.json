@@ -4,7 +4,7 @@
   "name": "jmc/navigation",
   "version": "0.2.0",
   "title": "Navigation",
-  "category": "jmc-section",
+  "category": "jmc-site",
   "icon": "menu",
   "description": "Display a navigation menu for your site.",
   "attributes": {
@@ -16,6 +16,7 @@
   "allowedBlocks": ["jmc/header-cta"],
   "example": {},
   "supports": {
+    "customClassName": false,
     "inserter": false,
     "html": false
   },

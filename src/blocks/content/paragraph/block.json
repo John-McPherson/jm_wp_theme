@@ -4,7 +4,7 @@
   "name": "jmc/paragraph",
   "version": "0.2.0",
   "title": "Paragraph",
-  "category": "jmc-blocks",
+  "category": "jmc-content",
   "icon": "editor-paragraph",
   "description": "A reusable paragraph content block.",
   "textdomain": "jmc-theme",
@@ -47,7 +47,6 @@
 
   "supports": {
     "anchor": true,
-    "className": true,
     "html": false
   },
 

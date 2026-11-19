@@ -8,10 +8,6 @@
   "icon": "layout",
   "description": "Text section with image",
   "attributes": {
-    "label": {
-      "type": "string",
-      "default": ""
-    },
     "palette": {
       "type": "string",
       "enum": ["default", "secondary", "inverse"],
@@ -21,25 +17,6 @@
       "type": "string",
       "enum": ["left", "right"],
       "default": "right"
-    },
-    "heading": {
-      "type": "string",
-      "default": ""
-    },
-    "text": {
-      "type": "string",
-      "default": ""
-    },
-    "link": {
-      "type": "object",
-      "default": {
-        "url": "",
-        "opensInNewTab": false
-      }
-    },
-    "linkText": {
-      "type": "string",
-      "default": ""
     },
     "imageId": {
       "type": "number",
@@ -88,7 +65,6 @@
   },
   "supports": {
     "anchor": true,
-    "customClassName": true,
     "html": false
   },
   "textdomain": "jmc-theme",

@@ -4,7 +4,7 @@
   "name": "jmc/list-item",
   "version": "0.2.0",
   "title": "List Item",
-  "category": "jmc-blocks",
+  "category": "jmc-content",
   "icon": "editor-ul",
   "description": "One point in a list. Supports bold, italic and links.",
   "attributes": {
@@ -16,9 +16,13 @@
   },
   "usesContext": [ "jmc/listStyle", "jmc/listIcon" ],
   "parent": [ "jmc/list" ],
+  "example": {
+    "attributes": {
+      "text": "Fully qualified and insured"
+    }
+  },
   "supports": {
     "anchor": true,
-    "customClassName": true,
     "html": false,
     "reusable": false,
     "splitting": true
