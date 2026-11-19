@@ -65,6 +65,13 @@ npm run test:unit:coverage
 
 The summary prints to the terminal; the HTML report and `coverage-summary.json` are written to `artifacts/coverage/`, which is not committed. There is no coverage threshold yet.
 
+### Block metadata
+
+Two suites check every `block.json` without loading WordPress:
+
+- `src/blocks/schema.test.ts` validates each file against the WordPress block schema with Ajv. The schema is a copy of `https://schemas.wp.org/trunk/block.json` in `tests/unit/schemas/block.json`, so the check runs offline. Refresh it with `npm run schema:update` when upgrading WordPress, and review the diff before committing it.
+- `src/blocks/registration.test.ts` checks the theme's [metadata conventions](blocks.md#conventions): each block registers its metadata, uses its folder's category, which `inc/blocks.php` registers, declares a type and a valid default for every attribute, and has an inserter `example` unless `supports.inserter` is `false`.
+
 ## Browser end-to-end tests
 
 Start Docker, create the local environment file once, and run the isolated WordPress environment:

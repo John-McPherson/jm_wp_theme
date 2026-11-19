@@ -5,6 +5,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { InnerBlocks } from '@wordpress/block-editor';
 
 import WhatsAppIcon from '../components/WhatsAppIcon';
+import blocksPhp from '../../inc/blocks.php?raw';
 
 vi.mock( '@wordpress/blocks', () => ( { registerBlockType: vi.fn() } ) );
 // Loading the editors only; they are not rendered here.
@@ -34,6 +35,13 @@ const folders = Object.keys( metadata )
 	.sort();
 
 type Settings = Record< string, any >;
+
+// The inserter category for each source folder, registered in inc/blocks.php.
+const CATEGORIES: Record< string, string > = {
+	content: 'jmc-content',
+	layouts: 'jmc-section',
+	site: 'jmc-site',
+};
 
 const SAVES_INNER_BLOCKS = [
 	'jmc/buttons',
@@ -78,8 +86,41 @@ describe( 'block registration', () => {
 		).toEqual( folders );
 	} );
 
+	it.each( Object.values( CATEGORIES ) )(
+		'registers the %s category',
+		( slug ) => {
+			expect( blocksPhp ).toMatch(
+				new RegExp( `'slug'\\s*=>\\s*'${ slug }'` )
+			);
+		}
+	);
+
 	describe.each( folders )( '%s', ( folder ) => {
 		const block = metadata[ `${ folder }/block.json` ].default;
+
+		it( 'uses its folder’s category', () => {
+			const group = folder.split( '/' )[ 1 ];
+
+			expect( block.category ).toBe( CATEGORIES[ group ] );
+		} );
+
+		// The inserter previews a block from its example.
+		if ( false !== block.supports?.inserter ) {
+			it( 'has an inserter example', () => {
+				expect( block.example ).toEqual( expect.any( Object ) );
+			} );
+		}
+
+		it.each(
+			Object.entries( block.attributes ?? {} ) as [ string, Settings ][]
+		)( 'declares a type and a valid default for %s', ( _, attribute ) => {
+			expect( attribute.type ).toEqual( expect.any( String ) );
+			expect( attribute ).toHaveProperty( 'default' );
+
+			if ( attribute.enum ) {
+				expect( attribute.enum ).toContain( attribute.default );
+			}
+		} );
 
 		it( 'registers its block.json metadata', () => {
 			// Variations are checked below: some gain an icon component.

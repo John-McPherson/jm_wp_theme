@@ -20,7 +20,7 @@ const ALLOWED_BLOCKS = [ 'jmc/column' ];
 export default function Edit( { attributes, setAttributes } ) {
 	const bind = bindFields( attributes, setAttributes );
 
-	const { palette, order } = attributes;
+	const { palette } = attributes;
 	const blockProps = useBlockProps( {
 		className: [
 			'jmc-section',
@@ -33,7 +33,7 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{
-			className: [ 'jmc-section__container', VARIANT_CLASSES[ order ] ],
+			className: 'jmc-section__container',
 		},
 		{
 			allowedBlocks: ALLOWED_BLOCKS,
