@@ -58,7 +58,7 @@ Milestones are releases; the *JMC Theme* project's **Sprint** field holds one-we
 | A branch named `<issue-number>-…` is created on GitHub (pushed, or created from the issue page) | In progress |
 | A pull request is merged into `dev` (its head branch's issue number and any linked closing issues) | Release candidate |
 
-Issues only move forwards (Backlog → Ready → In progress → Release candidate → Released) and are added to the project if missing. Branches created only locally do nothing until pushed. GitHub sends no event when a project field changes, so the Ready move polls the board; it runs from `main` only, so it starts once the workflow is released. Because active-sprint cards leave Backlog automatically, the current-sprint board view hides the Backlog column.
+Issues only move forwards (Backlog → Ready → In progress → Release candidate → Released) and are added to the project if missing. Branches created only locally do nothing until pushed. GitHub sends no event when a project field changes, so the Ready move polls the board; it runs from `main` only, so it starts once the workflow is released. Because active-sprint cards leave Backlog automatically, the **Sprint** view filters it out (`sprint:@current -status:Backlog`); **Next Sprint** (`sprint:@next`) keeps Backlog, where upcoming cards wait until their sprint starts.
 
 The workflow needs a `PROJECT_TOKEN` repository secret: a classic personal access token with the `project` and `repo` scopes. The default `GITHUB_TOKEN` cannot edit a user-owned project.
 
