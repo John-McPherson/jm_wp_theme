@@ -122,7 +122,7 @@ $wrapper_attributes = [
 
 		<?php if ( [] !== $service_area ) : ?>
 			<div class="jmc-contact-details__item jmc-contact-details__item--service-area">
-				<dt class="jmc-contact-details__label"><?php $the_icon( 'jmc/house' ); ?><span class="jmc-contact-details__label-text"><?php esc_html_e( 'Areas covered', 'jmc-theme' ); ?></span></dt>
+				<dt class="jmc-contact-details__label"><?php $the_icon( 'jmc/house' ); ?><span class="jmc-contact-details__label-text jmc-contact-details__label-text--visible"><?php esc_html_e( 'Areas covered:', 'jmc-theme' ); ?></span></dt>
 				<dd class="jmc-contact-details__value"><?php echo esc_html( jmc_service_area_phrase( $service_area ) ); ?></dd>
 			</div>
 		<?php endif; ?>

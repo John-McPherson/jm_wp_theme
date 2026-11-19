@@ -65,7 +65,7 @@ final class ContactDetailsRenderTest extends TestCase {
 		);
 		self::assertMatchesRegularExpression( '#<dt[^>]*>(?:<svg[^>]*></svg>)?<span[^>]*>Opening hours</span></dt>#', $html );
 		self::assertMatchesRegularExpression(
-			'#<dt[^>]*>(?:<svg[^>]*></svg>)?<span[^>]*>Areas covered</span></dt>\s*<dd class="jmc-contact-details__value">Glasgow and East Kilbride</dd>#',
+			'#<dt[^>]*>(?:<svg[^>]*></svg>)?<span class="jmc-contact-details__label-text jmc-contact-details__label-text--visible">Areas covered:</span></dt>\s*<dd class="jmc-contact-details__value">Glasgow and East Kilbride</dd>#',
 			$html
 		);
 		self::assertSame( 1, substr_count( $html, '<dl' ) );
@@ -78,14 +78,14 @@ final class ContactDetailsRenderTest extends TestCase {
 		$html = $this->render_contact_details();
 
 		foreach ( [
-			'Phone'         => 'jmc/phone',
-			'WhatsApp'      => 'jmc/whatsapp',
-			'Email'         => 'jmc/mail',
-			'Opening hours' => 'jmc/clock',
-			'Areas covered' => 'jmc/house',
+			'Phone'          => 'jmc/phone',
+			'WhatsApp'       => 'jmc/whatsapp',
+			'Email'          => 'jmc/mail',
+			'Opening hours'  => 'jmc/clock',
+			'Areas covered:' => 'jmc/house',
 		] as $label => $icon ) {
 			self::assertMatchesRegularExpression(
-				'#<dt class="jmc-contact-details__label"><svg class="jmc-contact-details__icon" data-icon="' . preg_quote( $icon, '#' ) . '" aria-hidden="true"[^>]*></svg><span class="jmc-contact-details__label-text">' . $label . '</span></dt>#',
+				'#<dt class="jmc-contact-details__label"><svg class="jmc-contact-details__icon" data-icon="' . preg_quote( $icon, '#' ) . '" aria-hidden="true"[^>]*></svg><span class="jmc-contact-details__label-text(?: jmc-contact-details__label-text--visible)?">' . $label . '</span></dt>#',
 				$html
 			);
 		}
