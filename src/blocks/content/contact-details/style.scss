@@ -52,10 +52,15 @@
 
 		// Long email addresses wrap rather than overflow a narrow column.
 		overflow-wrap: anywhere;
+
+		// Hovered links take the icon's highlight colour, matching the footer.
+		a {
+
+			@include link-hover;
+		}
 	}
 
-	.jmc-contact-details__hours,
-	.jmc-contact-details__areas {
+	.jmc-contact-details__hours {
 		margin: 0;
 		padding: 0;
 		list-style: none;
