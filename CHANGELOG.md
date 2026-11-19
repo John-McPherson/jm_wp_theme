@@ -8,6 +8,12 @@ All notable changes will be documented here. The project follows semantic versio
 
 - `npm run i18n:pot` generates the `languages/jmc-theme.pot` translation template, and `npm run package` ships it.
 - CI rejects the wrong text domain in TypeScript (ESLint) and in `style.css` and `block.json` metadata (PHPUnit).
+- [Platform support](docs/support.md) policy: a versioned matrix of supported WordPress, PHP, Node, browser, device and assistive-technology versions, with upgrade, end-of-support, ownership and review rules.
+- `package.json` declares `engines` (Node 24.18.0 or a later 24.x), and `.npmrc` makes npm refuse other versions.
+
+### Changed
+
+- **Breaking:** PHP 8.3 is now the minimum (was 8.0), in `style.css` and `composer.json`. CI tests PHP 8.3 and 8.5, and the `wp-env` site runs PHP 8.3.
 
 ### Fixed
 

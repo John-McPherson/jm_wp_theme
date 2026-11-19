@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-- A local WordPress version matching the minimum declared in `style.css`
-- PHP 8.0+
-- Node.js 24, selected through `.nvmrc`
+- A local WordPress version matching the one declared in `style.css`
+- PHP 8.3+
+- Node.js 24.18.0 or a later 24.x, selected through `.nvmrc`
 - npm and Composer 2
 - `rsync`
 - Docker Desktop or another Docker-compatible runtime for `wp-env`
@@ -34,7 +34,7 @@ npm run env:stop
 
 The development site is available at `http://localhost:8888` with username `admin` and password `password`. Playwright runs against Chromium, Firefox, and WebKit. Generated reports and failure evidence are written under `artifacts/e2e/` and are not committed.
 
-`.nvmrc` is the current Node contract. `package.json` does not yet declare an `engines` range, so non-nvm environments must select the matching major version explicitly.
+`.nvmrc` selects Node 24, and `package.json` `engines` requires 24.18.0 or a later 24.x. `.npmrc` sets `engine-strict`, so `npm install` and `npm ci` fail with `EBADENGINE` on any other version; run `nvm install 24` to update. Supported versions are set out in [Platform support](support.md).
 
 ## Branch and issue workflow
 

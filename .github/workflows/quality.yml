@@ -23,10 +23,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Minimum supported version (composer.json / style.css) and a current one.
+        # The supported floor (composer.json / style.css) and the newest stable
+        # release, as set out in docs/support.md.
         php:
-          - "8.0"
           - "8.3"
+          - "8.5"
 
     steps:
       - name: Check out repository
