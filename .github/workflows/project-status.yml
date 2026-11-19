@@ -1,0 +1,256 @@
+name: Project board status
+
+# Keeps the JMC Theme project board in step with the branch and pull request
+# lifecycle (see docs/development.md):
+#   - a new `<issue>-…` branch on GitHub moves the issue to "In progress";
+#   - a pull request merged into `dev` moves its issues to "Release candidate";
+#   - hourly (or on demand), Backlog cards in the active Sprint move to "Ready".
+# Cards only ever move forwards. Requires the PROJECT_TOKEN secret: a classic
+# personal access token with the `project` and `repo` scopes, because the
+# default GITHUB_TOKEN cannot edit a user-owned project.
+
+on:
+  create:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - dev
+  # GitHub sends no Actions event when a user-owned project's fields change, so
+  # sprint assignments are picked up by polling. Schedules run from `main` only.
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  update-status:
+    name: Update project status
+    if: >-
+      (github.event_name == 'create' && github.event.ref_type == 'branch') ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Move linked issues on the project board
+        uses: actions/github-script@v7
+        env:
+          PROJECT_NUMBER: "5"
+          STATUS_FIELD: Status
+        with:
+          github-token: ${{ secrets.PROJECT_TOKEN || github.token }}
+          script: |
+            const ORDER = [ 'Backlog', 'Ready', 'In progress', 'Release candidate', 'Released' ];
+            const { owner, repo } = context.repo;
+            const issueFromBranch = ( ref ) => ref?.match( /^(\d+)-/ )?.[ 1 ];
+
+            let target;
+            const issues = new Set();
+
+            if ( context.eventName === 'create' ) {
+              target = 'In progress';
+              const n = issueFromBranch( context.payload.ref );
+              if ( n ) issues.add( Number( n ) );
+            } else {
+              target = 'Release candidate';
+              const pr = context.payload.pull_request;
+              const n = issueFromBranch( pr.head.ref );
+              if ( n ) issues.add( Number( n ) );
+              const { repository } = await github.graphql(
+                `query($owner: String!, $repo: String!, $pr: Int!) {
+                  repository(owner: $owner, name: $repo) {
+                    pullRequest(number: $pr) {
+                      closingIssuesReferences(first: 50) { nodes { number } }
+                    }
+                  }
+                }`,
+                { owner, repo, pr: pr.number }
+              );
+              for ( const { number } of repository.pullRequest.closingIssuesReferences.nodes ) {
+                issues.add( number );
+              }
+            }
+
+            if ( ! issues.size ) {
+              core.info( 'No linked issue found; nothing to do.' );
+              return;
+            }
+            const { user } = await github.graphql(
+              `query($owner: String!, $number: Int!, $field: String!) {
+                user(login: $owner) {
+                  projectV2(number: $number) {
+                    id
+                    field(name: $field) {
+                      ... on ProjectV2SingleSelectField { id options { id name } }
+                    }
+                  }
+                }
+              }`,
+              { owner, number: Number( process.env.PROJECT_NUMBER ), field: process.env.STATUS_FIELD }
+            ).catch( ( error ) => {
+              throw new Error( `Cannot read project ${ process.env.PROJECT_NUMBER }. Is the PROJECT_TOKEN secret set with the "project" scope? (${ error.message })` );
+            } );
+
+            const project = user?.projectV2;
+            const option = project?.field?.options.find( ( o ) => o.name === target );
+            if ( ! option ) {
+              throw new Error( `Project ${ process.env.PROJECT_NUMBER } has no "${ target }" ${ process.env.STATUS_FIELD } option.` );
+            }
+
+            for ( const number of issues ) {
+              const { repository } = await github.graphql(
+                `query($owner: String!, $repo: String!, $number: Int!, $field: String!) {
+                  repository(owner: $owner, name: $repo) {
+                    issue(number: $number) {
+                      id
+                      projectItems(first: 20) {
+                        nodes {
+                          id
+                          project { id }
+                          fieldValueByName(name: $field) {
+                            ... on ProjectV2ItemFieldSingleSelectValue { name }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }`,
+                { owner, repo, number, field: process.env.STATUS_FIELD }
+              ).catch( () => ( { repository: { issue: null } } ) );
+
+              const issue = repository.issue;
+              if ( ! issue ) {
+                core.info( `#${ number } is not an issue in ${ owner }/${ repo }; skipping.` );
+                continue;
+              }
+
+              let item = issue.projectItems.nodes.find( ( i ) => i.project.id === project.id );
+              const current = item?.fieldValueByName?.name;
+              if ( ORDER.indexOf( current ) >= ORDER.indexOf( target ) ) {
+                core.info( `#${ number } is already "${ current }"; leaving it.` );
+                continue;
+              }
+
+              if ( ! item ) {
+                const added = await github.graphql(
+                  `mutation($project: ID!, $content: ID!) {
+                    addProjectV2ItemById(input: { projectId: $project, contentId: $content }) { item { id } }
+                  }`,
+                  { project: project.id, content: issue.id }
+                );
+                item = added.addProjectV2ItemById.item;
+              }
+
+              await github.graphql(
+                `mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: $project, itemId: $item, fieldId: $field,
+                    value: { singleSelectOptionId: $option }
+                  }) { projectV2Item { id } }
+                }`,
+                { project: project.id, item: item.id, field: project.field.id, option: option.id }
+              );
+              core.notice( `#${ number }: ${ current ?? 'no status' } → ${ target }` );
+            }
+
+  sprint-ready:
+    name: Move active-sprint cards to Ready
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Move Backlog cards in the active sprint to Ready
+        uses: actions/github-script@v7
+        env:
+          PROJECT_NUMBER: "5"
+          STATUS_FIELD: Status
+          SPRINT_FIELD: Sprint
+        with:
+          github-token: ${{ secrets.PROJECT_TOKEN || github.token }}
+          script: |
+            const { owner } = context.repo;
+            const { PROJECT_NUMBER, STATUS_FIELD, SPRINT_FIELD } = process.env;
+            const FROM = [ undefined, 'Backlog' ];
+            const TARGET = 'Ready';
+
+            let project;
+            const items = [];
+            let after = null;
+            do {
+              const { user } = await github.graphql(
+                `query($owner: String!, $number: Int!, $status: String!, $sprint: String!, $after: String) {
+                  user(login: $owner) {
+                    projectV2(number: $number) {
+                      id
+                      field(name: $status) {
+                        ... on ProjectV2SingleSelectField { id options { id name } }
+                      }
+                      items(first: 100, after: $after) {
+                        pageInfo { hasNextPage endCursor }
+                        nodes {
+                          id
+                          isArchived
+                          content { ... on Issue { number state } }
+                          status: fieldValueByName(name: $status) {
+                            ... on ProjectV2ItemFieldSingleSelectValue { name }
+                          }
+                          sprint: fieldValueByName(name: $sprint) {
+                            ... on ProjectV2ItemFieldIterationValue { title startDate duration }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }`,
+                { owner, number: Number( PROJECT_NUMBER ), status: STATUS_FIELD, sprint: SPRINT_FIELD, after }
+              ).catch( ( error ) => {
+                throw new Error( `Cannot read project ${ PROJECT_NUMBER }. Is the PROJECT_TOKEN secret set with the "project" scope? (${ error.message })` );
+              } );
+              project = user.projectV2;
+              items.push( ...project.items.nodes );
+              const { hasNextPage, endCursor } = project.items.pageInfo;
+              after = hasNextPage ? endCursor : null;
+            } while ( after );
+
+            // A sprint is active from its start date until the day before
+            // start + duration (dates are UTC calendar days).
+            const today = new Date().toISOString().slice( 0, 10 );
+            const isActive = ( { startDate, duration } ) => {
+              const end = new Date( `${ startDate }T00:00:00Z` );
+              end.setUTCDate( end.getUTCDate() + duration );
+              return startDate <= today && today < end.toISOString().slice( 0, 10 );
+            };
+
+            const option = project.field?.options.find( ( o ) => o.name === TARGET );
+            if ( ! option ) {
+              throw new Error( `Project ${ PROJECT_NUMBER } has no "${ TARGET }" ${ STATUS_FIELD } option.` );
+            }
+
+            const due = items.filter( ( i ) =>
+              ! i.isArchived &&
+              i.content?.state === 'OPEN' &&
+              i.sprint?.startDate &&
+              isActive( i.sprint ) &&
+              FROM.includes( i.status?.name )
+            );
+            if ( ! due.length ) {
+              core.info( 'No Backlog cards in the active sprint; nothing to do.' );
+              return;
+            }
+
+            for ( const item of due ) {
+              await github.graphql(
+                `mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: $project, itemId: $item, fieldId: $field,
+                    value: { singleSelectOptionId: $option }
+                  }) { projectV2Item { id } }
+                }`,
+                { project: project.id, item: item.id, field: project.field.id, option: option.id }
+              );
+              core.notice( `#${ item.content.number } (${ item.sprint.title }): ${ item.status?.name ?? 'no status' } → ${ TARGET }` );
+            }
