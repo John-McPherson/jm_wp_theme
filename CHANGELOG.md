@@ -4,6 +4,16 @@ All notable changes will be documented here. The project follows semantic versio
 
 ## Unreleased
 
+### Added
+
+- `npm run i18n:pot` generates the `languages/jmc-theme.pot` translation template, and `npm run package` ships it.
+- CI rejects the wrong text domain in TypeScript (ESLint) and in `style.css` and `block.json` metadata (PHPUnit).
+
+### Fixed
+
+- `style.css` declares the `jmc-theme` text domain used by the code, and the theme loads translations from `languages/`.
+- The privacy policy text uses a plural form for the enquiry retention period.
+
 ## [0.2.0] – 2026-11-19
 
 ### Added

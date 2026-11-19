@@ -13,6 +13,7 @@ uploads/
 # Generated builds
 /build/
 /dist/
+/languages/*.pot
 
 # Environment files
 .env

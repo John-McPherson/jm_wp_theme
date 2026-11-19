@@ -51,7 +51,9 @@ npm start
 | `npm run test:e2e` | Run Playwright in Chromium, Firefox, and WebKit |
 | `npm run test:e2e:headed` | Run Playwright with visible browser windows |
 | `npm run test:e2e:report` | Open the latest HTML report |
-| `npm run package` | Build and assemble the release directory in `dist/` |
+| `npm run i18n:pot` | Build the block scripts and generate `languages/jmc-theme.pot` |
+| `npm run i18n:make-pot` | Generate `languages/jmc-theme.pot` from the current build |
+| `npm run package` | Build, generate the translation template, and assemble the release directory in `dist/` |
 
 ## Structure
 

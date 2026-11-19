@@ -875,6 +875,5 @@ Changes confined to a dynamic block's PHP frontend markup normally do not need a
 
 - Normalise internal content-block categories to one registered category, or remove category metadata where it has no effect.
 - Revisit the `jmc/`-only global allowlist before FSE templates require core blocks.
-- Change the `style.css` text-domain header from `jmc-custom-theme` to the canonical `jmc-theme` used by translations and block metadata.
 - Review and remove or formally support the older top-level content attributes still declared by `jmc/text-with-image`.
 - Remove or implement the `order` attribute declared by `jmc/service-grid`; it has no effect, and the editor looks it up in the palette class map.

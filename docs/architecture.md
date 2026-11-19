@@ -87,8 +87,6 @@ All theme CSS lives in cascade layers. Their order has one source of truth, `src
 - CSS classes: `jmc-` prefix with BEM-style elements where useful.
 - Text domain: `jmc-theme` in PHP, TypeScript, and block metadata.
 
-The `style.css` header currently uses `jmc-custom-theme`; align it before release.
-
 ## Known constraints
 
 - The global block allowlist exposes only `jmc/` blocks and must become context-aware before header, navigation, query, and broader FSE workflows are completed.
