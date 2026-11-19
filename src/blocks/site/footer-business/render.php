@@ -41,15 +41,7 @@ if ( '' === $company_name && ! $has_contact && [] === $service_area ) {
 }
 
 // Read the places as one phrase: "Pudsey, Leeds and Bradford".
-$last_place  = (string) array_pop( $service_area );
-$places_text = [] === $service_area
-	? $last_place
-	: sprintf(
-		/* translators: 1: comma-separated list of places, 2: the last place. */
-		__( '%1$s and %2$s', 'jmc-theme' ),
-		implode( ', ', $service_area ),
-		$last_place
-	);
+$places_text = jmc_service_area_phrase( $service_area );
 
 /*
  * Output a theme icon from the core icon registry (see inc/icons.php).

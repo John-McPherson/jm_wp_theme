@@ -301,6 +301,33 @@ final class ContactHelperTest extends TestCase {
 	}
 
 	/**
+	 * Places read as one phrase, joined with commas and a final "and".
+	 *
+	 * @dataProvider service_area_phrase_provider
+	 *
+	 * @param list<string> $places   Places.
+	 * @param string       $expected Phrase.
+	 */
+	public function test_service_area_phrase( array $places, string $expected ): void {
+		self::assertSame( $expected, jmc_service_area_phrase( $places ) );
+	}
+
+	/**
+	 * Places and the phrase they read as.
+	 *
+	 * @return array<string, array{list<string>, string}>
+	 */
+	public function service_area_phrase_provider(): array {
+		return [
+			'none'        => [ [], '' ],
+			'one place'   => [ [ 'Pudsey' ], 'Pudsey' ],
+			'two places'  => [ [ 'Pudsey', 'Leeds' ], 'Pudsey and Leeds' ],
+			'four places' => [ [ 'Pudsey', 'Leeds', 'Bradford', 'Halifax' ], 'Pudsey, Leeds, Bradford and Halifax' ],
+			'unescaped'   => [ [ 'Brigg & District' ], 'Brigg & District' ],
+		];
+	}
+
+	/**
 	 * Pre-filled messages are encoded into email and WhatsApp links only.
 	 *
 	 * @dataProvider message_provider
