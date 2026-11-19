@@ -88,14 +88,22 @@ jobs:
           echo "packages=${packages}" >> "$GITHUB_OUTPUT"
           echo "key=${ImageOS}-$(printf '%s' "${packages}" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
 
-      # Ubuntu's mirrors can drop connections when they are slow; retry rather
-      # than fail. This also applies to the install-deps fallback below.
-      - name: Configure apt retries
+      # security.ubuntu.com has no mirrors and often times out, while the main
+      # archive goes through the runner's fast mirror list. Route the security
+      # source through that list too, and retry dropped connections. This also
+      # applies to the install-deps fallback below.
+      - name: Configure apt
         run: |
+          if [ -f /etc/apt/apt-mirrors.txt ]; then
+            sudo sed -i -E \
+              's#https?://security\.ubuntu\.com/ubuntu/?#mirror+file:/etc/apt/apt-mirrors.txt#g' \
+              /etc/apt/sources.list.d/*.sources /etc/apt/sources.list 2>/dev/null || true
+          fi
+
           printf '%s\n' \
-            'Acquire::Retries "5";' \
-            'Acquire::http::Timeout "30";' \
-            'Acquire::https::Timeout "30";' |
+            'Acquire::Retries "3";' \
+            'Acquire::http::Timeout "20";' \
+            'Acquire::https::Timeout "20";' |
             sudo tee /etc/apt/apt.conf.d/80-retries
 
       - name: Restore Playwright system packages
@@ -112,6 +120,7 @@ jobs:
         id: apt-download
         if: ${{ steps.apt-packages.outputs.packages != '' && steps.apt-cache.outputs.cache-hit != 'true' }}
         continue-on-error: true
+        timeout-minutes: 5
         run: |
           sudo apt-get update
           mkdir -p ~/.cache/playwright-apt
@@ -140,6 +149,8 @@ jobs:
       # are down too, warn and let the tests run: most missing packages are
       # fonts and codecs, and a real gap shows up as a test failure.
       - name: Verify Playwright system dependencies
+        continue-on-error: true
+        timeout-minutes: 5
         run: |
           if ! npx playwright install-deps --dry-run ${{ matrix.browser }}; then
             npx playwright install-deps ${{ matrix.browser }} ||
