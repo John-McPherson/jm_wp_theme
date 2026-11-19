@@ -71,11 +71,57 @@ jobs:
 
       - name: Install Playwright browser
         if: ${{ steps.playwright-cache.outputs.cache-hit != 'true' }}
-        run: npx playwright install --with-deps ${{ matrix.browser }}
+        run: npx playwright install ${{ matrix.browser }}
 
-      - name: Install Playwright system dependencies
-        if: ${{ steps.playwright-cache.outputs.cache-hit == 'true' }}
-        run: npx playwright install-deps ${{ matrix.browser }}
+      # `playwright install-deps` runs `apt-get update` against Ubuntu's mirrors,
+      # which can take several minutes. Instead, cache the .deb files the browser
+      # still needs and install them locally. The dry run lists missing packages
+      # from the runner's existing apt index, without touching the mirrors.
+      - name: List missing Playwright system packages
+        id: apt-packages
+        shell: bash
+        run: |
+          packages="$(
+            npx playwright install-deps --dry-run ${{ matrix.browser }} |
+              sed -n 's/^  \([^ ]*\)$/\1/p' |
+              sort |
+              tr '\n' ' '
+          )" || true
+          packages="${packages% }"
+
+          echo "Missing packages: ${packages:-none}"
+          echo "packages=${packages}" >> "$GITHUB_OUTPUT"
+          echo "key=${ImageOS}-$(printf '%s' "${packages}" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright system packages
+        id: apt-cache
+        if: ${{ steps.apt-packages.outputs.packages != '' }}
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/playwright-apt
+          key: playwright-apt-${{ matrix.browser }}-${{ steps.apt-packages.outputs.key }}
+
+      - name: Download Playwright system packages
+        if: ${{ steps.apt-packages.outputs.packages != '' && steps.apt-cache.outputs.cache-hit != 'true' }}
+        run: |
+          sudo apt-get update
+          mkdir -p ~/.cache/playwright-apt
+          cd ~/.cache/playwright-apt
+          apt-get download ${{ steps.apt-packages.outputs.packages }}
+
+      - name: Install Playwright system packages
+        if: ${{ steps.apt-packages.outputs.packages != '' }}
+        run: |
+          sudo apt-get install -y --no-install-recommends ~/.cache/playwright-apt/*.deb ||
+            echo "::warning::Cached system packages did not install; falling back to playwright install-deps."
+
+      # Safety net: if the cached packages were stale or the dry-run output
+      # changed format, fall back to Playwright's own installer.
+      - name: Verify Playwright system dependencies
+        run: |
+          if ! npx playwright install-deps --dry-run ${{ matrix.browser }}; then
+            npx playwright install-deps ${{ matrix.browser }}
+          fi
 
       - name: Build theme
         run: npm run build
