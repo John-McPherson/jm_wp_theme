@@ -15,4 +15,13 @@ export default [
 		],
 	},
 	...wordpress.configs.recommended,
+	{
+		rules: {
+			// Every translation call must use the theme's text domain.
+			'@wordpress/i18n-text-domain': [
+				'error',
+				{ allowedTextDomain: 'jmc-theme' },
+			],
+		},
+	},
 ];
