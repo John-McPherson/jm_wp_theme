@@ -1,10 +1,6 @@
 name: Playwright E2E
 
 on:
-  push:
-    branches:
-      - dev
-      - main
   pull_request:
     branches:
       - dev
@@ -30,9 +26,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Pull requests run Chromium only for fast feedback; dev/main pushes and
-        # the nightly run cover every browser, in parallel jobs.
-        browser: ${{ fromJSON(github.event_name == 'pull_request' && '["chromium"]' || '["chromium","firefox","webkit"]') }}
+        # Every run covers all three browsers, in parallel jobs.
+        browser: [chromium, firefox, webkit]
 
     env:
       CI: true
@@ -71,11 +66,96 @@ jobs:
 
       - name: Install Playwright browser
         if: ${{ steps.playwright-cache.outputs.cache-hit != 'true' }}
-        run: npx playwright install --with-deps ${{ matrix.browser }}
+        run: npx playwright install ${{ matrix.browser }}
 
-      - name: Install Playwright system dependencies
-        if: ${{ steps.playwright-cache.outputs.cache-hit == 'true' }}
-        run: npx playwright install-deps ${{ matrix.browser }}
+      # `playwright install-deps` runs `apt-get update` against Ubuntu's mirrors,
+      # which can take several minutes. Instead, cache the .deb files the browser
+      # still needs and install them locally. The dry run lists missing packages
+      # from the runner's existing apt index, without touching the mirrors.
+      - name: List missing Playwright system packages
+        id: apt-packages
+        shell: bash
+        run: |
+          packages="$(
+            npx playwright install-deps --dry-run ${{ matrix.browser }} |
+              sed -n 's/^  \([^ ]*\)$/\1/p' |
+              sort |
+              tr '\n' ' '
+          )" || true
+          packages="${packages% }"
+
+          echo "Missing packages: ${packages:-none}"
+          echo "packages=${packages}" >> "$GITHUB_OUTPUT"
+          echo "key=${ImageOS}-$(printf '%s' "${packages}" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
+      # security.ubuntu.com has no mirrors and often times out, while the main
+      # archive goes through the runner's fast mirror list. Route the security
+      # source through that list too, and retry dropped connections. This also
+      # applies to the install-deps fallback below.
+      - name: Configure apt
+        run: |
+          if [ -f /etc/apt/apt-mirrors.txt ]; then
+            sudo sed -i -E \
+              's#https?://security\.ubuntu\.com/ubuntu/?#mirror+file:/etc/apt/apt-mirrors.txt#g' \
+              /etc/apt/sources.list.d/*.sources /etc/apt/sources.list 2>/dev/null || true
+          fi
+
+          printf '%s\n' \
+            'Acquire::Retries "3";' \
+            'Acquire::http::Timeout "20";' \
+            'Acquire::https::Timeout "20";' |
+            sudo tee /etc/apt/apt.conf.d/80-retries
+
+      - name: Restore Playwright system packages
+        id: apt-cache
+        if: ${{ steps.apt-packages.outputs.packages != '' }}
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/playwright-apt
+          key: playwright-apt-${{ matrix.browser }}-${{ steps.apt-packages.outputs.key }}
+
+      # A failed download falls through to the install-deps fallback instead of
+      # failing the job.
+      - name: Download Playwright system packages
+        id: apt-download
+        if: ${{ steps.apt-packages.outputs.packages != '' && steps.apt-cache.outputs.cache-hit != 'true' }}
+        continue-on-error: true
+        timeout-minutes: 5
+        run: |
+          sudo apt-get update
+          mkdir -p ~/.cache/playwright-apt
+          cd ~/.cache/playwright-apt
+          apt-get download ${{ steps.apt-packages.outputs.packages }}
+
+      # Save straight after a complete download, so the cache fills even when a
+      # later step (or a test) fails.
+      - name: Save Playwright system packages
+        if: ${{ steps.apt-download.outcome == 'success' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.cache/playwright-apt
+          key: playwright-apt-${{ matrix.browser }}-${{ steps.apt-packages.outputs.key }}
+
+      - name: Install Playwright system packages
+        if: ${{ steps.apt-cache.outputs.cache-hit == 'true' || steps.apt-download.outcome == 'success' }}
+        # dpkg reads plain paths. `apt-get install ./file.deb` treats the `%3a`
+        # in downloaded file names as a URL escape and can't read $HOME as _apt.
+        run: |
+          sudo dpkg -i ~/.cache/playwright-apt/*.deb ||
+            echo "::warning::Cached system packages did not install; falling back to playwright install-deps."
+
+      # Safety net: if the cached packages were stale or the dry-run output
+      # changed format, fall back to Playwright's own installer. If the mirrors
+      # are down too, warn and let the tests run: most missing packages are
+      # fonts and codecs, and a real gap shows up as a test failure.
+      - name: Verify Playwright system dependencies
+        continue-on-error: true
+        timeout-minutes: 5
+        run: |
+          if ! npx playwright install-deps --dry-run ${{ matrix.browser }}; then
+            npx playwright install-deps ${{ matrix.browser }} ||
+              echo "::warning::Could not install Playwright system dependencies; running tests without them."
+          fi
 
       - name: Build theme
         run: npm run build
