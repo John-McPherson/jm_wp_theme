@@ -1,10 +1,6 @@
 name: Playwright E2E
 
 on:
-  push:
-    branches:
-      - dev
-      - main
   pull_request:
     branches:
       - dev
@@ -30,9 +26,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Pull requests run Chromium only for fast feedback; dev/main pushes and
-        # the nightly run cover every browser, in parallel jobs.
-        browser: ${{ fromJSON(github.event_name == 'pull_request' && '["chromium"]' || '["chromium","firefox","webkit"]') }}
+        # Every run covers all three browsers, in parallel jobs.
+        browser: [chromium, firefox, webkit]
 
     env:
       CI: true
