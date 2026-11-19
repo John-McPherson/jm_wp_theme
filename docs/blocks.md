@@ -723,7 +723,25 @@ Footer icons come from the core icon registry through `wp_get_icon()`; see [Icon
 
 ### Footer navigation
 
-Each `jmc/footer-navigation` block renders a flat list of links from the published `wp_navigation` menu chosen in its sidebar. Unlike `jmc/navigation`, it does not pick a menu automatically, has no mobile toggle, and loads no script. Submenu links are flattened into the list. The `<nav>` is labelled with the menu title, or "Footer" when the menu has none, so give each menu a meaningful title. The current page's link gets `aria-current="page"`; custom links never do. The block renders nothing when no menu is selected, the post is not a menu, or the menu has no links.
+Each `jmc/footer-navigation` block renders the published `wp_navigation` menu chosen in its sidebar. Unlike `jmc/navigation`, it does not pick a menu automatically, has no mobile toggle, and loads no script. The `<nav>` is labelled with the menu title, or "Footer" when the menu has none, so give each menu a meaningful title. The current page's link gets `aria-current="page"`; custom links never do. The block renders nothing when no menu is selected, the post is not a menu, or the menu has no links.
+
+The menu is read with `jmc_get_navigation_tree()`, like the header. A top-level submenu becomes a **group**: its parent is an `<h2>` heading and its links a list under it, with `aria-labelledby` pointing at the heading's unique ID so screen readers announce the group. A parent with a URL is a linked heading (and can be the current page); a parent without one is plain heading text. Groups are always expanded. Top-level plain links render as before, in menu order around the groups; consecutive links share one list.
+
+```html
+<nav class="jmc-footer-navigation" aria-label="Services">
+  <div class="jmc-footer-navigation__group">
+    <h2 id="jmc-footer-navigation__heading-1" class="jmc-footer-navigation__heading">
+      <a href="/domestic/" class="jmc-footer-navigation__heading-link">Domestic Services</a>
+    </h2>
+    <ul class="jmc-footer-navigation__list" aria-labelledby="jmc-footer-navigation__heading-1">
+      <li class="jmc-footer-navigation__item"><a href="/rewires/" class="jmc-footer-navigation__link">Rewires</a></li>
+    </ul>
+  </div>
+  <ul class="jmc-footer-navigation__list">…plain links…</ul>
+</nav>
+```
+
+The footer has no other headings, so groups use `h2`, the first level below the page's `h1`. Group headings use the `h6` type style in `--jmc-heading-color`, which is `base-50` on the footer's inverse palette. Heading links share the footer's link hover and focus treatment. Unsupported content follows the header's rules: links nested deeper than one level move up into their group, items without a label or URL are skipped, and a submenu with no usable links renders as a plain link (or is skipped when it has no URL either). To build a group, add a submenu to the footer menu in **Appearance → Editor → Navigation** and put its links inside it.
 
 Add a column by inserting another Footer Navigation block inside the footer; remove one with the block toolbar. Create menus in **Appearance → Editor → Navigation**, or with WP-CLI:
 
