@@ -2,7 +2,7 @@
 
 ## Status
 
-The current package command builds the theme, recreates `dist/`, and copies `build/`, `inc/`, `components/`, `templates/`, and required root runtime files. CI runs the command and checks its essential structure.
+The current package command builds the theme, generates `languages/jmc-theme.pot`, recreates `dist/`, and copies `build/`, `inc/`, `components/`, `templates/`, `languages/`, and required root runtime files. CI runs the command and checks its essential structure.
 
 This is a structural gate, not a complete release test. Packaging remains Unix-specific because it uses `mkdir`, `rm`, and `rsync`; CI does not yet install and activate the package in a clean WordPress environment.
 
@@ -40,7 +40,7 @@ The installable theme must include:
 - `parts/`
 - `patterns/`
 - `styles/` (colour palette style variations)
-- `languages/` when introduced
+- `languages/` (the generated `jmc-theme.pot` translation template)
 - `functions.php`
 - `style.css`
 - `theme.json`
