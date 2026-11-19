@@ -1,43 +1,112 @@
 {
-  "$schema": "https://schemas.wp.org/trunk/block.json",
-  "apiVersion": 3,
-  "name": "jmc/header-cta",
-  "version": "0.1.0",
-  "title": "Header Call to Action",
-  "category": "jmc-site",
-  "icon": "button",
-  "parent": ["jmc/navigation"],
-  "description": "An optional header button linking to a page, URL or telephone number.",
-  "attributes": {
-    "text": {
-      "type": "string",
-      "default": ""
-    },
-    "link": {
-      "type": "object",
-      "default": {
-        "url": "",
-        "opensInNewTab": false
-      }
-    }
-  },
-  "example": {
-    "attributes": {
-      "text": "Call 01234 567890",
-      "link": {
-        "url": "tel:01234567890",
-        "opensInNewTab": false
-      }
-    }
-  },
-  "supports": {
-    "className": true,
-    "html": false,
-    "inserter": false,
-    "multiple": false
-  },
-  "textdomain": "jmc-theme",
-  "editorScript": "file:./index.js",
-  "style": ["jmc-button-style", "file:./style-index.css"],
-  "render": "file:./render.php"
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "jmc/header-cta",
+	"version": "0.1.0",
+	"title": "Header Call to Action",
+	"category": "jmc-site",
+	"icon": "button",
+	"parent": [ "jmc/navigation" ],
+	"description": "An optional header button linking to a page, URL or telephone number, or to the business phone, email or WhatsApp.",
+	"attributes": {
+		"text": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonType": {
+			"type": "string",
+			"enum": [ "primary", "secondary" ],
+			"default": "primary"
+		},
+		"link": {
+			"type": "object",
+			"default": {
+				"url": "",
+				"opensInNewTab": false
+			}
+		},
+		"linkType": {
+			"type": "string",
+			"enum": [ "link", "phone", "email", "whatsapp" ],
+			"default": "link"
+		},
+		"emailSubject": {
+			"type": "string",
+			"default": ""
+		},
+		"emailBody": {
+			"type": "string",
+			"default": ""
+		},
+		"whatsappMessage": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"variations": [
+		{
+			"name": "link",
+			"title": "Header Call to Action",
+			"description": "Links to a page, URL, telephone number or email address.",
+			"icon": "button",
+			"attributes": {
+				"linkType": "link"
+			},
+			"isDefault": true,
+			"scope": [ "transform" ],
+			"isActive": [ "linkType" ]
+		},
+		{
+			"name": "phone",
+			"title": "Header Phone Button",
+			"description": "Calls the business phone number set in Settings → Business.",
+			"icon": "phone",
+			"attributes": {
+				"linkType": "phone"
+			},
+			"scope": [ "transform" ],
+			"isActive": [ "linkType" ]
+		},
+		{
+			"name": "email",
+			"title": "Header Email Button",
+			"description": "Emails the business email address set in Settings → Business.",
+			"icon": "email",
+			"attributes": {
+				"linkType": "email"
+			},
+			"scope": [ "transform" ],
+			"isActive": [ "linkType" ]
+		},
+		{
+			"name": "whatsapp",
+			"title": "Header WhatsApp Button",
+			"description": "Opens a WhatsApp chat with the business WhatsApp number set in Settings → Business.",
+			"icon": "format-chat",
+			"attributes": {
+				"linkType": "whatsapp"
+			},
+			"scope": [ "transform" ],
+			"isActive": [ "linkType" ]
+		}
+	],
+	"example": {
+		"attributes": {
+			"text": "Call 01234 567890",
+			"link": {
+				"url": "tel:01234567890",
+				"opensInNewTab": false
+			}
+		}
+	},
+	"supports": {
+		"className": true,
+		"html": false,
+		"inserter": false,
+		"multiple": false
+	},
+	"textdomain": "jmc-theme",
+	"editorScript": "file:./index.js",
+	"style": [ "jmc-button-style", "file:./style-index.css" ],
+	"render": "file:./render.php"
 }

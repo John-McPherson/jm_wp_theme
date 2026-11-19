@@ -32,7 +32,7 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/footer-business` | The shared business name, address, phone, WhatsApp, email, and service area         | Dynamic PHP               | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
 | `jmc/footer-navigation` | A column of links from a selected `wp_navigation` menu                          | Dynamic PHP               | Restricted to `jmc/footer`; insertable there, multiple allowed (one column each); no toggle or view script            |
 | `jmc/footer-legal`    | Site credit, copyright notice with the current year, and links from the `legal` menu | Dynamic PHP              | Restricted to `jmc/footer`; direct inserter disabled; single instance; locked against removal in the footer part      |
-| `jmc/header-cta`      | Optional header call-to-action linking to a page, URL, or telephone number         | Dynamic PHP               | Restricted to `jmc/navigation`; direct inserter disabled; single instance; locked against removal in the header part   |
+| `jmc/header-cta`      | Optional header button, primary or secondary, linking to a page, URL, phone number or email address, or to the business phone, email or WhatsApp; see [Header call-to-action](#header-call-to-action) | Dynamic PHP               | Restricted to `jmc/navigation`; direct inserter disabled; single instance; locked against removal in the header part   |
 | `jmc/navigation`      | Primary navigation rendered from a selected `wp_navigation` menu, with one level of submenus | Dynamic PHP + view script | Site chrome; direct inserter disabled; allows only `jmc/header-cta`, rendered as the last menu item                     |
 | `jmc/heading`         | Semantic heading with configurable level                                           | Dynamic PHP               | Uses `jmc/variant` context; level defaults to `2`; insertable only inside `jmc/text-with-image`, `jmc/hero`, `jmc/cta-banner` and `jmc/service-grid` (`ancestor`) |
 | `jmc/list`            | Styled list of short points with icon, bullet or number markers                    | Dynamic PHP               | `listStyle` `icon` (default), `bullet` or `number`; `icon` from a fixed Lucide set; provides `jmc/listStyle` and `jmc/listIcon`; allows only `jmc/list-item`; insertable only inside `jmc/text-with-image` and `jmc/cta-banner` (`ancestor`); renders nothing when empty; see [Lists](#lists) |
@@ -213,20 +213,23 @@ The current page's link gets `aria-current="page"` at either level; custom links
 
 ## Header call-to-action
 
-`jmc/header-cta` stores a `text` label and a `link` object (`{ url, opensInNewTab }`, the shape saved by `LinkToolBar`). It is placed in `parts/header.html` as the only inner block of `jmc/navigation`, which renders it as the last `<li>` of the menu list. It therefore appears at the end of the desktop menu and inside the mobile dropdown, and it shares the dropdown's open, close, and Escape behaviour.
+`jmc/header-cta` is placed in `parts/header.html` as the only inner block of `jmc/navigation`, which renders it as the last `<li>` of the menu list. It therefore appears at the end of the desktop menu and inside the mobile dropdown, and it shares the dropdown's open, close, and Escape behaviour.
 
-The link is validated by `jmc_safe_link_url()` (`inc/helpers/link.php`):
+It is a small [button](#buttons) with the same attributes and behaviour as `jmc/button`:
 
-| Destination | Result |
+| Attribute | Values |
 | --- | --- |
-| `http://` or `https://` URL with a host | Rendered unchanged |
-| Site-relative path such as `/contact/` | Rendered unchanged |
-| `tel:` link | Normalised to `tel:` plus an optional leading `+` and 3–15 digits; spaces, dashes, dots, and brackets are removed |
-| Anything else, including `javascript:`, `data:`, `mailto:`, `//host`, and values containing whitespace or control characters | Rejected |
+| `text` | The label |
+| `buttonType` | `primary` (default) or `secondary` (`jmc-button__secondary`) |
+| `linkType` | `link` (default), `phone`, `email` or `whatsapp`, chosen with the block variations below; see [Link types](#link-types) |
+| `link` | The button's own `{ url, opensInNewTab }`, used by `link` buttons and validated as in [Link validation](#link-validation), so `mailto:` links are accepted |
+| `emailSubject`, `emailBody`, `whatsappMessage` | Optional [pre-filled messages](#pre-filled-messages) |
 
-`mailto:` links are rejected unless the caller passes `allow_mailto: true`; the header CTA does not, `jmc/button` does (see [Buttons](#buttons)).
+Both blocks resolve these with `jmc_button_link_args()` (`inc/helpers/button.php`) and edit them with `ButtonEditor` (`src/components/ButtonEditor.tsx`). Like `jmc/button`, the link type is chosen with block variations, switched from the block's variation control: **Header Call to Action** (`link`, the default), **Header Phone Button**, **Header Email Button** and **Header WhatsApp Button**. The block is never inserted, so the variations are scoped to `transform` only. Header CTAs saved before these attributes existed (only `text` and `link`) render as primary `link` buttons, unchanged.
 
-The block renders nothing when the label is empty or the link is missing, malformed, or rejected. Output uses the `button-link` component with the `jmc-button--small` size modifier, so new-tab handling follows [Button links](#button-links): telephone links never open in a new tab.
+The button is rendered by the `button-link` component with the classes `jmc-button--small jmc-header-cta`, then the style class, then any custom class. `jmc-button--small` changes only sizing, so the secondary style keeps the header layout at every breakpoint, in the desktop menu and the mobile dropdown alike (see [Button sizes](#button-sizes)).
+
+The block renders nothing when the label is empty, when a `link` button's destination is missing, malformed or rejected, or when a phone, email or WhatsApp button's business detail is missing or invalid. New-tab handling follows [Button links](#button-links): telephone and email links never open in a new tab.
 
 The block is not insertable, so a site whose header template part has been customised in the Site Editor does not pick it up from `parts/header.html`. Either reset the header template part, or add `<!-- wp:jmc/header-cta {"lock":{"remove":true}} /-->` inside the `jmc/navigation` block of the saved part.
 
@@ -326,6 +329,8 @@ Banners saved before `jmc/buttons` was introduced hold `jmc/button` directly in 
 ## Buttons
 
 `jmc/button` renders a single `.jmc-button` link through the `button-link` component. It is in the inserter only inside `jmc/text-with-image`, `jmc/hero` and `jmc/buttons` (its `ancestor` list). Inside `jmc/buttons`, new buttons are usually added from the group's **+** menu (**Button**, **Phone button**, **Email button**, or **WhatsApp button**), which presets the link type. Its `buttonType` attribute selects `primary` (default) or `secondary` (`jmc-button__secondary`).
+
+The render resolves the button's style, destination and icon with `jmc_button_link_args()` (`inc/helpers/button.php`), and the editor is `ButtonEditor` (`src/components/ButtonEditor.tsx`). [`jmc/header-cta`](#header-call-to-action) shares both.
 
 ### Link types
 
