@@ -460,9 +460,9 @@ It is restricted to `jmc/column` (`parent`) and is placed by the [CTA Banner (Co
 </address>
 ```
 
-- Each item pairs a `<dt>` label with a `<dd>` value. The label text is visually hidden (`sr-only`), so each value sits beside its icon as in the footer, but screen readers still announce it, and it reads as "Phone: 01234 567890" without styles.
+- Each item pairs a `<dt>` label with a `<dd>` value. The label text is visually hidden (`sr-only`), except for the service area, so each value sits beside its icon as in the footer, but screen readers still announce it, and it reads as "Phone: 01234 567890" without styles.
 - Phone, WhatsApp and email values link with the value as written as the link text.
-- Opening hours list every day in week order with `<time datetime="08:00">8:00 am</time> to <time …>` in the site's time format, or "Closed", in a list with `role="list"` because its bullets are removed. The service area reads as one phrase, worded like the footer by `jmc_service_area_phrase()`: "Pudsey", "Pudsey and Leeds", "Pudsey, Leeds and Bradford" (the "and" is translatable).
+- Opening hours list every day in week order with `<time datetime="08:00">8:00 am</time> to <time …>` in the site's time format, or "Closed", in a list with `role="list"` because its bullets are removed. The service area is the one visible label: a bold, translatable "Areas covered:" on the same line as the places, as in the footer. The places read as one phrase, worded like the footer by `jmc_service_area_phrase()`: "Pudsey", "Pudsey and Leeds", "Pudsey, Leeds and Bradford" (the "and" is translatable).
 - Phone, WhatsApp and email links share the footer's hover and keyboard-focus treatment (the `link-hover` mixin): the highlight colour, which matches the icons, and an underline.
 - Icons are decorative and in the footer's style: `jmc/phone`, `jmc/whatsapp`, `jmc/mail`, `jmc/clock`, and `jmc/house`.
 - A missing, invalid or hidden field is left out entirely, and the block renders nothing when no field is left.

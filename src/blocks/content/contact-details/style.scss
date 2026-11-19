@@ -42,9 +42,23 @@
 	}
 
 	// The icon stands in for the label visually; screen readers still hear it.
-	.jmc-contact-details__label-text {
+	.jmc-contact-details__label-text:not(.jmc-contact-details__label-text--visible) {
 
 		@include sr-only;
+	}
+
+	// The service area reads as one line, as in the footer: a bold
+	// "Areas covered:" label, then the places.
+	.jmc-contact-details__label-text--visible {
+		font-weight: 700;
+	}
+
+	.jmc-contact-details__item--service-area {
+
+		> .jmc-contact-details__label,
+		> .jmc-contact-details__value {
+			display: inline;
+		}
 	}
 
 	.jmc-contact-details__value {
