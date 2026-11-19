@@ -86,6 +86,17 @@
 
 		}
 
+		// Links and submenu toggles share the footer's hover and focus
+		// treatment. The toggle's chevron is drawn in `currentcolor`, so it
+		// follows. The current page is bold and ignores the pointer, so it
+		// never looks hovered.
+		&__link,
+		&__submenu-link,
+		&__submenu-toggle {
+
+			@include m.link-hover;
+		}
+
 		&__item--has-submenu {
 			display: flex;
 			flex-direction: column;
