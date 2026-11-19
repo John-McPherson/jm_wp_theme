@@ -79,15 +79,49 @@ describe( 'Heading edit', () => {
 		);
 	} );
 
-	// The level control is shown only for `lockLevel` headings; see the
-	// follow-up on whether that is inverted. These tests pin how changing it works.
-	it( 'changes the level from the sidebar', () => {
-		const setAttributes = renderEdit( { level: '1', lockLevel: true } );
-		const level = screen.getByRole( 'combobox', {
-			name: 'HEADING_LEVEL',
-		} ) as HTMLSelectElement;
+	const levelControl = () =>
+		screen.queryByRole( 'combobox', { name: 'HEADING_LEVEL' } );
 
-		expect( level.value ).toBe( '1' );
+	it.each( [
+		[ 'omitted', {} ],
+		[ 'false', { lockLevel: false } ],
+	] )( 'shows the level control when lockLevel is %s', ( _label, attrs ) => {
+		renderEdit( attrs );
+
+		expect( levelControl() ).not.toBeNull();
+	} );
+
+	it( 'hides the level control when lockLevel is true', () => {
+		renderEdit( { level: '1', lockLevel: true } );
+
+		expect( levelControl() ).toBeNull();
+		expect( heading().dataset.tagName ).toBe( 'h1' );
+	} );
+
+	const optionValues = () =>
+		Array.from(
+			( levelControl() as HTMLSelectElement ).options,
+			( option ) => option.value
+		);
+
+	it( 'offers H2 to H6, leaving H1 to the hero', () => {
+		renderEdit( { level: '2' } );
+
+		expect( optionValues() ).toEqual( [ '2', '3', '4', '5', '6' ] );
+	} );
+
+	it( 'keeps H1 as an option for an existing unlocked H1', () => {
+		renderEdit( { level: '1' } );
+
+		expect( optionValues() ).toEqual( [ '1', '2', '3', '4', '5', '6' ] );
+		expect( ( levelControl() as HTMLSelectElement ).value ).toBe( '1' );
+	} );
+
+	it( 'changes the level from the sidebar', () => {
+		const setAttributes = renderEdit( { level: '2' } );
+		const level = levelControl() as HTMLSelectElement;
+
+		expect( level.value ).toBe( '2' );
 
 		fireEvent.change( level, { target: { value: '3' } } );
 

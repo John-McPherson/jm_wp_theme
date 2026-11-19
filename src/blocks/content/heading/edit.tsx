@@ -17,6 +17,23 @@ const HEADING_TAGS = {
 
 type HeadingLevel = keyof typeof HEADING_TAGS;
 
+// H1 belongs to the page title or the hero heading, which seeds it with
+// `lockLevel`, so authors pick from H2 down.
+const HEADING_LEVELS = [
+	{ label: 'H2', value: '2' },
+	{ label: 'H3', value: '3' },
+	{ label: 'H4', value: '4' },
+	{ label: 'H5', value: '5' },
+	{ label: 'H6', value: '6' },
+] as const;
+
+// An existing unlocked H1 keeps its option so the control shows the real
+// level; authors can move it down but not back up.
+const levelOptions = ( level: string ) =>
+	'1' === level
+		? [ { label: 'H1', value: '1' }, ...HEADING_LEVELS ]
+		: HEADING_LEVELS;
+
 const VARIANT_CLASSES = {
 	default: '',
 	hero: 'jmc-hero__text-heading',
@@ -33,18 +50,16 @@ export default function Edit( { attributes, setAttributes, context } ) {
 
 	const { level, lockLevel } = attributes;
 
-	const classes = [].filter( Boolean ).join( ' ' );
-
 	const sideBar = (
 		<Sidebar>
 			<Sidebar.Section title={ __( 'Heading level', 'jmc-theme' ) }>
 				<SelectInput
-					{ ...( {
-						value: String( level ),
-						type: 'heading_level',
-						set: ( value: string ) =>
-							setAttributes( { level: value as HeadingLevel } ),
-					} as any ) }
+					value={ String( level ) }
+					type="heading_level"
+					options={ levelOptions( String( level ) ) }
+					set={ ( value: string ) =>
+						setAttributes( { level: value as HeadingLevel } )
+					}
 				/>
 			</Sidebar.Section>
 		</Sidebar>
@@ -52,12 +67,11 @@ export default function Edit( { attributes, setAttributes, context } ) {
 
 	return (
 		<>
-			{ lockLevel && sideBar }
+			{ ! lockLevel && sideBar }
 			<div { ...blockProps }>
 				<TextInput
 					{ ...bind.text( 'text' ) }
 					tagName={ HEADING_TAGS[ level ] }
-					className={ classes }
 				/>
 			</div>
 		</>
