@@ -4,7 +4,7 @@
   "name": "jmc/credential-list",
   "version": "0.2.0",
   "title": "Credential List",
-  "category": "jmc-blocks",
+  "category": "jmc-content",
   "icon": "awards",
   "description": "A list of credentials: accreditation logos, guarantees, experience and review scores.",
   "allowedBlocks": [
@@ -15,7 +15,6 @@
   ],
   "supports": {
     "anchor": true,
-    "customClassName": true,
     "html": false,
     "inserter": false,
     "reusable": false

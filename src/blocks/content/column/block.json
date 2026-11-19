@@ -4,11 +4,12 @@
   "name": "jmc/column",
   "version": "0.2.0",
   "title": "Column",
-  "category": "jm",
+  "category": "jmc-content",
   "icon": "columns",
   "description": "Organises related content within a section.",
   "textdomain": "jmc-theme",
   "supports": {
+    "customClassName": false,
     "html": false,
     "inserter": false
   },

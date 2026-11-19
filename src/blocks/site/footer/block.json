@@ -29,7 +29,6 @@
     ]
   },
   "supports": {
-    "className": true,
     "html": false,
     "inserter": false,
     "multiple": false

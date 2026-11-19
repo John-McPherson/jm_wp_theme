@@ -20,6 +20,7 @@
     },
     "variant": {
       "type": "string",
+      "enum": ["hero"],
       "default": "hero"
     },
     "palette": {
@@ -75,8 +76,7 @@
   "supports": {
     "multiple": false,
     "html": false,
-    "anchor": true,
-    "className": true
+    "anchor": true
   },
 
   "editorScript": "file:./index.js",

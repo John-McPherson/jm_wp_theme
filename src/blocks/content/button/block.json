@@ -4,7 +4,7 @@
   "name": "jmc/button",
   "version": "0.2.0",
   "title": "Button",
-  "category": "jm",
+  "category": "jmc-content",
   "icon": "button",
   "description": "A reusable linked button.",
   "textdomain": "jmc-theme",
@@ -16,6 +16,7 @@
     },
     "buttonType": {
       "type": "string",
+      "enum": ["primary", "secondary"],
       "default": "primary"
     },
     "link": {
@@ -106,7 +107,6 @@
 
   "supports": {
     "anchor": true,
-    "className": true,
     "html": false
   },
 
