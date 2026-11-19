@@ -16,17 +16,48 @@ All notable changes will be documented here. The project follows semantic versio
 - Consistent `jmc/` block namespaces and `jmc_` PHP global prefixes.
 - A valid `jmc-section` block category and corrected category-filter shape.
 - CTA Banner: a Stacked variation, one or more buttons through the new Buttons block, and omission of empty columns and empty banners.
-- Phone and Email button variations that link to new site-wide business contact settings (Settings → General).
+- Phone and Email button variations that link to new site-wide business contact settings (Settings → Business).
 - Buttons validate their destinations, accept `mailto:` links and bare phone numbers or email addresses, and honour the editor's open-in-new-tab setting.
 - Contact Details block showing the business phone, WhatsApp, email, opening hours, and service area from site-wide settings, with field toggles, Lucide and brand icons, and in-editor editing of the settings.
-- WhatsApp number, opening hours, and service area business settings (Settings → General), alongside phone and email.
+- WhatsApp number, opening hours, and service area business settings (Settings → Business), alongside phone and email.
+- A Settings → Business admin page (administrators only) that edits every business setting in one place: name, address, phone, WhatsApp, email, opening hours, and service area.
 - CTA Banner (Contact Details) variation: a heading and text beside the contact details.
 - WhatsApp Button variation with the WhatsApp logo, and optional pre-filled email subjects and bodies and WhatsApp messages, keeping line breaks.
 - Simple Icons brand logos in the theme's icon collection, starting with WhatsApp.
+- Site Logo block (`jmc/site-logo`): the theme's logo as an inline SVG in the header, coloured by `--jmc-logo-*` tokens that follow the surrounding palette, with Brand, Mono dark and Mono light styles.
+- Hero, Service introduction and Why choose us patterns in new Heroes, Services and Trust pattern categories, with lorem ipsum placeholder copy until client copy is supplied.
+- Switchable colour palettes (Appearance → Editor → Styles → Colors): the default navy and copper, Alternate palette 1 (black and red on light grey) and Alternate palette 2 (graphite and verdigris on concrete). Includes a contrast report (`npm run test:contrast`) and tests covering every palette, section palette and logo colour.
+- Call to action and Contact details patterns in new Calls to action and Contact pattern categories. Service listings use the Service Grid block rather than a pattern.
+- Front-page and page templates: the shared header and footer parts around one `<main>` landmark holding the page title (H1) and content. The title is omitted when the page contains a hero, whose heading is the H1.
+- Services landing page and Service page templates, applied automatically to the Services page and its direct children, with breadcrumbs (Home → Services → Service) and matching starter patterns. Structured data is left to Yoast SEO.
+- Home page starter pattern (`jmc/home-page`): the homepage's standard sections (hero, service introduction, Service Grid, why choose us and contact details), each locked, offered when a page is created.
+- Contact (`page-contact`) and 404 templates, with a `jmc/contact-page` starter pattern that seeds the Contact page's own content (hero, enquiry form, contact details and call to action): one main landmark, a single H1, and 404 recovery through a homepage link and a call to action.
+- Front-end site search is turned off: search requests get a 404 and the 404 template. Admin and editor searches still work.
+- Service List: a **Parent page** setting, and a **Choose pages** toggle with an ordered page picker. The toggle is locked on when the parent has no published children, and the choice is kept if children are published later (#141).
+- Service cards show a “Learn more” cue beside the arrow, with the text editable per grid (#141).
+- Reusable `PageSelect` and `PageListInput` editor controls (#141).
+- Primary navigation submenus: one level of submenus from the Site Editor menu. On desktop each opens as a dropdown on mouse hover or from its own disclosure button (keyboard and touch), one at a time, closing on Escape, focus leaving or a click outside; on mobile they are always expanded in the menu. Every link stays reachable without JavaScript, and deeper nesting is flattened into the submenu (#85).
+- The header call-to-action uses the Button block's types (#148): a primary or secondary style, and Phone, Email and WhatsApp variations, switched like the Button block's, that read Settings → Business, with optional pre-filled email and WhatsApp messages. Existing header buttons render as before. Like other buttons, a header button's own link may now be a `mailto:` link.
 
 ### Changed
 
+- Service grids list the published child pages of the page they are on (falling back to the Services page without a page), ready for Domestic and Commercial service categories. The editor preview shows the same pages as the site, including chosen pages (#141).
+- With an even number of service cards, the Service grid's intro spans the first row at two columns so the cards pair up (#141).
+
+- Buttons in a Buttons group stack in columns narrower than 30rem, with every button as wide as the widest, and sit side by side at their own width in wider columns.
+- The Heading and Paragraph blocks list `jmc/service-grid` as an allowed ancestor, matching the intro the Services grid seeds, and each layout block's editor template now lives in `template.ts` and is checked against every block's `parent` and `ancestor` rules (#136).
+- The Enquiry form no longer has an introduction paragraph; it is just the form. Introductions saved by older forms are no longer shown and are dropped the next time the page is saved.
+- Primary buttons on light and secondary sections hover to `brand-800` instead of `brand-900`, a slightly softer dark that each palette can tune.
+- The header uses the theme's inline SVG logo instead of the core Site Logo block's uploaded image.
+- The business settings moved from Settings → General to Settings → Business; stored values are unchanged.
+- The footer's business name and address are now site-wide settings, edited on Settings → Business or in the footer's Business details sidebar instead of on the block. Existing footer values are copied into the settings once.
+- The opening-hours fields on the settings page line up in columns.
+- Highlight text, icons and focus rings in the default section palette use `accent-600` (5.37:1 on `base-100`) instead of `accent-500` (3.65:1).
+- The `error` colour is darker (#B33A3A) so error messages reach 4.5:1 on light sections, and the inverse palette uses a lightened error colour (`--jmc-error-color`) so errors stay readable on dark sections.
 - Server-rendered editor previews (contact details, services list, navigation, footer navigation) are inert, so links in them no longer leave the editor.
+- Development tooling upgraded to the latest `@wordpress/*` majors (`scripts` 37, `env` 12), Playwright 1.65 and PHPUnit 9.6.39, clearing every critical `npm audit` advisory; the remaining upstream-only advisories are documented in `docs/development.md`. Tooling now needs Node 22.13 or later (`.nvmrc` stays on 24).
+- JavaScript unit tests run on Vitest instead of Jest.
+- Breadcrumbs moved from a strip between the header and the hero into the hero (#145). On child pages the trail replaces the hero's label, starts with a home icon, and marks the current page in the highlight colour; a **Show breadcrumbs** setting (on by default) turns it off. The Services templates no longer include a breadcrumbs block.
 
 ### Known issues
 

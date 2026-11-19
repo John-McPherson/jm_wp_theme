@@ -15,7 +15,7 @@ const ALLOWED_BLOCKS = [ 'jmc/button' ];
 
 const TEMPLATE: [ string ][] = [ [ 'jmc/button' ] ];
 
-// `jmc/button` is hidden from the inserter, so buttons are added from here instead.
+// Buttons are added from this menu, which presets each button's link type.
 const NEW_BUTTONS = [
 	{
 		linkType: 'link',

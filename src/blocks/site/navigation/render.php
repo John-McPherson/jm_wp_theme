@@ -27,9 +27,9 @@ if ( ! $navigation || 'wp_navigation' !== $navigation->post_type ) {
 $menu_blocks = parse_blocks( content: $navigation->post_content );
 
 
-$links = get_navigation_links( menu_blocks: $menu_blocks );
+$items = jmc_get_navigation_tree( menu_blocks: $menu_blocks );
 
-if ( [] === $links ) {
+if ( [] === $items ) {
 	return;
 }
 
@@ -58,6 +58,17 @@ $navigation_list_attributes = [
 	],
 ];
 
+/**
+ * Whether a navigation link points at the current page.
+ *
+ * `is_page( 0 )` matches every page, so custom links (no ID) are never current.
+ *
+ * @param array{id:int,title:string,url:string} $link_item The link.
+ *
+ * @return bool
+ */
+$is_current = static fn ( array $link_item ): bool => $link_item['id'] > 0 && is_page( $link_item['id'] );
+
 
 ?>
 
@@ -69,23 +80,70 @@ $navigation_list_attributes = [
 	</button>
 	<ul <?php jmc_the_attributes( $navigation_list_attributes ); ?>>
 		<?php
-		foreach ( $links as $link_item ) :
+		foreach ( $items as $item ) :
+			$children   = $item['children'];
+			$submenu_id = [] !== $children ? wp_unique_id( 'jmc-navigation__submenu-' ) : '';
 
-			$link_attributes = [
-				'href'  => esc_url( $link_item['url'] ),
-				'class' => 'jmc-navigation__link',
+			$item_attributes = [
+				'classes' => [
+					'jmc-navigation__item',
+					[] !== $children ? 'jmc-navigation__item--has-submenu' : '',
+					[] !== array_filter( $children, $is_current ) ? 'jmc-navigation__item--current-ancestor' : '',
+				],
 			];
 
-			// is_page( 0 ) matches every page, so custom links (no ID) must be skipped.
-			if ( $link_item['id'] > 0 && is_page( $link_item['id'] ) ) {
-				$link_attributes['aria-current'] = 'page';
-			}
+			$link_attributes = [
+				'href'         => $item['url'],
+				'class'        => 'jmc-navigation__link',
+				'aria-current' => $is_current( $item ) ? 'page' : null,
+			];
+
+			$submenu_toggle_attributes = [
+				'type'          => 'button',
+				'classes'       => [
+					'jmc-navigation__submenu-toggle',
+					'' === $item['url'] ? 'jmc-navigation__submenu-toggle--label' : '',
+				],
+				'aria-expanded' => 'false',
+				'aria-controls' => $submenu_id,
+			];
 			?>
-			
-			<li class="jmc-navigation__item">
-				<a <?php jmc_the_attributes( $link_attributes ); ?>>
-					<?php echo esc_html( $link_item['title'] ); ?> 
-				</a>
+			<li<?php jmc_the_attributes( $item_attributes ); ?>>
+				<?php if ( '' !== $item['url'] ) : ?>
+					<a<?php jmc_the_attributes( $link_attributes ); ?>><?php echo esc_html( $item['title'] ); ?></a>
+				<?php else : ?>
+					<span class="jmc-navigation__label"><?php echo esc_html( $item['title'] ); ?></span>
+				<?php endif; ?>
+
+				<?php if ( [] !== $children ) : ?>
+					<button<?php jmc_the_attributes( $submenu_toggle_attributes ); ?>>
+						<?php if ( '' === $item['url'] ) : ?>
+							<?php echo esc_html( $item['title'] ); ?>
+						<?php else : ?>
+							<span class="sro">
+								<?php
+								/* translators: %s: Parent navigation item label. */
+								echo esc_html( sprintf( __( '%s submenu', 'jmc-theme' ), $item['title'] ) );
+								?>
+							</span>
+						<?php endif; ?>
+						<span class="jmc-navigation__submenu-icon" aria-hidden="true"></span>
+					</button>
+					<ul id="<?php echo esc_attr( $submenu_id ); ?>" class="jmc-navigation__submenu">
+						<?php
+						foreach ( $children as $child ) :
+							$child_attributes = [
+								'href'         => $child['url'],
+								'class'        => 'jmc-navigation__submenu-link',
+								'aria-current' => $is_current( $child ) ? 'page' : null,
+							];
+							?>
+							<li class="jmc-navigation__submenu-item">
+								<a<?php jmc_the_attributes( $child_attributes ); ?>><?php echo esc_html( $child['title'] ); ?></a>
+							</li>
+						<?php endforeach; ?>
+					</ul>
+				<?php endif; ?>
 			</li>
 		<?php endforeach; ?>
 

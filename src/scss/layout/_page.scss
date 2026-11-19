@@ -1,0 +1,18 @@
+@layer layout {
+
+	/*
+	 * The page title shares the section content width: the page margin on
+	 * narrow screens, centred at the section container width on wide ones.
+	 */
+	.jmc-page-title {
+		padding-block-start: var(--jmc-section-padding);
+		padding-inline: max(var(--jmc-page-margin), calc((100% - var(--jmc-container-l)) / 2));
+		color: var(--jmc-text-color);
+		overflow-wrap: break-word;
+	}
+
+	// Keep space above the footer when the page has no sections.
+	.site-main:not(:has(.jmc-section)) {
+		padding-block-end: var(--jmc-section-padding);
+	}
+}

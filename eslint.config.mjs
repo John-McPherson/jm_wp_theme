@@ -8,6 +8,7 @@ export default [
 			'node_modules/**',
 			'vendor/**',
 			'coverage/**',
+			'artifacts/**',
 			'playwright-report/**',
 			'test-results/**',
 			'.claude/**',

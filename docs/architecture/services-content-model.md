@@ -5,6 +5,7 @@
 - Applies to: Service landing page, individual service pages, service cards, navigation, search, breadcrumbs, and structured data
 - Related issue: [#43](https://github.com/John-McPherson/jm_wp_theme/issues/43)
 - Amended: 2026-11-17 by [#6](https://github.com/John-McPherson/jm_wp_theme/issues/6): service cards use a service icon instead of the featured image (see [Amendment: service icons](#amendment-service-icons))
+- Amended: 2026-11-18 by [#141](https://github.com/John-McPherson/jm_wp_theme/issues/141): service grids list the children of their own page, or chosen pages (see [Amendment: service categories and grid sources](#amendment-service-categories-and-grid-sources))
 
 ## Context
 
@@ -99,11 +100,18 @@ The service-page structure should consistently support:
 4. relevant call to action;
 5. optional related content where a defined relationship exists.
 
+### Implementation
+
+- `templates/services-landing.html` lays out the Services page and `templates/service.html` its direct children. The theme routes each page to its template from the resolved Services page, ahead of any template assigned in the editor, and never applies either template to deeper descendants or unrelated pages; see [Services templates](../blocks.md#services-templates).
+- The templates hold the header, the page content and the footer, and no editorial content. Breadcrumbs belong to the page's hero, which shows them on child pages; see [Hero breadcrumbs](../blocks.md#hero-breadcrumbs).
+- The `jmc/services-landing` and `jmc/service-page` starter patterns give each page the structure above, as locked sections whose copy belongs to the page. Only the landing page lists services, through `jmc/service-grid`.
+- No related-content section is provided yet, because no relationship between services is defined beyond their shared parent.
+
 ## Navigation, search, and breadcrumbs
 
 - Navigation links point to the canonical page URLs.
-- Service pages remain included in normal WordPress search unless a separate documented search decision overrides this.
-- Breadcrumbs derive from the native page ancestry: Home → Services → Service.
+- Service pages remain included in normal WordPress search unless a separate documented search decision overrides this. Front-end site search is currently turned off for the whole site, so this applies again if search is restored; see [Site search](../blocks.md#site-search).
+- Breadcrumbs derive from the native page ancestry: Home → Services → Service. The hero renders them on service pages, with Home as an icon link; the Services page itself is top level, so it shows its label instead.
 - Menus may feature selected services, but a menu is not the service catalogue or source of truth.
 - Removing a service requires unpublishing or moving the page and reviewing redirects and inbound navigation.
 
@@ -120,6 +128,10 @@ At minimum:
 - validate the final rendered output.
 
 Any additional schema-specific value must satisfy the custom-meta rule: structured, validated, and not reliably derivable from existing content.
+
+### Implementation
+
+The theme outputs no structured data. Schema is deferred to Yoast SEO, which is planned to own it and builds it from the page record (title, excerpt, permalink and hierarchy) and its site-wide organisation settings, satisfying the rules above without a parallel form. The theme's part is to keep the visible content clean for it: one H1 per page, the excerpt as the page summary, canonical permalinks, and native breadcrumbs. Validate the rendered output once Yoast is configured.
 
 ## Editorial governance
 
@@ -207,3 +219,36 @@ Service cards show an icon rather than the featured image. Photographs at card s
 - The icon is stored in the `jmc_service_icon` page meta and chosen in the page's **Service icon** panel, from the theme's `jmc` icon collection (Lucide icons generated at build time; see [Icons](../blocks.md#icons)).
 - Featured images are no longer part of the service card contract. Pages may still have one, for example for social sharing, but the grid does not use it.
 - A page without an icon still renders a card without one; the editorial requirement to choose an icon stands.
+
+## Amendment: service categories and grid sources
+
+- Date: 2026-11-18
+- Issue: [#141](https://github.com/John-McPherson/jm_wp_theme/issues/141)
+
+Services are grouped under category landing pages, so the hierarchy has three levels:
+
+```text
+/services/                          Services: lists the categories
+/services/domestic/                 Domestic Services: lists domestic services
+/services/domestic/rewires/         a service
+/services/commercial/               Commercial Services: lists commercial services
+/services/commercial/fit-outs/      a service
+```
+
+### Grid sources
+
+A service grid lists the published, unprotected children of its parent page, which is the page it is on unless the block names another page. The Services page therefore lists the two categories as cards, and each category lists its own services. A grid with no page context (for example in a template) uses the Services page.
+
+A grid may instead list pages chosen in the block, stored as page IDs in the chosen order. This is how a page without children, such as the homepage, shows a selection of services. It does not reintroduce the rejected manually maintained grid: the block stores references only, and every card is still built from the page's own title, excerpt, icon and permalink, so nothing is duplicated and nothing can drift. Chosen pages that are unpublished, password-protected or deleted are skipped.
+
+When the parent has no children the grid is locked to chosen pages, and that choice is saved, so publishing children later does not silently replace the selection.
+
+### Implementation
+
+- `jmc_get_service_list_parent()` resolves a grid's parent, and `jmc_get_services()` and `jmc_get_chosen_services()` in `inc/helpers/services.php` are the retrieval functions; any service listing must use them.
+- Category pages are cards like any service, so they need an excerpt and an icon too.
+- The "Retrieval contract" above now applies to the grid's parent rather than only to the Services page.
+
+### Still to do under #141
+
+Template routing for category pages and their services, the Service icon panel on category pages and their services, a category landing starter pattern, and three-level breadcrumbs. Until then the "direct children of the Services page" rules for templates and the icon panel still apply.

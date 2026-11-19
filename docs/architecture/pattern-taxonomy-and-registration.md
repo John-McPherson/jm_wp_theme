@@ -127,12 +127,11 @@ Every lock must have a specific structural, accessibility, or functional reason 
 
 ## Placeholder content
 
-Placeholder content must be safe, realistic, and obviously replaceable.
+Placeholder content must be safe and obviously replaceable.
 
-- Use concise neutral copy representative of an electrical-services website.
+- Until client copy is available, pattern text is lorem ipsum. This keeps placeholder copy from shipping as if it were real. Client copy replaces it in [#135](https://github.com/John-McPherson/jm_wp_theme/issues/135).
 - Do not invent awards, accreditations, customer claims, prices, response times, guarantees, addresses, phone numbers, or legal statements.
 - Do not use production customer data or personal information.
-- Use descriptive labels instead of lorem ipsum where the content's purpose matters.
 - Keep heading levels compatible with insertion beneath the page title; patterns must not assume they own the page's only `h1`.
 - Use replaceable media that the project has the right to distribute.
 - Provide meaningful alternative text for informative placeholder images; use an empty alternative attribute for decorative images.

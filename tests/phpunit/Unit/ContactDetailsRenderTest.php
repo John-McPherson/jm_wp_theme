@@ -65,7 +65,7 @@ final class ContactDetailsRenderTest extends TestCase {
 		);
 		self::assertMatchesRegularExpression( '#<dt[^>]*>(?:<svg[^>]*></svg>)?<span[^>]*>Opening hours</span></dt>#', $html );
 		self::assertMatchesRegularExpression(
-			'#<dt[^>]*>(?:<svg[^>]*></svg>)?<span[^>]*>Areas covered</span></dt>\s*<dd[^>]*>\s*<ul class="jmc-contact-details__areas" role="list">\s*<li>Glasgow</li>\s*<li>East Kilbride</li>#',
+			'#<dt[^>]*>(?:<svg[^>]*></svg>)?<span class="jmc-contact-details__label-text jmc-contact-details__label-text--visible">Areas covered:</span></dt>\s*<dd class="jmc-contact-details__value">Glasgow and East Kilbride</dd>#',
 			$html
 		);
 		self::assertSame( 1, substr_count( $html, '<dl' ) );
@@ -78,14 +78,14 @@ final class ContactDetailsRenderTest extends TestCase {
 		$html = $this->render_contact_details();
 
 		foreach ( [
-			'Phone'         => 'jmc/phone',
-			'WhatsApp'      => 'jmc/whatsapp',
-			'Email'         => 'jmc/mail',
-			'Opening hours' => 'jmc/clock',
-			'Areas covered' => 'jmc/house',
+			'Phone'          => 'jmc/phone',
+			'WhatsApp'       => 'jmc/whatsapp',
+			'Email'          => 'jmc/mail',
+			'Opening hours'  => 'jmc/clock',
+			'Areas covered:' => 'jmc/house',
 		] as $label => $icon ) {
 			self::assertMatchesRegularExpression(
-				'#<dt class="jmc-contact-details__label"><svg class="jmc-contact-details__icon" data-icon="' . preg_quote( $icon, '#' ) . '" aria-hidden="true"[^>]*></svg><span class="jmc-contact-details__label-text">' . $label . '</span></dt>#',
+				'#<dt class="jmc-contact-details__label"><svg class="jmc-contact-details__icon" data-icon="' . preg_quote( $icon, '#' ) . '" aria-hidden="true"[^>]*></svg><span class="jmc-contact-details__label-text(?: jmc-contact-details__label-text--visible)?">' . $label . '</span></dt>#',
 				$html
 			);
 		}
@@ -123,7 +123,7 @@ final class ContactDetailsRenderTest extends TestCase {
 		self::assertStringNotContainsString( 'Opening hours', $html );
 		self::assertStringNotContainsString( '<time', $html );
 		self::assertStringContainsString( 'mailto:hello@example.com', $html );
-		self::assertStringContainsString( '<li>Glasgow</li>', $html );
+		self::assertStringContainsString( 'Glasgow and East Kilbride', $html );
 		self::assertSame( 3, substr_count( $html, '<dt' ) );
 	}
 
@@ -164,7 +164,7 @@ final class ContactDetailsRenderTest extends TestCase {
 		self::assertStringNotContainsString( 'not-an-email', $html );
 		self::assertStringNotContainsString( 'Opening hours', $html );
 		self::assertSame( 1, substr_count( $html, '<dt' ) );
-		self::assertStringContainsString( '<li>Glasgow</li>', $html );
+		self::assertStringContainsString( '<dd class="jmc-contact-details__value">Glasgow</dd>', $html );
 	}
 
 	/**
@@ -229,8 +229,48 @@ final class ContactDetailsRenderTest extends TestCase {
 
 		$html = $this->render_contact_details();
 
-		self::assertStringContainsString( '<li>Brigg &amp; District</li>', $html );
-		self::assertStringContainsString( '<li>Hull &quot;East&quot;</li>', $html );
+		self::assertStringContainsString( 'Brigg &amp; District and Hull &quot;East&quot;', $html );
+	}
+
+	/**
+	 * The service area reads as one phrase, worded like the footer, with no list.
+	 *
+	 * @dataProvider service_area_provider
+	 *
+	 * @param list<string> $places   Stored places.
+	 * @param string       $expected Expected phrase.
+	 */
+	public function test_service_area_is_one_phrase( array $places, string $expected ): void {
+		$GLOBALS['jmc_test_options'][ JMC_BUSINESS_SERVICE_AREA_OPTION ] = $places;
+
+		$html = $this->render_contact_details();
+
+		self::assertStringContainsString( '<dd class="jmc-contact-details__value">' . $expected . '</dd>', $html );
+		self::assertSame( 1, substr_count( $html, '<ul' ), 'Only the opening hours should be a list.' );
+	}
+
+	/**
+	 * Stored service areas and how Contact Details reads them.
+	 *
+	 * @return array<string, array{list<string>, string}>
+	 */
+	public function service_area_provider(): array {
+		return [
+			'one place'    => [ [ 'Pudsey' ], 'Pudsey' ],
+			'two places'   => [ [ 'Pudsey', 'Leeds' ], 'Pudsey and Leeds' ],
+			'three places' => [ [ 'Pudsey', 'Leeds', 'Bradford' ], 'Pudsey, Leeds and Bradford' ],
+		];
+	}
+
+	/**
+	 * The service area row is omitted when the setting is empty or the toggle is off.
+	 */
+	public function test_omits_service_area_row(): void {
+		self::assertStringNotContainsString( 'Areas covered', $this->render_contact_details( [ 'showServiceArea' => false ] ) );
+
+		$GLOBALS['jmc_test_options'][ JMC_BUSINESS_SERVICE_AREA_OPTION ] = [];
+
+		self::assertStringNotContainsString( 'Areas covered', $this->render_contact_details() );
 	}
 
 	/**

@@ -5,9 +5,8 @@ import { store as coreStore } from '@wordpress/core-data';
 import { useSelect } from '@wordpress/data';
 import ServerSideRender from '@wordpress/server-side-render';
 
+import ContactSettings from '../../../components/ContactSettings';
 import Sidebar from '../../../components/Sidebar';
-
-import ContactSettings from './settings';
 
 type Attributes = {
 	showPhone: boolean;
@@ -58,7 +57,7 @@ const FIELDS: { key: Field; label: string }[] = [
 const EmptyDetails = () => (
 	<p className="jmc-contact-details__empty">
 		{ __(
-			'No contact details to show. Add them in Settings → General, or switch on a field in the block settings.',
+			'No contact details to show. Add them in Settings → Business, or switch on a field in the block settings.',
 			'jmc-theme'
 		) }
 	</p>
@@ -86,7 +85,7 @@ export default function Edit( { attributes, setAttributes }: Props ) {
 				<Sidebar.Section title={ __( 'Contact details', 'jmc-theme' ) }>
 					<p>
 						{ __(
-							'Details come from Settings → General, so they stay the same everywhere. Choose which to show here.',
+							'Details come from Settings → Business, so they stay the same everywhere. Choose which to show here.',
 							'jmc-theme'
 						) }
 					</p>

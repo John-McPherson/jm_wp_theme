@@ -13,6 +13,23 @@
       "area": "footer"
     }
   ],
+  "customTemplates": [
+    {
+      "name": "services-landing",
+      "title": "Services landing page",
+      "postTypes": ["page"]
+    },
+    {
+      "name": "service",
+      "title": "Service page",
+      "postTypes": ["page"]
+    },
+    {
+      "name": "page-contact",
+      "title": "Contact",
+      "postTypes": ["page"]
+    }
+  ],
   "settings": {
     "layout": {
       "contentSize": "768px",
@@ -396,7 +413,7 @@
         {
           "slug": "error",
           "name": "Error",
-          "color": "#C94949"
+          "color": "#B33A3A"
         }
       ]
     }

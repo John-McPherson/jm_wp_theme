@@ -106,9 +106,16 @@ final class HeaderTemplateTest extends TestCase {
 			'parts/header.html'
 		);
 
-		$this->assertStringContainsString(
+		$this->assertMatchesRegularExpression(
+			'/<!--\s+wp:jmc\/site-logo\s+\{"lock":\{"remove":true\}\}\s+\/-->/',
+			$header,
+			'The header should use the theme logo block, locked against removal.'
+		);
+
+		$this->assertStringNotContainsString(
 			'<!-- wp:site-logo',
-			$header
+			$header,
+			'The header should not use the core Site Logo block, which prints an uploaded image.'
 		);
 
 		$this->assertStringContainsString(
@@ -156,7 +163,7 @@ final class HeaderTemplateTest extends TestCase {
 		$this->assertDoesNotMatchRegularExpression(
 			'/<img\b/i',
 			$header,
-			'The template should use the Site Logo block.'
+			'The template should use the theme logo block, not an image.'
 		);
 
 		$this->assertDoesNotMatchRegularExpression(

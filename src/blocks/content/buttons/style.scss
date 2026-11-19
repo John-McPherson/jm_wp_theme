@@ -2,20 +2,38 @@
 
 @layer blocks {
 
-	// Full-width and stacked on small screens, then a wrapping row.
+	// Stacked in narrow columns, with every button as wide as the widest so
+	// the stack reads as one set; full width on the smallest screens. Once the
+	// column has room for a row, buttons sit side by side at their own width.
+	// Stacking is decided by the column's width rather than by wrapping,
+	// because CSS cannot tell when a flex row has wrapped.
 	.jmc-buttons {
 		display: flex;
 		flex-direction: column;
+		align-items: stretch;
 		gap: var(--jmc-padding-s);
 		width: 100%;
 
-		.jmc-button:not(:last-child) {
-			margin-bottom: 0;
+		.jmc-button {
+			width: auto;
+
+			&:not(:last-child) {
+				margin-bottom: 0;
+			}
 		}
 
 		@include min($compact) {
+			width: fit-content;
+			max-width: 100%;
+		}
+
+		@include min($mobile) {
 			flex-flow: row wrap;
 			align-items: center;
+
+			.jmc-button {
+				width: fit-content;
+			}
 		}
 	}
 }

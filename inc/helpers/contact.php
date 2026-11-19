@@ -8,6 +8,16 @@
 declare(strict_types=1);
 
 /**
+ * Option holding the business (trading) name.
+ */
+const JMC_BUSINESS_NAME_OPTION = 'jmc_business_name';
+
+/**
+ * Option holding the business postal address, one line per line of the address.
+ */
+const JMC_BUSINESS_ADDRESS_OPTION = 'jmc_business_address';
+
+/**
  * Option holding the business telephone number, as it should be displayed.
  */
 const JMC_BUSINESS_PHONE_OPTION = 'jmc_business_phone';
@@ -41,6 +51,41 @@ const JMC_BUSINESS_DAYS = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'frida
  * Longest place name kept in the service area, in characters.
  */
 const JMC_SERVICE_AREA_MAX_LENGTH = 100;
+
+/**
+ * Sanitise the business name for storage.
+ *
+ * Plain text on one line: tags are removed, entities decoded and whitespace
+ * (including line breaks) collapsed.
+ *
+ * @param mixed $value Submitted value.
+ *
+ * @return string The name, or an empty string when it is missing or blank.
+ */
+function jmc_sanitize_business_name( mixed $value ): string {
+	return trim( (string) preg_replace( '/\s+/u', ' ', jmc_plain_text( $value ) ) );
+}
+
+/**
+ * Sanitise the business address for storage.
+ *
+ * Plain text, one address line per line: tags are removed (a `<br>` becomes a
+ * new line), entities decoded, whitespace within each line collapsed and
+ * blank lines dropped.
+ *
+ * @param mixed $value Submitted value.
+ *
+ * @return string The address lines joined by `\n`, or an empty string when it is missing or blank.
+ */
+function jmc_sanitize_business_address( mixed $value ): string {
+	return implode(
+		"\n",
+		array_map(
+			static fn ( string $line ): string => (string) preg_replace( '/\s+/u', ' ', $line ),
+			explode( "\n", jmc_plain_text( $value ) )
+		)
+	);
+}
 
 /**
  * Sanitise a business telephone number for storage.
@@ -247,6 +292,30 @@ function jmc_sanitize_business_service_area( mixed $value ): array {
 	}
 
 	return array_values( $places );
+}
+
+/**
+ * Read a list of places as one phrase, as the footer and Contact Details show it.
+ *
+ * One place reads "Pudsey", two read "Pudsey and Leeds", and three or more read
+ * "Pudsey, Leeds and Bradford". The "and" is translatable. The phrase is not
+ * escaped; escape it at output.
+ *
+ * @param string[] $places Place names, e.g. from jmc_business_contact_details().
+ *
+ * @return string The phrase, or an empty string when there are no places.
+ */
+function jmc_service_area_phrase( array $places ): string {
+	$last_place = (string) array_pop( $places );
+
+	return [] === $places
+		? $last_place
+		: sprintf(
+			/* translators: 1: comma-separated list of places, 2: the last place. */
+			__( '%1$s and %2$s', 'jmc-theme' ),
+			implode( ', ', $places ),
+			$last_place
+		);
 }
 
 /**

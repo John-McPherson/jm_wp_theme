@@ -1,50 +1,20 @@
 import { __ } from '@wordpress/i18n';
 
-import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
+import {
+	useBlockProps,
+	useInnerBlocksProps,
+	store as blockEditorStore,
+} from '@wordpress/block-editor';
+import { createBlocksFromInnerBlocksTemplate } from '@wordpress/blocks';
+import { useDispatch } from '@wordpress/data';
+import { useEffect, useRef } from '@wordpress/element';
 
 import bindFields from '../../../utils/bindFields';
 
 import Sidebar from '../../../components/Sidebar';
 import SelectInput from '../../../components/SelectInput';
 
-const TEMPLATE = [
-	[
-		'jmc/column',
-		{},
-		[
-			[
-				'jmc/heading',
-				{
-					level: '2',
-				},
-			],
-		],
-	],
-	[
-		'jmc/column',
-		{},
-		[
-			[ 'jmc/paragraph', {} ],
-			// No inner template here: the locked section re-syncs to its template, which
-			// would drop any extra buttons. `jmc/buttons` seeds its own first button.
-			[ 'jmc/buttons', {} ],
-		],
-	],
-];
-
-// Contact variation: a heading and supporting text beside the business contact
-// details, which `order` places on the chosen side (right by default).
-const CONTACT_TEMPLATE = [
-	[
-		'jmc/column',
-		{},
-		[
-			[ 'jmc/heading', { level: '2' } ],
-			[ 'jmc/paragraph', {} ],
-		],
-	],
-	[ 'jmc/column', {}, [ [ 'jmc/contact-details', {} ] ] ],
-];
+import { TEMPLATE, CONTACT_TEMPLATE } from './template';
 
 const VARIANT_CLASSES = {
 	default: '',
@@ -67,11 +37,30 @@ const CONTACT_ORDER_OPTIONS = [
 	{ label: __( 'Contact Details Right', 'jmc-theme' ), value: 'right' },
 ];
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, clientId } ) {
 	const bind = bindFields( attributes, setAttributes );
 
 	const { palette, order, layout } = attributes;
 	const isStacked = 'stacked' === layout;
+	const template = 'contact' === layout ? CONTACT_TEMPLATE : TEMPLATE;
+
+	// The section no longer re-syncs to its template (that would discard blocks
+	// authors add to the columns), so switching between the button and contact
+	// variations rebuilds the columns here instead.
+	const { replaceInnerBlocks } = useDispatch( blockEditorStore );
+	const previousTemplate = useRef( template );
+
+	useEffect( () => {
+		if ( previousTemplate.current === template ) {
+			return;
+		}
+
+		previousTemplate.current = template;
+		replaceInnerBlocks(
+			clientId,
+			createBlocksFromInnerBlocksTemplate( template )
+		);
+	}, [ template, clientId, replaceInnerBlocks ] );
 
 	const blockProps = useBlockProps( {
 		className: [
@@ -97,8 +86,9 @@ export default function Edit( { attributes, setAttributes } ) {
 		},
 		{
 			allowedBlocks: ALLOWED_BLOCKS,
-			template: 'contact' === layout ? CONTACT_TEMPLATE : TEMPLATE,
-			templateLock: true,
+			template,
+			// The two columns stay put; each column unlocks its own content (see jmc/column).
+			templateLock: 'insert',
 		}
 	);
 

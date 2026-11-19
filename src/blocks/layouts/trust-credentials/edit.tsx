@@ -7,6 +7,8 @@ import bindFields from '../../../utils/bindFields';
 import Sidebar from '../../../components/Sidebar';
 import SelectInput from '../../../components/SelectInput';
 
+import { TEMPLATE } from './template';
+
 type Attributes = {
 	palette: 'default' | 'secondary' | 'inverse';
 	className?: string;
@@ -16,9 +18,6 @@ type Props = {
 	attributes: Attributes;
 	setAttributes: ( attributes: Partial< Attributes > ) => void;
 };
-
-// The section is just the list of credentials.
-const TEMPLATE = [ [ 'jmc/credential-list' ] ];
 
 const ALLOWED_BLOCKS = [ 'jmc/credential-list' ];
 

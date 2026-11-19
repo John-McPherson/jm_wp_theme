@@ -15,4 +15,10 @@
 			pointer-events: all;
 		}
 	}
+
+	// The trail replaces the first label, as render.php drops it on the
+	// frontend. The label stays saved for when breadcrumbs are off.
+	.jmc-hero--has-breadcrumbs > .jmc-hero__text > .jmc-label:nth-child(1 of .jmc-label) {
+		display: none;
+	}
 }

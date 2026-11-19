@@ -22,9 +22,7 @@
       "type": "object",
       "default": {
         "url": "",
-        "opensInNewTab": false,
-        "target": "",
-        "rel": ""
+        "opensInNewTab": false
       }
     },
     "linkType": {
@@ -62,7 +60,7 @@
     {
       "name": "phone",
       "title": "Phone Button",
-      "description": "Calls the business phone number set in Settings → General.",
+      "description": "Calls the business phone number set in Settings → Business.",
       "icon": "phone",
       "attributes": {
         "linkType": "phone"
@@ -73,7 +71,7 @@
     {
       "name": "email",
       "title": "Email Button",
-      "description": "Emails the business email address set in Settings → General.",
+      "description": "Emails the business email address set in Settings → Business.",
       "icon": "email",
       "attributes": {
         "linkType": "email"
@@ -84,7 +82,7 @@
     {
       "name": "whatsapp",
       "title": "WhatsApp Button",
-      "description": "Opens a WhatsApp chat with the business WhatsApp number set in Settings → General.",
+      "description": "Opens a WhatsApp chat with the business WhatsApp number set in Settings → Business.",
       "icon": "format-chat",
       "attributes": {
         "linkType": "whatsapp"
@@ -99,17 +97,17 @@
       "text": "Get a quote",
       "link": {
         "url": "#",
-        "target": "",
-        "rel": ""
+        "opensInNewTab": false
       }
     }
   },
 
+  "ancestor": ["jmc/text-with-image", "jmc/hero", "jmc/buttons"],
+
   "supports": {
     "anchor": true,
     "className": true,
-    "html": false,
-    "inserter": false
+    "html": false
   },
 
   "editorScript": "file:./index.js",

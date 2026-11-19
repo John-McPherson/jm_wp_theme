@@ -27,9 +27,12 @@ flowchart TD
 - `inc/setup.php` declares theme support and editor styles.
 - `inc/enqueue.php` loads the compiled shared stylesheet when it exists and uses its modification time for cache busting. It also prints the cascade-layer order (see Styling and tokens) at the top of the frontend `<head>` and as a dependency of the shared stylesheet in the editor.
 - `inc/blocks.php` recursively registers compiled block metadata, registers the section category, and applies the current editor allowlist.
-- `inc/contact.php` registers the site-wide business contact settings (phone, WhatsApp, email, opening hours, service area) and their Settings → General fields (see [Business contact settings](blocks.md#business-contact-settings)).
+- `inc/templates.php` keeps one H1 in the page templates by omitting the page title when the content contains a hero (see [Page templates](blocks.md#page-templates)).
+- `inc/contact.php` registers the site-wide business settings (name, address, phone, WhatsApp, email, opening hours, service area) and the **Settings → Business** admin page that edits them (`manage_options` only), and copies the footer's legacy block attributes into them once (see [Business contact settings](blocks.md#business-contact-settings)).
+- `inc/helpers/svg.php` reads a theme SVG file and filters it through an SVG allow-list for inline output (used by the site logo).
 - `inc/icons.php` registers the theme's `jmc` icon collection with the core icon registry: the Lucide icons and Simple Icons brand logos generated at build time (see [Icons](blocks.md#icons)).
 - `inc/services.php` enables page excerpts, registers the Services page setting and the `jmc_service_icon` page meta, and loads the service icon editor panel (see [Services grid](blocks.md#services-grid)).
+- `inc/enquiries.php` registers the private `jmc_enquiry` post type and handles enquiry delivery, the admin list and resend action, failure notices, retention, and personal data export and erasure. `inc/enquiry-submission.php` registers the enquiry REST routes and the no-JavaScript `admin-post.php` handler (see [Enquiry form](blocks.md#enquiry-form)). Both are loaded after the helpers they use.
 - `inc/helpers/` contains reusable framework-level PHP helpers.
 
 Feature logic should not accumulate in the bootstrap.
@@ -38,11 +41,11 @@ Feature logic should not accumulate in the bootstrap.
 
 Source metadata and editor code live in `src/blocks/content/`, `src/blocks/layouts/`, and `src/blocks/site/`; production compilation writes to `build/js/blocks/`. Registration scans each compiled directory containing `block.json`.
 
-The current library contains seventeen dynamic blocks:
+The current library contains eighteen dynamic blocks:
 
 - Four insertable sections: `cta-banner`, `hero`, `service-grid`, and `text-with-image`.
 - Seven composition blocks: `button`, `buttons`, `column`, `contact-details`, `heading`, `paragraph`, and `service-list`.
-- Six site-chrome blocks used in template parts: `navigation` and `header-cta` in the header; `footer`, `footer-business`, `footer-navigation`, and `footer-legal` in the footer.
+- Seven site-chrome blocks used in template parts: `site-logo`, `navigation` and `header-cta` in the header; `footer`, `footer-business`, `footer-navigation`, and `footer-legal` in the footer.
 
 Editor code that is not tied to one block lives in `src/editor/`, with its own entry in `webpack.config.js`; it currently holds the service icon panel.
 
@@ -56,7 +59,7 @@ Attributes crossing from the editor into PHP are untrusted. Render code must val
 
 Use the typed argument helpers in `inc/helpers/component-args.php` and escaped HTML-attribute helpers in `inc/helpers/html/attributes.php`. Do not concatenate raw attributes into markup. `href` values are escaped with `jmc_esc_href()` (`inc/helpers/link.php`), which is `esc_url()` except that it keeps encoded line breaks in pre-filled email and WhatsApp messages (see [Link escaping](blocks.md#link-escaping)).
 
-Shared editor code lives in `src/components/` and `src/utils/`: for example `SiteSetting` reads and edits a site option from a block, with a notice for users who cannot manage options; `useThemeIcons()` fetches the registered `jmc` icons so editor previews match `wp_get_icon()`; and `WhatsAppIcon` supplies the WhatsApp logo for editor UI.
+Shared editor code lives in `src/components/` and `src/utils/`: for example `SiteSetting` reads and edits a site option from a block, with a notice for users who cannot manage options; `ContactSettings` is the **Business details** sidebar panel shared by the Contact Details and footer business blocks; `useThemeIcons()` fetches the registered `jmc` icons so editor previews match `wp_get_icon()`; and `WhatsAppIcon` supplies the WhatsApp logo for editor UI.
 
 ### Styling and tokens
 
@@ -91,7 +94,7 @@ The `style.css` header currently uses `jmc-custom-theme`; align it before releas
 - The global block allowlist exposes only `jmc/` blocks and must become context-aware before header, navigation, query, and broader FSE workflows are completed.
 - Some internal block metadata still uses legacy, unregistered categories.
 - TypeScript strict mode is disabled and existing contracts contain weak typing.
-- Header and footer template parts exist; patterns and full template coverage are not implemented.
+- Header and footer template parts, the first theme patterns, and the front-page, page, services landing, service, contact and 404 templates exist; other views (posts and archives) still fall back to `index.html`. Front-end search is turned off by `inc/search.php` and answered with the 404 template.
 - Automated behavioural and accessibility tests are not configured.
 - Packaging uses Unix-specific shell tools and is not clean-install tested.
 - Production hosting, deployment, health-check, and rollback commands are undecided.

@@ -15,6 +15,13 @@ use PHPUnit\Framework\TestCase;
 final class HeaderCtaRenderTest extends TestCase {
 
 	/**
+	 * Reset the option fixtures between tests.
+	 */
+	protected function tearDown(): void {
+		unset( $GLOBALS['jmc_test_options'] );
+	}
+
+	/**
 	 * A configured web link renders a button with its label and destination.
 	 */
 	public function test_renders_configured_url(): void {
@@ -176,12 +183,6 @@ final class HeaderCtaRenderTest extends TestCase {
 					'link' => [ 'url' => 'javascript:alert(1)' ],
 				],
 			],
-			'mailto url'        => [
-				[
-					'text' => 'Call',
-					'link' => [ 'url' => 'mailto:hello@example.com' ],
-				],
-			],
 			'invalid telephone' => [
 				[
 					'text' => 'Call',
@@ -194,6 +195,246 @@ final class HeaderCtaRenderTest extends TestCase {
 					'link' => [ 'url' => '//example.com' ],
 				],
 			],
+		];
+	}
+
+	/**
+	 * Saved CTAs without a link or button type render as primary `link` buttons.
+	 */
+	public function test_saved_cta_renders_as_primary_link(): void {
+		$saved = [
+			'text' => 'Get a quote',
+			'link' => [ 'url' => 'https://example.com/contact/' ],
+		];
+
+		self::assertSame(
+			$this->render_cta(
+				$saved + [
+					'linkType'   => 'link',
+					'buttonType' => 'primary',
+				]
+			),
+			$this->render_cta( $saved )
+		);
+	}
+
+	/**
+	 * A `link` CTA may link to an email address, as the button block does.
+	 */
+	public function test_renders_mailto_link(): void {
+		$html = $this->render_cta(
+			[
+				'text' => 'Email us',
+				'link' => [ 'url' => 'mailto:hello@example.com' ],
+			]
+		);
+
+		self::assertStringContainsString( 'href="mailto:hello@example.com"', $html );
+	}
+
+	/**
+	 * Phone, email and WhatsApp CTAs link to the site-wide business details, not their own link.
+	 */
+	public function test_contact_types_use_business_details(): void {
+		$GLOBALS['jmc_test_options'] = [
+			JMC_BUSINESS_PHONE_OPTION    => '01234 567890',
+			JMC_BUSINESS_EMAIL_OPTION    => 'hello@example.com',
+			JMC_BUSINESS_WHATSAPP_OPTION => '+44 7700 900123',
+		];
+
+		$link = [
+			'url'           => 'https://example.com/',
+			'opensInNewTab' => true,
+		];
+
+		$phone = $this->render_cta(
+			[
+				'text'     => 'Call us',
+				'linkType' => 'phone',
+				'link'     => $link,
+			]
+		);
+
+		self::assertStringContainsString( 'href="tel:01234567890"', $phone );
+		self::assertStringContainsString( 'class="jmc-button jmc-button--small jmc-header-cta"', $phone );
+		self::assertStringNotContainsString( 'example.com', $phone );
+		self::assertStringNotContainsString( 'target=', $phone );
+
+		$email = $this->render_cta(
+			[
+				'text'     => 'Email us',
+				'linkType' => 'email',
+				'link'     => $link,
+			]
+		);
+
+		self::assertStringContainsString( 'href="mailto:hello@example.com"', $email );
+		self::assertStringNotContainsString( 'target=', $email );
+
+		$whatsapp = $this->render_cta(
+			[
+				'text'     => 'WhatsApp us',
+				'linkType' => 'whatsapp',
+				'link'     => [ 'url' => 'https://example.com/' ],
+			]
+		);
+
+		self::assertStringContainsString( 'href="https://wa.me/447700900123"', $whatsapp );
+		self::assertStringNotContainsString( 'example.com', $whatsapp );
+		self::assertMatchesRegularExpression(
+			'#<svg class="jmc-button__icon" data-icon="jmc/whatsapp" aria-hidden="true"[^>]*></svg>\s*WhatsApp us#',
+			$whatsapp
+		);
+		self::assertStringNotContainsString( 'jmc-button__icon', $phone . $email );
+	}
+
+	/**
+	 * Email and WhatsApp CTAs add their pre-filled message; phone CTAs ignore it.
+	 */
+	public function test_contact_types_add_prefilled_message(): void {
+		$GLOBALS['jmc_test_options'] = [
+			JMC_BUSINESS_PHONE_OPTION    => '01234 567890',
+			JMC_BUSINESS_EMAIL_OPTION    => 'hello@example.com',
+			JMC_BUSINESS_WHATSAPP_OPTION => '+44 7700 900123',
+		];
+
+		$message = [
+			'text'            => 'Contact us',
+			'emailSubject'    => 'Quote request',
+			'emailBody'       => "Please call me back.\nThanks",
+			'whatsappMessage' => "Hi there,\nI need an electrician.",
+		];
+
+		self::assertStringContainsString(
+			'href="mailto:hello@example.com?subject=Quote%20request&amp;body=Please%20call%20me%20back.%0D%0AThanks"',
+			$this->render_cta( [ 'linkType' => 'email' ] + $message )
+		);
+		self::assertStringContainsString(
+			'href="https://wa.me/447700900123?text=Hi%20there%2C%0AI%20need%20an%20electrician."',
+			$this->render_cta( [ 'linkType' => 'whatsapp' ] + $message )
+		);
+		self::assertStringContainsString(
+			'href="tel:01234567890"',
+			$this->render_cta( [ 'linkType' => 'phone' ] + $message )
+		);
+	}
+
+	/**
+	 * Contact CTAs render nothing when their business detail is empty or invalid.
+	 *
+	 * @dataProvider missing_contact_provider
+	 *
+	 * @param array<string, mixed> $options    Stored options.
+	 * @param array<string, mixed> $attributes Block attributes to render.
+	 */
+	public function test_omits_contact_cta_without_details( array $options, array $attributes ): void {
+		$GLOBALS['jmc_test_options'] = $options;
+
+		self::assertSame( '', trim( $this->render_cta( $attributes ) ) );
+	}
+
+	/**
+	 * Option and attribute sets that must render nothing.
+	 *
+	 * @return array<string, array{array<string, mixed>, array<string, mixed>}>
+	 */
+	public function missing_contact_provider(): array {
+		// A valid own link must not stand in for a missing business detail.
+		$link = [ 'url' => 'https://example.com/' ];
+
+		return [
+			'no phone set'    => [
+				[],
+				[
+					'text'     => 'Call us',
+					'linkType' => 'phone',
+					'link'     => $link,
+				],
+			],
+			'no email set'    => [
+				[],
+				[
+					'text'     => 'Email us',
+					'linkType' => 'email',
+					'link'     => $link,
+				],
+			],
+			'no WhatsApp set' => [
+				[],
+				[
+					'text'     => 'WhatsApp us',
+					'linkType' => 'whatsapp',
+					'link'     => $link,
+				],
+			],
+			'invalid phone'   => [
+				[ JMC_BUSINESS_PHONE_OPTION => '0800 ELECTRIC' ],
+				[
+					'text'     => 'Call us',
+					'linkType' => 'phone',
+				],
+			],
+			'phone, no label' => [
+				[ JMC_BUSINESS_PHONE_OPTION => '01234 567890' ],
+				[ 'linkType' => 'phone' ],
+			],
+		];
+	}
+
+	/**
+	 * An unknown link type falls back to the CTA's own link.
+	 */
+	public function test_unknown_link_type_uses_own_link(): void {
+		$GLOBALS['jmc_test_options'] = [ JMC_BUSINESS_PHONE_OPTION => '01234 567890' ];
+
+		$html = $this->render_cta(
+			[
+				'text'     => 'Contact',
+				'linkType' => 'fax',
+				'link'     => [ 'url' => '/contact/' ],
+			]
+		);
+
+		self::assertStringContainsString( 'href="/contact/"', $html );
+	}
+
+	/**
+	 * The secondary style adds its class after the header classes; unknown styles fall back to primary.
+	 *
+	 * @dataProvider button_type_provider
+	 *
+	 * @param mixed  $button_type Saved button type.
+	 * @param string $classes     Expected class attribute.
+	 */
+	public function test_button_type_classes( mixed $button_type, string $classes ): void {
+		$GLOBALS['jmc_test_options'] = [ JMC_BUSINESS_PHONE_OPTION => '01234 567890' ];
+
+		foreach ( [ 'link', 'phone' ] as $link_type ) {
+			self::assertStringContainsString(
+				'class="' . $classes . '"',
+				$this->render_cta(
+					[
+						'text'       => 'Contact',
+						'link'       => [ 'url' => '/contact/' ],
+						'linkType'   => $link_type,
+						'buttonType' => $button_type,
+					]
+				)
+			);
+		}
+	}
+
+	/**
+	 * Button types and the classes they render.
+	 *
+	 * @return array<string, array{mixed, string}>
+	 */
+	public function button_type_provider(): array {
+		return [
+			'primary'    => [ 'primary', 'jmc-button jmc-button--small jmc-header-cta' ],
+			'secondary'  => [ 'secondary', 'jmc-button jmc-button--small jmc-header-cta jmc-button__secondary' ],
+			'unknown'    => [ 'tertiary', 'jmc-button jmc-button--small jmc-header-cta' ],
+			'non-string' => [ [ 'secondary' ], 'jmc-button jmc-button--small jmc-header-cta' ],
 		];
 	}
 

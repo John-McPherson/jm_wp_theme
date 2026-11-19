@@ -12,6 +12,11 @@ declare(strict_types=1);
  *
  * @var array{
  *     text?: string,
+ *     buttonType?: string,
+ *     linkType?: string,
+ *     emailSubject?: string,
+ *     emailBody?: string,
+ *     whatsappMessage?: string,
  *     link?: array{
  *         url?: string,
  *         opensInNewTab?: bool
@@ -21,37 +26,20 @@ declare(strict_types=1);
  * @var WP_Block $block
  */
 
-$text = jmc_args_string(
-	args: $attributes,
-	key: 'text'
-);
-
-$cta_link = is_array( $attributes['link'] ?? null )
-	? $attributes['link']
-	: [];
-
-$url = jmc_safe_link_url( $cta_link['url'] ?? null );
-
-if ( '' === $text || '' === $url ) {
-	return;
-}
-
-// Telephone links hand off to the dialler, so never open them in a new tab.
-$opens_in_new_tab = true === ( $cta_link['opensInNewTab'] ?? false )
-	&& ! str_starts_with( $url, 'tel:' );
+// Saved header CTAs without a link or button type render as primary `link` buttons.
+$button = jmc_button_link_args( $attributes );
 
 jmc_component(
 	name: 'button-link',
-	args: [
-		'text'    => $text,
-		'link'    => [
-			'url'    => $url,
-			'target' => $opens_in_new_tab ? '_blank' : '',
-		],
-		'classes' => [
-			'jmc-button--small',
-			'jmc-header-cta',
-			$attributes['className'] ?? null,
-		],
-	]
+	args: array_merge(
+		$button,
+		[
+			'classes' => [
+				'jmc-button--small',
+				'jmc-header-cta',
+				$button['classes'],
+				$attributes['className'] ?? null,
+			],
+		]
+	)
 );

@@ -86,8 +86,31 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Run Jest unit tests
-        run: npm run test:unit -- --runInBand
+      - name: Run Vitest unit tests with coverage
+        run: npm run test:unit:coverage
+
+      # Reported to follow the trend; there is no threshold yet.
+      - name: Summarise coverage
+        if: ${{ !cancelled() }}
+        run: |
+          node -e '
+          const fs = require( "fs" );
+          const file = "artifacts/coverage/coverage-summary.json";
+          if ( ! fs.existsSync( file ) ) process.exit( 0 );
+          const { total } = JSON.parse( fs.readFileSync( file, "utf8" ) );
+          const rows = [ "statements", "branches", "functions", "lines" ]
+            .map( ( key ) => `| ${ key } | ${ total[ key ].pct }% | ${ total[ key ].covered }/${ total[ key ].total } |` );
+          console.log( [ "### JavaScript unit test coverage", "", "| Metric | Coverage | Covered |", "| --- | --- | --- |", ...rows ].join( "\n" ) );
+          ' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload coverage report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-coverage-${{ github.run_id }}
+          path: artifacts/coverage/
+          retention-days: 14
+          if-no-files-found: ignore
 
       - name: Type-check
         run: npm run typecheck
@@ -107,6 +130,7 @@ jobs:
           test -f dist/functions.php
           test -f dist/style.css
           test -f dist/theme.json
+          test -d dist/styles/colors
           test -f dist/build/css/style.css
           test -d dist/build/js
           test -d dist/inc
@@ -114,3 +138,4 @@ jobs:
           test -d dist/templates
           test -d dist/parts
           test -f dist/parts/header.html
+          test -f dist/patterns/hero.php

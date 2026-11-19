@@ -7,6 +7,10 @@
 		--jmc-text-highlight: var(--jmc-color-accent-300);
 		--jmc-card-background: var(--jmc-color-brand-800);
 
+		// The error preset is tuned for light surfaces; lighten it here so error
+		// text and borders stay readable on the dark background.
+		--jmc-error-color: color-mix(in srgb, var(--jmc-color-error) 55%, var(--jmc-color-white));
+
 		// Boundaries and elevation
 
 		--jmc-border-color: color-mix(in srgb, var(--jmc-color-base-50) 18%, transparent);
@@ -24,5 +28,10 @@
 		--jmc-button-secondary-color: var(--jmc-color-base-100);
 		--jmc-button-secondary-hover-background: var(--jmc-color-base-100);
 		--jmc-button-secondary-hover-color: var(--jmc-color-brand-900);
+
+		// Logo
+		--jmc-logo-primary: var(--jmc-color-base-50);
+		--jmc-logo-accent: var(--jmc-color-accent-300);
+		--jmc-logo-secondary: var(--jmc-color-base-300);
 	}
 }

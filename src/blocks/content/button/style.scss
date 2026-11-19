@@ -80,11 +80,11 @@
 		outline: 2px solid var(--jmc-text-highlight);
 		outline-offset: 2px;
 	}
-}
 
-@include min($compact) {
+	@include min($compact) {
 
-	.jmc-button {
-		width: fit-content;
+		.jmc-button {
+			width: fit-content;
+		}
 	}
 }

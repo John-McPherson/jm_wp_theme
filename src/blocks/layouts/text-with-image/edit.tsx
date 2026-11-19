@@ -10,12 +10,7 @@ import MediaInput from '../../../components/MediaInput';
 import Sidebar from '../../../components/Sidebar';
 import SelectInput from '../../../components/SelectInput';
 
-const TEMPLATE = [
-	[ 'jmc/paragraph', { variant: 'label' } ],
-	[ 'jmc/heading', { level: '1', lockLevel: true } ],
-	[ 'jmc/paragraph' ],
-	[ 'jmc/button', { buttonType: 'secondary' } ],
-];
+import { TEMPLATE } from './template';
 
 const VARIANT_CLASSES = {
 	default: '',
@@ -25,7 +20,12 @@ const VARIANT_CLASSES = {
 	right: 'jmc-text-with-image--image-right',
 };
 
-const ALLOWED_BLOCKS = [ 'jmc/heading', 'jmc/paragraph', 'jmc/button' ];
+const ALLOWED_BLOCKS = [
+	'jmc/heading',
+	'jmc/paragraph',
+	'jmc/list',
+	'jmc/button',
+];
 
 export default function Edit( { attributes, setAttributes } ) {
 	const bind = bindFields( attributes, setAttributes );

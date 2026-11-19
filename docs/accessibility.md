@@ -19,6 +19,7 @@ The project targets WCAG 2.2 Level AA. This is an engineering requirement, not a
 - Focus indicators, control boundaries, and meaningful graphics: minimum 3:1 against adjacent colours.
 - Information and state must not be communicated by colour alone.
 - Measure actual semantic foreground/background/state pairs, not isolated primitive colours.
+- `npm run test:contrast` records these pairs, including the site logo's colours, for every colour palette (`theme.json` and `styles/colors/`) in the default, secondary and inverse section palettes; `scripts/palettes/contrast.test.js` fails on any pair below these minimums.
 
 ## Content semantics
 
@@ -63,8 +64,7 @@ For each new or changed user-facing feature:
 - Global list resets currently remove visible bullets and numbering.
 - No deliberate shared `:focus-visible` system has been demonstrated.
 - Global smooth scrolling does not yet include a reduced-motion override.
-- Palette combinations do not yet have recorded contrast evidence.
-- Skip-link, landmark, navigation, and template behaviour remain unverified.
+- Skip-link, landmark, navigation, and template behaviour remain unverified in a browser. The contact and 404 templates have one `<main>` landmark and one H1 with no skipped heading levels, checked from the template markup by `ContactNotFoundTemplatesTest`. Site search is turned off, so no template has a search form.
 - No automated accessibility check currently runs in CI.
 
 These gaps must be resolved and manually verified before claiming WCAG 2.2 AA conformance.

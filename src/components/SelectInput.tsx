@@ -10,6 +10,7 @@ type Props = {
 	set: ( value: string ) => void;
 	type?: keyof typeof defaultOptions;
 	options?: readonly Option[];
+	label?: string;
 };
 
 const defaultOptions: Record< string, Option[] > = {
@@ -36,10 +37,16 @@ const defaultOptions: Record< string, Option[] > = {
 	],
 } as const;
 
-const SelectInput = ( { value, set, type = 'palette', options }: Props ) => {
+const SelectInput = ( {
+	value,
+	set,
+	type = 'palette',
+	options,
+	label,
+}: Props ) => {
 	return (
 		<SelectControl
-			label={ type.toUpperCase() }
+			label={ label ?? type.toUpperCase() }
 			value={ String( value ) }
 			options={ options || defaultOptions[ type ] }
 			onChange={ set }

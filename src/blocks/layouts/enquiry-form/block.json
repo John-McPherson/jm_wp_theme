@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "jmc/enquiry-form",
+  "version": "0.1.0",
+  "title": "Enquiry Form",
+  "category": "jmc-section",
+  "icon": "email-alt",
+  "description": "An enquiry form that sends visitors’ enquiries to the business email address and keeps a copy in WordPress.",
+  "keywords": ["contact", "enquiry", "form", "quote"],
+  "attributes": {
+    "palette": {
+      "type": "string",
+      "enum": ["default", "secondary", "inverse"],
+      "default": "default"
+    },
+    "submitText": {
+      "type": "string",
+      "default": "Send enquiry"
+    }
+  },
+  "example": {
+    "attributes": {
+      "palette": "default"
+    },
+    "viewportWidth": 1200
+  },
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false,
+    "multiple": false
+  },
+  "textdomain": "jmc-theme",
+  "editorScript": "file:./index.js",
+  "style": "file:./style-index.css",
+  "viewScript": "file:./view.js",
+  "render": "file:./render.php"
+}

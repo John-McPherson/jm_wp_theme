@@ -1,5 +1,5 @@
-/* global describe, it, expect */
-const { iconToSvg, nodeToPathData } = require( './shapes' );
+import { describe, expect, it } from 'vitest';
+import { iconToSvg, nodeToPathData } from './shapes';
 
 describe( 'nodeToPathData', () => {
 	it( 'keeps path data', () => {

@@ -18,6 +18,9 @@ require_once dirname( __DIR__, 2 ) . '/inc/helpers/link.php';
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/navigation.php';
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/text.php';
 require_once dirname( __DIR__, 2 ) . '/inc/helpers/contact.php';
+require_once dirname( __DIR__, 2 ) . '/inc/helpers/button.php';
+require_once dirname( __DIR__, 2 ) . '/inc/helpers/enquiry.php';
+require_once dirname( __DIR__, 2 ) . '/inc/helpers/svg.php';
 
 /**
  * Render a theme component.
@@ -225,7 +228,22 @@ function __( string $text, string $domain = 'default' ): string {
  * @return string Placeholder SVG markup, or an empty string.
  */
 function wp_get_icon( string $name, array $args = [] ): string {
-	if ( ! in_array( $name, [ 'jmc/clock', 'jmc/house', 'jmc/mail', 'jmc/map-pin', 'jmc/phone', 'jmc/whatsapp' ], true ) ) {
+	$icons = [
+		'jmc/arrow-right',
+		'jmc/check',
+		'jmc/circle-check',
+		'jmc/clock',
+		'jmc/house',
+		'jmc/mail',
+		'jmc/map-pin',
+		'jmc/phone',
+		'jmc/plus',
+		'jmc/shield-check',
+		'jmc/whatsapp',
+		'jmc/zap',
+	];
+
+	if ( ! in_array( $name, $icons, true ) ) {
 		return '';
 	}
 
@@ -266,9 +284,11 @@ function sanitize_key( string $key ): string {
  * Retrieve posts.
  *
  * Test double that filters the `$GLOBALS['jmc_test_posts']` fixtures by
- * `post_type`, `name`, `post_parent` and `post_status`, and records each
- * query's arguments in `$GLOBALS['jmc_test_get_posts_queries']`. A
- * `posts_per_page` of -1 returns every match, as in core.
+ * `post_type`, `name`, `post_parent`, `post_status`, `post__in` and
+ * `has_password`, and records each query's arguments in
+ * `$GLOBALS['jmc_test_get_posts_queries']`. An `orderby` of `post__in` keeps
+ * the given ID order, and a `posts_per_page` of -1 returns every match, as in
+ * core.
  *
  * @param array<string,mixed> $args Query arguments.
  *
@@ -286,7 +306,18 @@ function get_posts( array $args = [] ): array {
 			&& ( ! isset( $args['name'] ) || ( $post->post_name ?? '' ) === $args['name'] )
 			&& ( ! isset( $args['post_parent'] ) || ( $post->post_parent ?? 0 ) === $args['post_parent'] )
 			&& in_array( $post->post_status ?? 'publish', $statuses, true )
+			&& ( ! isset( $args['post__in'] ) || in_array( $post->ID ?? 0, (array) $args['post__in'], true ) )
+			&& ( ! isset( $args['has_password'] ) || ( '' !== ( $post->post_password ?? '' ) ) === $args['has_password'] )
 	);
+
+	if ( 'post__in' === ( $args['orderby'] ?? null ) ) {
+		$order = array_flip( array_values( (array) $args['post__in'] ) );
+
+		usort(
+			$posts,
+			static fn ( object $a, object $b ): int => $order[ $a->ID ] <=> $order[ $b->ID ]
+		);
+	}
 
 	$limit = (int) ( $args['posts_per_page'] ?? 5 );
 
@@ -494,6 +525,137 @@ function wp_get_attachment_image( int $attachment_id, string $size = 'thumbnail'
 	}
 
 	return $html . ' />';
+}
+
+/**
+ * Filter HTML to the allowed elements and attributes.
+ *
+ * Test double approximating core's kses: disallowed elements are unwrapped
+ * (their text is kept), disallowed attributes are dropped, and `href` values
+ * with a protocol other than http(s), mailto or tel are removed. Core strips
+ * the bad protocol instead, but either way no script URL survives.
+ *
+ * @param string                             $content      HTML to filter.
+ * @param array<string, array<string, bool>> $allowed_html Allowed elements and their attributes.
+ *
+ * @return string Filtered HTML.
+ */
+function wp_kses( string $content, array $allowed_html ): string {
+	// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- DOM extension property names.
+	if ( '' === trim( $content ) ) {
+		return $content;
+	}
+
+	$document = new DOMDocument();
+	$previous = libxml_use_internal_errors( true );
+	$document->loadHTML(
+		'<?xml encoding="utf-8"?><body>' . $content . '</body>',
+		LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+	);
+	libxml_clear_errors();
+	libxml_use_internal_errors( $previous );
+
+	$root = $document->getElementsByTagName( 'body' )->item( 0 );
+
+	$filter = static function ( DOMNode $node ) use ( &$filter, $allowed_html ): void {
+		foreach ( iterator_to_array( $node->childNodes ) as $child ) {
+			if ( ! $child instanceof DOMElement ) {
+				continue;
+			}
+
+			$filter( $child );
+
+			$tag = strtolower( $child->tagName );
+
+			if ( ! isset( $allowed_html[ $tag ] ) ) {
+				while ( $child->firstChild ) {
+					$node->insertBefore( $child->firstChild, $child );
+				}
+
+				$node->removeChild( $child );
+				continue;
+			}
+
+			foreach ( iterator_to_array( $child->attributes ) as $attribute ) {
+				$name    = strtolower( $attribute->name );
+				$allowed = ! empty( $allowed_html[ $tag ][ $name ] );
+
+				if ( $allowed && 'href' === $name ) {
+					$allowed = 1 !== preg_match( '/^\s*(?!https?:|mailto:|tel:)[a-z][a-z0-9+.-]*:/i', $attribute->value );
+				}
+
+				if ( ! $allowed ) {
+					$child->removeAttribute( $attribute->name );
+				}
+			}
+		}
+	};
+
+	$filter( $root );
+
+	$html = '';
+
+	foreach ( $root->childNodes as $child ) {
+		$html .= $document->saveHTML( $child );
+	}
+
+	// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+	return $html;
+}
+
+/**
+ * Strip all HTML tags, including the contents of script and style elements.
+ *
+ * Test double for the core function.
+ *
+ * @param string $text Text to strip.
+ *
+ * @return string Plain text.
+ */
+function wp_strip_all_tags( string $text ): string {
+	$text = (string) preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', $text );
+
+	return trim( strip_tags( $text ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- This is the wp_strip_all_tags() double.
+}
+
+/**
+ * Escape an HTML tag name.
+ *
+ * Test double for the core function.
+ *
+ * @param string $tag_name Tag name.
+ *
+ * @return string Lowercase tag name with only safe characters.
+ */
+function tag_escape( string $tag_name ): string {
+	return strtolower( (string) preg_replace( '/[^a-zA-Z0-9-_:]/', '', $tag_name ) );
+}
+
+/**
+ * Retrieve the path of a file in the theme.
+ *
+ * Test double that resolves against `$GLOBALS['jmc_test_theme_root']`,
+ * defaulting to the theme's own directory, so tests can supply build files.
+ *
+ * @param string $file File to search for in the theme directory.
+ *
+ * @return string The file path.
+ */
+function get_theme_file_path( string $file = '' ): string {
+	$root = (string) ( $GLOBALS['jmc_test_theme_root'] ?? dirname( __DIR__, 2 ) );
+
+	return rtrim( $root, '/' ) . '/' . ltrim( $file, '/' );
+}
+
+/**
+ * Retrieve the active theme's directory name.
+ *
+ * Test double that reads `$GLOBALS['jmc_test_stylesheet']`, defaulting to the theme's own.
+ *
+ * @return string Theme directory name.
+ */
+function get_stylesheet(): string {
+	return (string) ( $GLOBALS['jmc_test_stylesheet'] ?? 'amc_electrical' );
 }
 
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound

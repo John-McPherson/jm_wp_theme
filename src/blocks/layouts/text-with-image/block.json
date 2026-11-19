@@ -34,9 +34,7 @@
       "type": "object",
       "default": {
         "url": "",
-        "label": "",
-        "target": "",
-        "rel": ""
+        "opensInNewTab": false
       }
     },
     "linkText": {
@@ -97,6 +95,5 @@
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",
-  "viewScript": "file:./view.js",
   "render": "file:./render.php"
 }

@@ -1,0 +1,201 @@
+@use "../../../scss/abstracts/index" as *;
+
+@layer blocks {
+
+	.jmc-enquiry-form {
+		--jmc-enquiry-form-gap: var(--jmc-padding-m);
+		--jmc-enquiry-form-input-background: var(--jmc-card-background);
+		--jmc-enquiry-form-error-color: var(--jmc-error-color);
+
+		// A long form reads best as one centred, comfortably narrow column.
+		.jmc-section__container {
+			grid-template-columns: minmax(0, 1fr);
+			max-width: var(--jmc-container-sm);
+			align-items: start;
+		}
+
+		&__form:not([hidden]) {
+			display: flex;
+			flex-direction: column;
+			gap: var(--jmc-enquiry-form-gap);
+			width: 100%;
+		}
+
+		&__field {
+			display: flex;
+			flex-direction: column;
+			gap: var(--jmc-padding-3xs);
+
+			&--checkbox {
+				display: grid;
+				grid-template-columns: auto 1fr;
+				align-items: start;
+				column-gap: var(--jmc-padding-xs);
+
+				// Error above and privacy link below span both columns.
+				> p {
+					grid-column: 1 / -1;
+				}
+			}
+		}
+
+		&__label {
+			color: var(--jmc-heading-color);
+			font-weight: 600;
+		}
+
+		&__optional {
+			font-weight: 400;
+		}
+
+		&__hint {
+			margin: 0;
+			font-size: var(--jmc-p3);
+		}
+
+		// Links in running text stay underlined so they don't rely on colour
+		// alone; hover and keyboard focus add the palette's highlight.
+		&__link {
+			color: inherit;
+			font-weight: 600;
+			text-decoration-line: underline;
+			text-decoration-thickness: 1px;
+			text-underline-offset: 0.2em;
+			transition:
+				color 0.2s ease,
+				text-decoration-thickness 0.2s ease;
+
+			&:hover,
+			&:focus-visible {
+				color: var(--jmc-text-highlight);
+				text-decoration-thickness: 2px;
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--jmc-text-highlight);
+				outline-offset: 2px;
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				transition: none;
+			}
+		}
+
+		&__input {
+			display: block;
+			width: 100%;
+			min-height: 2.75rem;
+			padding: var(--jmc-padding-2xs) var(--jmc-padding-xs);
+			// Mixed from the text colour so the boundary meets 3:1 on every palette.
+			border: 1.5px solid color-mix(in srgb, var(--jmc-text-color) 60%, transparent);
+			background: var(--jmc-enquiry-form-input-background);
+			color: var(--jmc-text-color);
+			font: inherit;
+
+			&--short {
+				max-width: 12ch;
+			}
+
+			&--textarea {
+				min-height: 9rem;
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--jmc-text-highlight);
+				outline-offset: 2px;
+			}
+
+			&[aria-invalid="true"] {
+				border-color: var(--jmc-enquiry-form-error-color);
+				border-width: 2px;
+			}
+		}
+
+		textarea.jmc-enquiry-form__input {
+			resize: vertical;
+		}
+
+		&__checkbox {
+			width: 1.5rem;
+			height: 1.5rem;
+			margin: 0;
+			accent-color: var(--jmc-button-background);
+			border: 1.5px solid var(--jmc-text-color);
+
+			&:focus-visible {
+				outline: 2px solid var(--jmc-text-highlight);
+				outline-offset: 2px;
+			}
+		}
+
+		&__error {
+			margin: 0;
+			color: var(--jmc-enquiry-form-error-color);
+			font-weight: 600;
+		}
+
+		&__notice {
+			width: 100%;
+			margin-bottom: var(--jmc-enquiry-form-gap);
+			padding: var(--jmc-padding-s);
+			border-left: 4px solid var(--jmc-border-color);
+			background: var(--jmc-card-background);
+
+			&--success {
+				border-color: var(--jmc-color-success);
+			}
+
+			&--error {
+				border-color: var(--jmc-enquiry-form-error-color);
+			}
+
+			&:focus-visible {
+				outline: 2px solid var(--jmc-text-highlight);
+				outline-offset: 2px;
+			}
+
+			p,
+			ul {
+				margin: 0;
+			}
+
+			> * + * {
+				margin-top: var(--jmc-padding-2xs);
+			}
+		}
+
+		&__alternative:not([hidden]) {
+			display: flex;
+			flex-wrap: wrap;
+			gap: var(--jmc-padding-xs);
+		}
+
+		&__summary {
+			padding-left: 1.25em;
+		}
+
+		&__submit {
+			align-self: flex-start;
+			margin-top: var(--jmc-padding-2xs);
+
+			&[aria-disabled="true"] {
+				cursor: progress;
+				opacity: 0.7;
+			}
+		}
+
+		// Honeypot: off screen rather than display:none, which some bots skip.
+		&__trap {
+			position: absolute;
+			left: -100vw;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+		}
+
+		// Native error state where JavaScript isn't validating.
+		form:not([novalidate]) .jmc-enquiry-form__input:user-invalid {
+			border-color: var(--jmc-enquiry-form-error-color);
+		}
+	}
+}

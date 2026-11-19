@@ -26,11 +26,16 @@
       "type": "string",
       "enum": ["default", "secondary", "inverse"],
       "default": "default"
+    },
+    "showBreadcrumbs": {
+      "type": "boolean",
+      "default": true
     }
   },
   "providesContext": {
     "jmc/variant": "variant"
   },
+  "usesContext": ["postId", "postType"],
 
   "example": {
     "attributes": {
