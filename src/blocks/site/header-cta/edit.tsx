@@ -1,13 +1,12 @@
 import { useBlockProps } from '@wordpress/block-editor';
 import { __ } from '@wordpress/i18n';
 
-import bindFields from '../../../utils/bindFields';
-import ButtonLink from '../../../components/ButtonLink';
+import ButtonEditor, {
+	type ButtonAttributes,
+} from '../../../components/ButtonEditor';
 import Sidebar from '../../../components/Sidebar';
 
-type HeaderCtaAttributes = {
-	text: string;
-	link: { url: string; opensInNewTab: boolean };
+type HeaderCtaAttributes = ButtonAttributes & {
 	className?: string;
 };
 
@@ -19,31 +18,34 @@ type EditProps = {
 export default function Edit( { attributes, setAttributes }: EditProps ) {
 	const blockProps = useBlockProps( {} );
 
-	const bind = bindFields( attributes, setAttributes );
-
 	return (
 		<>
 			<Sidebar>
 				<Sidebar.Section title={ __( 'Call to action', 'jmc-theme' ) }>
 					<p>
 						{ __(
-							'Use the link button in the toolbar to choose a page, a web address, or a phone number such as tel:01234567890.',
+							'Switch between a link and a business phone, email or WhatsApp button with the block variation control, as for the Button block. A link button takes a page, web address, phone number or email address from the link button in the toolbar; the others use the details in Settings → Business.',
 							'jmc-theme'
 						) }
 					</p>
 					<p>
 						{ __(
-							'The button is hidden on the site when the label or link is empty, or when the link is not a web address, site path or phone number.',
+							'The button is hidden on the site when the label is empty, or when its link or business detail is missing or invalid.',
 							'jmc-theme'
 						) }
 					</p>
 				</Sidebar.Section>
 			</Sidebar>
 			<div { ...blockProps }>
-				<ButtonLink
-					text={ bind.text( 'text' ) }
-					link={ bind.link( 'link' ) }
-					className="jmc-button--small jmc-header-cta"
+				<ButtonEditor
+					attributes={ attributes }
+					setAttributes={ setAttributes }
+					className={ [
+						'jmc-button--small jmc-header-cta',
+						attributes.className,
+					]
+						.filter( Boolean )
+						.join( ' ' ) }
 				/>
 			</div>
 		</>

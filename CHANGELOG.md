@@ -37,6 +37,7 @@ All notable changes will be documented here. The project follows semantic versio
 - Service cards show a “Learn more” cue beside the arrow, with the text editable per grid (#141).
 - Reusable `PageSelect` and `PageListInput` editor controls (#141).
 - Primary navigation submenus: one level of submenus from the Site Editor menu. On desktop each opens as a dropdown on mouse hover or from its own disclosure button (keyboard and touch), one at a time, closing on Escape, focus leaving or a click outside; on mobile they are always expanded in the menu. Every link stays reachable without JavaScript, and deeper nesting is flattened into the submenu (#85).
+- The header call-to-action uses the Button block's types (#148): a primary or secondary style, and Phone, Email and WhatsApp variations, switched like the Button block's, that read Settings → Business, with optional pre-filled email and WhatsApp messages. Existing header buttons render as before. Like other buttons, a header button's own link may now be a `mailto:` link.
 
 ### Changed
 
