@@ -84,10 +84,14 @@ The site is hosted on WP Engine. [`.github/workflows/deploy.yml`](../.github/wor
 
 Each run:
 
-1. Installs locked npm and Composer dependencies and runs `npm run package`.
+1. Gets the package:
+   - `dev` and `staging` install locked npm and Composer dependencies and run `npm run package`.
+   - `main` does not build. It downloads the package staging deployed for the same git tree (`git rev-parse HEAD^{tree}`), so production receives exactly the files tested on staging. Merging `staging` into `main` keeps the tree. If staging has not deployed that tree, the production deploy fails.
 2. Checks the essential files are in `dist/`.
-3. Uploads `dist/` as the artifact `theme-<branch>-<sha>` (kept 30 days, 90 for production).
-4. Syncs `dist/` to `wp-content/themes/amc_electrical/` over the WP Engine SSH Gateway with `--delete` (limited to the theme directory), lints PHP, and clears the cache.
+3. Syncs `dist/` to `wp-content/themes/amc_electrical/` over the WP Engine SSH Gateway with `--delete` (limited to the theme directory), lints PHP, and clears the cache.
+4. After a successful deploy, uploads `dist/` as the artifact `theme-<branch>-<tree>` (kept 30 days for `dev`, 90 for `staging` and `main`).
+
+A release must reach `main` through `staging`, and within 90 days of the staging deploy. If the staging package has expired, re-run that staging deploy first.
 
 Deploys for a branch run one at a time and are never cancelled part-way through. The deploy does not activate the theme; activate it once in WP Admin after the first deploy to a new environment.
 
