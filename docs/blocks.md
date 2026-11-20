@@ -130,7 +130,15 @@ Each of these breaks a [convention](#conventions) and is left for a follow-up.
 
 **Supports and class names**
 
-- Root classes that are not `jmc-<folder-name>`: `jmc/column` (`jmc-section__column`), `jmc/list-item` (`jmc-list__item`) and `jmc/footer` (`jmc-footer__inner`). `jmc/navigation`'s editor root is `jmc-navigation-editor`. The secondary button style is the element class `jmc-button__secondary` rather than a modifier. Renaming these classes changes the stylesheets and any custom CSS that targets them. The `column`, `list-item` and `footer` classes are deliberate: those blocks are elements of their parent. The footer block sits inside the `<footer class="jmc-footer">` template part, so its root and container are `jmc-footer__inner` and `jmc-footer__container`.
+- The secondary button style is the element class `jmc-button__secondary` rather than a modifier. Renaming it changes the stylesheets and any custom CSS that targets it.
+
+### Deliberate exceptions
+
+These differ from the [root class convention](#conventions) on purpose:
+
+- `jmc/column` (`jmc-section__column`) and `jmc/list-item` (`jmc-list__item`) are elements of their parent block.
+- `jmc/footer` (`jmc-footer__inner`, with `jmc-footer__container` inside) is an element of the `<footer class="jmc-footer">` template part that holds it, so the page has one `jmc-footer` root.
+- `jmc/navigation`'s editor root is `jmc-navigation-editor`. It wraps the server-rendered `<nav class="jmc-navigation">` preview and the header call to action, so giving it `jmc-navigation` would nest one navigation root inside another.
 
 ## Patterns
 
