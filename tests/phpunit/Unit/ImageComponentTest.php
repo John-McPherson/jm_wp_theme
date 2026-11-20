@@ -103,6 +103,146 @@ final class ImageComponentTest extends TestCase {
 	}
 
 	/**
+	 * Registered sizes and `full` are passed through.
+	 *
+	 * @dataProvider registered_size_provider
+	 *
+	 * @param string $size Image size.
+	 */
+	public function test_accepts_registered_sizes( string $size ): void {
+		$html = $this->render_image(
+			[
+				'image_id' => 7,
+				'size'     => $size,
+			]
+		);
+
+		self::assertStringContainsString( "7-{$size}.png", $html );
+	}
+
+	/**
+	 * Sizes the component accepts.
+	 *
+	 * @return array<string, array{string}>
+	 */
+	public function registered_size_provider(): array {
+		return [
+			'thumbnail'    => [ 'thumbnail' ],
+			'medium_large' => [ 'medium_large' ],
+			'full'         => [ 'full' ],
+		];
+	}
+
+	/**
+	 * Unregistered sizes fall back to `large`.
+	 *
+	 * @dataProvider unregistered_size_provider
+	 *
+	 * @param mixed $size Image size.
+	 */
+	public function test_unregistered_size_falls_back_to_large( mixed $size ): void {
+		$html = $this->render_image(
+			[
+				'image_id' => 7,
+				'size'     => $size,
+			]
+		);
+
+		self::assertStringContainsString( '7-large.png', $html );
+	}
+
+	/**
+	 * Sizes that are not registered.
+	 *
+	 * @return array<string, array{mixed}>
+	 */
+	public function unregistered_size_provider(): array {
+		return [
+			'unknown'    => [ 'hero-banner' ],
+			'empty'      => [ '' ],
+			'wrong case' => [ 'Medium' ],
+			'integer'    => [ 300 ],
+		];
+	}
+
+	/**
+	 * Supported loading values are output.
+	 *
+	 * @dataProvider loading_provider
+	 *
+	 * @param string $loading Loading strategy.
+	 */
+	public function test_applies_loading( string $loading ): void {
+		$html = $this->render_image(
+			[
+				'image_id' => 7,
+				'loading'  => $loading,
+			]
+		);
+
+		self::assertStringContainsString( "loading=\"{$loading}\"", $html );
+	}
+
+	/**
+	 * Supported loading strategies.
+	 *
+	 * @return array<string, array{string}>
+	 */
+	public function loading_provider(): array {
+		return [
+			'lazy'  => [ 'lazy' ],
+			'eager' => [ 'eager' ],
+		];
+	}
+
+	/**
+	 * A `false` loading value omits the attribute.
+	 */
+	public function test_false_loading_omits_attribute(): void {
+		$html = $this->render_image(
+			[
+				'image_id' => 7,
+				'loading'  => false,
+			]
+		);
+
+		self::assertStringNotContainsString( 'loading=', $html );
+	}
+
+	/**
+	 * Unsupported loading values fall back to lazy loading.
+	 *
+	 * @dataProvider invalid_loading_provider
+	 *
+	 * @param mixed $loading Loading strategy.
+	 */
+	public function test_invalid_loading_falls_back_to_lazy( mixed $loading ): void {
+		$html = $this->render_image(
+			[
+				'image_id' => 7,
+				'loading'  => $loading,
+			]
+		);
+
+		self::assertStringContainsString( 'loading="lazy"', $html );
+	}
+
+	/**
+	 * Unsupported loading values.
+	 *
+	 * @return array<string, array{mixed}>
+	 */
+	public function invalid_loading_provider(): array {
+		return [
+			'unknown' => [ 'auto' ],
+			'empty'   => [ '' ],
+			'true'    => [ true ],
+			'null'    => [ null ],
+			'array'   => [ [ 'eager' ] ],
+		];
+	}
+
+	/**
 	 * Missing or unknown images render nothing.
 	 *
 	 * @dataProvider missing_image_provider

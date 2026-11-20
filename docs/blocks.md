@@ -931,7 +931,7 @@ Keyboard focus (`:focus-visible`) uses the hover colours plus a 2px `--jmc-text-
 
 Background images are decorative: they must not contain information needed to understand the page. A meaningful image must render as an `<img>` or image block with appropriate alternative-text handling.
 
-`components/image.php` renders a Media Library image with `wp_get_attachment_image()`. Its arguments are `image_id` (required; nothing renders without it), `classes`, `size` (default `large`), `sizes` (default `(max-width: 768px) 100vw, 50vw`) and `alt`. Without `alt`, the Media Library alternative text is used; a string `alt` replaces it, trimmed, and an empty string marks the image as decorative. Images load lazily.
+`components/image.php` renders a Media Library image with `wp_get_attachment_image()`. Its arguments are `image_id` (required; nothing renders without it), `classes`, `size` (a registered image size or `full`; default and fallback `large`), `sizes` (default `(max-width: 768px) 100vw, 50vw`), `loading` and `alt`. Without `alt`, the Media Library alternative text is used; a string `alt` replaces it, trimmed, and an empty string marks the image as decorative. `loading` is `lazy` (default and fallback for unsupported values), `eager` for images above the fold, or `false` to omit the attribute and let WordPress choose.
 
 ## Deprecation
 
