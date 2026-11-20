@@ -141,6 +141,8 @@ Errors allowed in every test are listed, each with a reason, in `tests/e2e/fixtu
 | Browser | `Prefetch request denied: URL must be secure (HTTPS)` | WebKit refuses the prefetches requested by WordPress core's speculative loading on a non-HTTPS origin. `wp-env` serves plain HTTP; production uses HTTPS. |
 | Browser | `NS_BINDING_ABORTED` from `chrome://juggler/`         | Playwright's Firefox automation layer logs a worker request it aborted when a test navigates away. It comes from the test harness, not the page.          |
 
+Tests that request a missing page on purpose (the 404 and search scans) also allow `notFoundPageLoadError` from the same file, the `Failed to load resource: … status of 404` message Chromium and WebKit log for that response. It is not allowed globally, because a 404 anywhere else is a broken link or asset.
+
 No PHP log entries are allowed. Fix the cause rather than allow-listing it; add an entry only for noise the theme cannot fix, with a pattern as narrow as possible.
 
 ## PHP regression tests

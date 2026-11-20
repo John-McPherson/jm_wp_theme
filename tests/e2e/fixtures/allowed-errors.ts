@@ -32,6 +32,19 @@ export const allowedBrowserErrors: AllowedError[] = [
 ];
 
 /**
+ * The browser's report of a page answered with 404 Not Found.
+ *
+ * Not allowed globally: a 404 anywhere else is a broken link or asset. Tests
+ * that visit a missing page on purpose opt in with
+ * `test.use( { allowedBrowserErrors: [ notFoundPageLoadError ] } )`.
+ */
+export const notFoundPageLoadError: AllowedError = {
+	pattern:
+		/^Failed to load resource: the server responded with a status of 404/,
+	reason: 'Chromium and WebKit log the 404 response of a page the test deliberately requests to check the not-found template.',
+};
+
+/**
  * PHP log entries allowed during every run.
  */
 export const allowedPhpErrors: AllowedError[] = [];

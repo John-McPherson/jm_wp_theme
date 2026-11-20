@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 
 import { accessibilityExceptions } from './accessibility-exceptions';
+import { notFoundPageLoadError } from './fixtures/allowed-errors';
 import { expect, test } from './fixtures/test';
 import { expectNoAxeViolations } from './helpers/axe';
 import {
@@ -293,23 +294,32 @@ test.describe( 'axe accessibility scans', () => {
 			await expectNoAxeViolations( page, 'contact page' );
 		} );
 
-		// Site search is turned off: a search is answered by the 404 template.
-		test( 'search', async ( { page } ) => {
-			await page.goto( '/?s=electrician' );
-			await expect( page.locator( 'main.jmc-not-found' ) ).toBeVisible();
-			await waitForNavigation( page );
+		test.describe( 'not found', () => {
+			// These pages answer 404 on purpose, which the browser logs.
+			test.use( { allowedBrowserErrors: [ notFoundPageLoadError ] } );
 
-			await expectNoAxeViolations( page, 'search' );
-		} );
+			// Site search is turned off: a search is answered by the 404 template.
+			test( 'search', async ( { page } ) => {
+				await page.goto( '/?s=electrician' );
+				await expect(
+					page.locator( 'main.jmc-not-found' )
+				).toBeVisible();
+				await waitForNavigation( page );
 
-		test( '404 page', async ( { page } ) => {
-			const response = await page.goto( '/?p=999999999' );
+				await expectNoAxeViolations( page, 'search' );
+			} );
 
-			expect( response?.status() ).toBe( 404 );
-			await expect( page.locator( 'main.jmc-not-found' ) ).toBeVisible();
-			await waitForNavigation( page );
+			test( '404 page', async ( { page } ) => {
+				const response = await page.goto( '/?p=999999999' );
 
-			await expectNoAxeViolations( page, '404 page' );
+				expect( response?.status() ).toBe( 404 );
+				await expect(
+					page.locator( 'main.jmc-not-found' )
+				).toBeVisible();
+				await waitForNavigation( page );
+
+				await expectNoAxeViolations( page, '404 page' );
+			} );
 		} );
 	} );
 
