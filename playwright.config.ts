@@ -5,6 +5,8 @@ dotenv.config( { path: '.env.e2e' } );
 
 export default defineConfig( {
 	testDir: './tests/e2e',
+	globalSetup: './tests/e2e/setup/global-setup.ts',
+	globalTeardown: './tests/e2e/setup/global-teardown.ts',
 	outputDir: './artifacts/e2e/test-results',
 	fullyParallel: false,
 	forbidOnly: Boolean( process.env.CI ),
