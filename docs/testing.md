@@ -19,7 +19,9 @@ Playwright browser tests run against an isolated `wp-env` site pinned to the Wor
 
 `src/scss/foundations.test.ts` compiles the global stylesheet and the affected block stylesheets with Sass and reads them through the CSSOM: links are underlined with no global rule removing it, no global rule removes `ul`, `ol` or `li` markers, `:focus-visible` draws the focus-ring tokens in the highlight colour, smooth scrolling is set only under `prefers-reduced-motion: no-preference`, the reduced-motion rule in the reset layer switches off transitions, animations and smooth scrolling with `!important`, each navigation and component list removes its own markers in its block's layer, content lists keep bullets and numbers, and buttons opt out of the link underline. `SkipLinkTargetTest` checks every template has exactly one `<main>` Group block and that `jmc_main_skip_link_target()` gives only the main group `tabindex="-1"`.
 
-Broader WordPress integration coverage, visual-regression tests, and automated accessibility (axe) scans are not yet configured. Static quality gates and focused regression tests do not replace full behavioural verification.
+`tests/e2e/axe.spec.ts` runs [axe](https://github.com/dequelabs/axe-core) (`@axe-core/playwright`) against the WCAG 2.0–2.2 A and AA rules and axe's best-practice rules, in every browser the suite runs. It builds a site from the theme's patterns — a static front page (`jmc/home-page`), a standard page with the template title (service introduction, why choose us, contact details and call-to-action patterns), the Services landing page and one service beneath it, and the Contact page — fills in the business details, and fills in the header and footer template parts as the Site Editor does: a menu with a submenu in each, a header call to action and a credential logo (the e2e logo fixture). It then scans the front page, standard page, Services landing page, single service page, Contact page, a search (answered by the 404 template, since search is turned off) and a missing page at 1280px; the mobile menu open with its submenus expanded at 375px; a desktop submenu opened by keyboard; and the enquiry form's error summary after an empty submission and its no-JavaScript "sent" and "invalid" notices. Together these render every custom block. Scans run with reduced motion, so colours are never measured mid-transition. A serious or critical violation fails the test, listing for each rule its impact, help link and every failing element's selector, markup and what to fix; minor and moderate violations are added to the report as annotations, and the full results are attached to each test. Accepted violations are recorded in `tests/e2e/accessibility-exceptions.ts` (see [Accessibility exceptions](accessibility.md#accessibility-exceptions)), and the spec fails once an exception's review date has passed. Setup restores the options it changes and deletes its pages, menus, logo and template parts afterwards; it refuses to run if the header or footer is already customised in the Site Editor.
+
+Broader WordPress integration coverage and visual-regression tests are not yet configured, and axe does not yet scan editor states. Static quality gates and focused regression tests do not replace full behavioural verification.
 
 ## Local quality gate
 
@@ -96,6 +98,14 @@ Run only the Navigation browser tests in Chromium:
 npm run test:e2e -- tests/e2e/header.spec.ts -g "theme navigation" --project=chromium
 ```
 
+Run only the axe scans in Chromium:
+
+```bash
+npm run test:e2e -- tests/e2e/axe.spec.ts --project=chromium
+```
+
+A failing scan names the page or state, then each serious or critical rule with its help link and the selector, markup and fix for every failing element. Fix the markup; record an [exception](accessibility.md#accessibility-exceptions) only when that is not yet possible. When you add a template or an interactive state, add a scan for it.
+
 Run `npm run build` after changing block scripts or metadata, before starting or testing the local WordPress environment.
 
 Tests that change WordPress options or theme modifications must capture and restore the original state. The shared CI environment runs with one worker to prevent database-state races.
@@ -151,7 +161,7 @@ Tracked under `v0.4.0 – Quality & Testing`:
 - Add WordPress integration coverage where isolated test doubles cannot represent runtime behaviour accurately.
 - Increase TypeScript strictness and add typed block-editor contract tests.
 - Expand Playwright editor and frontend coverage beyond the header.
-- Add axe checks for representative editor and frontend states.
+- Extend the axe scans to representative editor states and the other colour palettes.
 - Consider visual-regression coverage for palettes and responsive variants.
 
 Do not describe planned checks as configured until they run in CI.

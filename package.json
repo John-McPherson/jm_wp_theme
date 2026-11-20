@@ -47,6 +47,7 @@
   "homepage": "https://github.com/John-McPherson/jm_wp_theme#readme",
   "prettier": "@wordpress/prettier-config",
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.62.1",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",

@@ -40,6 +40,8 @@ Some checks are already guarded by the automated suites in [Testing](testing.md)
 - **Automated** — the whole check is covered by Playwright in Chromium, Firefox and WebKit. Skip it on the keyboard-only setups (**D1–D3**) if CI passed for the build under test; still run it with each screen reader, because no test checks what is announced.
 - **Partly automated** — the named test covers only part of the check, or covers it in rendered markup (PHPUnit) or a simulated DOM (Vitest) rather than a real browser. Run the whole check on every setup.
 
+Separately, `tests/e2e/axe.spec.ts` scans the primary templates, the open mobile menu, an expanded submenu and the enquiry form's error and result states with axe, and fails on serious or critical violations such as missing names, labels or alternative text and insufficient contrast in the default palette. It marks no check here as automated: axe cannot tell whether a name, label or reading order makes sense, so run every check as listed.
+
 If a manual check fails where a test claims coverage, report the failure and note in the issue that the test needs extending.
 
 ## Frontend checks
