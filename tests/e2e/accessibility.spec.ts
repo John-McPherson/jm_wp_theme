@@ -204,15 +204,18 @@ test.describe( 'accessibility foundations', () => {
 			.focus();
 
 		const header = await page.locator( '.jmc-header' ).boundingBox();
-		const link = await page
-			.getByRole( 'main' )
-			.getByRole( 'link', { name: bodyLink } )
-			.boundingBox();
+		const link = page.getByRole( 'main' ).getByRole( 'link', {
+			name: bodyLink,
+		} );
 
 		expect( header ).not.toBeNull();
-		expect( link?.y ).toBeGreaterThanOrEqual(
-			( header?.y ?? 0 ) + ( header?.height ?? 0 )
-		);
+		// WebKit animates the focus scroll (`scroll-behavior: smooth`), so wait
+		// for the link to settle rather than reading it mid-scroll.
+		await expect
+			.poll( async () => ( await link.boundingBox() )?.y )
+			.toBeGreaterThanOrEqual(
+				( header?.y ?? 0 ) + ( header?.height ?? 0 )
+			);
 	} );
 
 	test( 'scrolls smoothly only without a reduced-motion preference', async ( {
