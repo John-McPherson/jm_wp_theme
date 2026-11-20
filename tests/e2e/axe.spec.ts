@@ -84,7 +84,9 @@ const waitForNavigation = async ( page: Page ) => {
 const desktop = { width: 1280, height: 800 };
 const mobile = { width: 375, height: 812 };
 
-test.describe( 'axe accessibility scans', () => {
+// The scans set their own desktop and mobile viewports, so phone projects
+// skip them (see playwright.config.ts).
+test.describe( 'axe accessibility scans', { tag: '@desktop' }, () => {
 	// Scan the settled page: with reduced motion, transitions finish at once,
 	// so colour contrast is never measured mid-transition.
 	test.use( { contextOptions: { reducedMotion: 'reduce' } } );
