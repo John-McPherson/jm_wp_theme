@@ -16,9 +16,13 @@
 		@include h5;
 		color: var(--jmc-text-highlight);
 		text-transform: uppercase;
+	}
 
-		&:not(:last-of-type) {
-			padding-bottom: var(--jmc-padding-2xs);
-		}
+	// A label sits tight to whatever follows it, usually a heading. Same
+	// specificity as `.jmc-paragraph:not(:last-child)` above, so this later
+	// rule wins. `:last-child`, not `:last-of-type`, so a label that is the
+	// only `<p>` in its column still gets it.
+	.jmc-label:not(:last-child) {
+		padding-bottom: var(--jmc-padding-2xs);
 	}
 }

@@ -490,6 +490,17 @@ function get_the_title( mixed $post = 0 ): string {
 }
 
 /**
+ * Return the registered intermediate image size names.
+ *
+ * Test double listing core's default sizes.
+ *
+ * @return string[] Image size names.
+ */
+function get_intermediate_image_sizes(): array {
+	return [ 'thumbnail', 'medium', 'medium_large', 'large', '1536x1536', '2048x2048' ];
+}
+
+/**
  * Render an attachment image.
  *
  * Test double for registered attachment fixtures. The size is written into
@@ -521,6 +532,11 @@ function wp_get_attachment_image( int $attachment_id, string $size = 'thumbnail'
 	$html = '<img';
 
 	foreach ( $attr as $name => $value ) {
+		// Core omits a `false` loading attribute.
+		if ( false === $value ) {
+			continue;
+		}
+
 		$html .= sprintf( ' %s="%s"', $name, esc_attr( (string) $value ) );
 	}
 
@@ -645,6 +661,30 @@ function get_theme_file_path( string $file = '' ): string {
 	$root = (string) ( $GLOBALS['jmc_test_theme_root'] ?? dirname( __DIR__, 2 ) );
 
 	return rtrim( $root, '/' ) . '/' . ltrim( $file, '/' );
+}
+
+/**
+ * Retrieve the URL of a file in the theme.
+ *
+ * Test double that resolves against a fixed theme URL.
+ *
+ * @param string $file File to search for in the theme directory.
+ *
+ * @return string The file URL.
+ */
+function get_theme_file_uri( string $file = '' ): string {
+	return 'https://example.com/wp-content/themes/amc_electrical/' . ltrim( $file, '/' );
+}
+
+/**
+ * Determine whether the site has a Site Icon.
+ *
+ * Test double that reads `$GLOBALS['jmc_test_has_site_icon']`, defaulting to false.
+ *
+ * @return bool Whether a Site Icon is set.
+ */
+function has_site_icon(): bool {
+	return (bool) ( $GLOBALS['jmc_test_has_site_icon'] ?? false );
 }
 
 /**

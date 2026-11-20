@@ -62,8 +62,11 @@
 			// scrollable panel stays reachable.
 			height: calc(100dvh - var(--jmc-header-height));
 			margin-top: var(--jmc-header-height);
-			padding-top: var(--jmc-section-padding-sm);
+			// Room on every side for the focus ring, which the panel's
+			// scrolling would otherwise clip.
+			padding-block: var(--jmc-section-padding-sm);
 			padding-inline: var(--jmc-page-margin);
+			list-style: none;
 			background-color: var(--jmc-background-color);
 			border-top: 1px solid var(--jmc-shadow-color);
 			overflow-y: auto;

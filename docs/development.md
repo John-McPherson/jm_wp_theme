@@ -57,6 +57,7 @@ Milestones are releases; the *JMC Theme* project's **Sprint** field holds one-we
 | Its Sprint becomes active (checked hourly, or run the workflow manually) | Ready |
 | A branch named `<issue-number>-…` is created on GitHub (pushed, or created from the issue page) | In progress |
 | A pull request is merged into `dev` (its head branch's issue number and any linked closing issues) | Release candidate |
+| A pull request is merged into `main` (its own issues, plus those of every pull request merged into the release, found from its `Merge pull request #N` commits) | Released |
 
 Issues only move forwards (Backlog → Ready → In progress → Release candidate → Released) and are added to the project if missing. Branches created only locally do nothing until pushed. GitHub sends no event when a project field changes, so the Ready move polls the board; it runs from `main` only, so it starts once the workflow is released. Because active-sprint cards leave Backlog automatically, the **Sprint** view filters it out (`sprint:@current -status:Backlog`); **Next Sprint** (`sprint:@next`) keeps Backlog, where upcoming cards wait until their sprint starts.
 

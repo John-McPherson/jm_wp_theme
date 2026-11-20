@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 
 import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
+import { useEntityRecord } from '@wordpress/core-data';
 
 import './editor.scss';
 
@@ -30,7 +31,16 @@ const ALLOWED_BLOCKS = [
 export default function Edit( { attributes, setAttributes } ) {
 	const bind = bindFields( attributes, setAttributes );
 
-	const { imageUrl, palette, order } = attributes;
+	const { imageId, imageUrl, palette, order } = attributes;
+
+	// Match the frontend, where wp_get_attachment_image() uses the attachment's
+	// alternative text; stay empty until it loads or when none is set.
+	const { record } = useEntityRecord( 'root', 'media', imageId, {
+		enabled: imageId > 0,
+	} );
+	const imageAlt =
+		( record as { alt_text?: string } | undefined )?.alt_text?.trim() ?? '';
+
 	const blockProps = useBlockProps( {
 		className: [
 			'jmc-section',
@@ -74,7 +84,9 @@ export default function Edit( { attributes, setAttributes } ) {
 					<div { ...innerBlocksProps } />
 					<div className="jmc-section__column">
 						<div className="jmc-image jmc-text-with-image__image">
-							{ imageUrl && <img src={ imageUrl } alt="#" /> }
+							{ imageUrl && (
+								<img src={ imageUrl } alt={ imageAlt } />
+							) }
 							<MediaInput
 								{ ...bind.media( 'imageId', 'imageUrl' ) }
 							/>

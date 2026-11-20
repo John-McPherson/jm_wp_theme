@@ -1,0 +1,25 @@
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
+/*
+ * Links are underlined by default, so a link in body copy never relies on
+ * colour alone. Hover thickens the underline and keyboard focus adds the
+ * shared focus ring (base/_focus.scss); the underline stays in every state.
+ *
+ * Navigation, buttons and other components set their own decoration in
+ * their block styles, which sit in later layers and so win over this rule.
+ */
+@layer base {
+
+	a {
+		text-decoration-line: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.2em;
+
+		&:hover,
+		&:active {
+			text-decoration-thickness: 2px;
+		}
+	}
+}

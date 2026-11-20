@@ -1,0 +1,30 @@
+/* ==========================================================================
+   Focus
+   ========================================================================== */
+
+/*
+ * One keyboard focus ring for every interactive element: a solid outline in
+ * the section's highlight colour, which `npm run test:contrast` checks at
+ * 3:1 against every palette background. Outlines are not clipped by
+ * `overflow` on the element itself and sit outside its box, so the offset
+ * keeps the ring clear of filled buttons and fields.
+ *
+ * Components that draw the ring somewhere else (a card around a stretched
+ * link) remove it from the link in their own block styles.
+ */
+@layer base {
+
+	:focus-visible {
+		outline: var(--jmc-focus-width) solid var(--jmc-text-highlight);
+		outline-offset: var(--jmc-focus-offset);
+	}
+
+	/*
+	 * The skip link's target. `<main>` takes focus only so the skip link can
+	 * move keyboard and screen-reader focus into it (inc/templates.php); it
+	 * is not a control, so it gets no ring.
+	 */
+	main[tabindex="-1"]:focus {
+		outline: none;
+	}
+}

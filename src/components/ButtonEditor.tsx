@@ -12,7 +12,7 @@ import TextInput from './TextInput';
 
 const VARIANT_CLASSES = {
 	primary: '',
-	secondary: 'jmc-button__secondary',
+	secondary: 'jmc-button--secondary',
 };
 
 // Site-wide business details (Settings → Business) used by phone, email and WhatsApp buttons.

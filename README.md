@@ -80,6 +80,7 @@ npm start
 - [Blocks](docs/blocks.md)
 - [Design system](docs/design-system.md)
 - [Accessibility](docs/accessibility.md)
+- [Manual accessibility QA checklist](docs/accessibility-qa.md)
 - [Testing](docs/testing.md)
 - [Platform support](docs/support.md)
 - [Roadmap and issue workflow](docs/roadmap.md)
@@ -91,7 +92,7 @@ npm start
 
 The theme provides nine dynamic, server-rendered blocks: five internal composition blocks and four editor-insertable section blocks. GitHub Actions installs locked dependencies, type-checks, lints PHP/TypeScript/SCSS, runs PHPCS, builds the theme, packages `dist/`, and verifies required package paths.
 
-The site-identity header template part and cross-browser Playwright smoke coverage are now configured. Primary navigation, header CTA, footer, complete template coverage, automated accessibility checks, visual regression baselines, and clean-install package verification remain planned work. The current global block allowlist also needs to become context-aware before core Site Editor blocks are required.
+The site-identity header template part and cross-browser Playwright smoke coverage are now configured. Primary navigation, header CTA, footer, complete template coverage, automated accessibility checks, visual regression baselines, and clean-install package verification remain planned work.
 
 ## Browser support
 

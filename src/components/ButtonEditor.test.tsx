@@ -79,7 +79,7 @@ describe( 'ButtonEditor', () => {
 
 			expect( label ).toHaveProperty( 'value', 'Get a quote' );
 			expect( label.dataset.className ).toBe(
-				'jmc-button__secondary jmc-button'
+				'jmc-button--secondary jmc-button'
 			);
 
 			fireEvent.change( label, { target: { value: 'Book now' } } );
@@ -221,7 +221,7 @@ describe( 'ButtonEditor', () => {
 		const button = label.parentElement as HTMLElement;
 		const icon = button.querySelector( '.jmc-button__icon' );
 
-		expect( button.className ).toBe( 'jmc-button__secondary jmc-button' );
+		expect( button.className ).toBe( 'jmc-button--secondary jmc-button' );
 		expect( label.dataset.tagName ).toBe( 'span' );
 		expect( label.dataset.className ).toBe( '' );
 		expect( icon?.getAttribute( 'aria-hidden' ) ).toBe( 'true' );
