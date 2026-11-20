@@ -61,12 +61,13 @@ Exclude `node_modules/`, `vendor/` unless runtime dependencies require it, `src/
 4. Run the complete local quality gate in [Testing](testing.md).
 5. Run `npm run package` and inspect `dist/`.
 6. Install and activate the package in a clean supported WordPress environment.
-7. Complete block, template, navigation, accessibility, and compatibility smoke tests.
+7. Complete block, template, navigation, and compatibility smoke tests.
 8. Update `Tested up to` only when supported by evidence, and review the [Platform support](support.md) matrix, recording the review date.
 9. Merge `dev` into `staging`, then verify the staging deploy.
-10. Open and review a `staging` to `main` release PR.
-11. Tag the exact release commit and retain the tested package.
-12. Merge the release PR, approve the production deploy in GitHub Actions, and verify production health.
+10. Run the [manual accessibility QA checklist](accessibility-qa.md) on staging and record the results as `docs/accessibility-qa/v<version>.md`, linked from the release's `CHANGELOG.md` entry. Bring the results file to `staging` through `dev` like any other change. Critical and high-priority failures block the release.
+11. Open and review a `staging` to `main` release PR, linking the accessibility results.
+12. Tag the exact release commit and retain the tested package.
+13. Merge the release PR, approve the production deploy in GitHub Actions, and verify production health.
 
 ## Rollback
 
