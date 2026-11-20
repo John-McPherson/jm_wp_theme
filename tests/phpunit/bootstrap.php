@@ -664,6 +664,30 @@ function get_theme_file_path( string $file = '' ): string {
 }
 
 /**
+ * Retrieve the URL of a file in the theme.
+ *
+ * Test double that resolves against a fixed theme URL.
+ *
+ * @param string $file File to search for in the theme directory.
+ *
+ * @return string The file URL.
+ */
+function get_theme_file_uri( string $file = '' ): string {
+	return 'https://example.com/wp-content/themes/amc_electrical/' . ltrim( $file, '/' );
+}
+
+/**
+ * Determine whether the site has a Site Icon.
+ *
+ * Test double that reads `$GLOBALS['jmc_test_has_site_icon']`, defaulting to false.
+ *
+ * @return bool Whether a Site Icon is set.
+ */
+function has_site_icon(): bool {
+	return (bool) ( $GLOBALS['jmc_test_has_site_icon'] ?? false );
+}
+
+/**
  * Retrieve the active theme's directory name.
  *
  * Test double that reads `$GLOBALS['jmc_test_stylesheet']`, defaulting to the theme's own.
