@@ -4,13 +4,28 @@ All notable changes will be documented here. The project follows semantic versio
 
 ## Unreleased
 
+## [0.2.2] – 2026-11-20
+
+Accessibility QA results: [docs/accessibility-qa/v0.2.2.md](docs/accessibility-qa/v0.2.2.md).
+
 ### Added
 
 - [Manual accessibility QA checklist](docs/accessibility-qa.md): keyboard, visual, screen-reader and editor checks, the supported browser and screen-reader setups, a [results template](docs/accessibility-qa/template.md) recorded for each release, and how to report failures. [Releasing](docs/releasing.md#release-checklist) requires it for every release candidate.
+- Theme favicons (`favicon.ico`, `favicon.svg`, `apple-touch-icon.png`) in the front end, admin and login screens, used only when no Site Icon is set in **Settings → General** (#189).
+- The project board moves an issue to **Released** when its pull request reaches `main` through a release (#169).
+
+### Changed
+
+- The site logo uses the "AMC Electrical Solutions" wordmark (#189).
+- **Breaking:** The block allow-list depends on the editor context (#12). The post and page editor offers `jmc/*` blocks only; the Site Editor also offers the core template, layout and navigation blocks the theme's templates and parts need. Plugin blocks are no longer allowed by default and opt in through the new `jmc_allowed_blocks` filter. See [Blocks](docs/blocks.md#allowed-blocks).
+- **Breaking:** Block class names follow the `block.json` conventions (#13): `jmc-cta` becomes `jmc-cta-banner` (with `--stacked`, `--contact`, `--order-left` and `--order-right` modifiers), `jmc-footer-inner` becomes `jmc-footer__inner`, `jmc-button__secondary` becomes `jmc-button--secondary`, and the section grid custom properties are block-prefixed. Custom CSS that targets the old names stops applying; saved content needs no migration.
+- The image component honours `loading` (`lazy`, `eager`, or `false` to let WordPress decide) and falls back to `large` for unknown image sizes (#14).
 
 ### Fixed
 
 - Accessibility foundations (#59): links are underlined by default in every state; content lists keep their bullets and numbers, with navigation and component lists removing them in their own styles; one shared `:focus-visible` ring across the theme; the **Skip to content** link moves focus into `<main>`, and the fallback `index.html` template now has one; smooth scrolling, transitions and animations are switched off for `prefers-reduced-motion: reduce`.
+- The Text with Image editor preview uses the image's alternative text instead of `#` (#158).
+- A label paragraph that is the only paragraph in its column sits tight to the heading after it (#108).
 
 ## [0.2.1] – 2026-11-19
 
