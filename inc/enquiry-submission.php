@@ -197,7 +197,8 @@ function jmc_submit_enquiry( array $post ): array {
 	 * Passes no personal data or message content, so it is safe to use for
 	 * monitoring and aggregate reporting.
 	 *
-	 * @param string $outcome One of `sent`, `delivery_failed`, `duplicate`, `spam`,
+	 * @param string $outcome One of `sent`, `delivery_failed`, `duplicate`, `spam`
+	 *                        (discarded), `spam_stored` (held for review),
 	 *                        `rate_limited`, `invalid`, `store_failed` or `expired`.
 	 */
 	do_action( 'jmc_enquiry_outcome', $result['outcome'] );
