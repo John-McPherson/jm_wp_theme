@@ -4,21 +4,27 @@ All notable changes will be documented here. The project follows semantic versio
 
 ## Unreleased
 
+## [0.2.1] – 2026-11-19
+
 ### Added
 
 - `npm run i18n:pot` generates the `languages/jmc-theme.pot` translation template, and `npm run package` ships it.
 - CI rejects the wrong text domain in TypeScript (ESLint) and in `style.css` and `block.json` metadata (PHPUnit).
 - [Platform support](docs/support.md) policy: a versioned matrix of supported WordPress, PHP, Node, browser, device and assistive-technology versions, with upgrade, end-of-support, ownership and review rules.
 - `package.json` declares `engines` (Node 24.18.0 or a later 24.x), and `.npmrc` makes npm refuse other versions.
+- Block metadata is validated against the WordPress `block.json` schema, and the block contracts are documented in [Blocks](docs/blocks.md).
+- GitHub Actions deploys to WP Engine: `dev` to development, `staging` to staging, and `main` to production (with approval), promoting the exact package tested on staging. See [Releasing](docs/releasing.md#deployment).
 
 ### Changed
 
 - **Breaking:** PHP 8.3 is now the minimum (was 8.0), in `style.css` and `composer.json`. CI tests PHP 8.3 and 8.5, and the `wp-env` site runs PHP 8.3.
+- CI quality checks run on pull requests only, not on every push.
 
 ### Fixed
 
 - `style.css` declares the `jmc-theme` text domain used by the code, and the theme loads translations from `languages/`.
 - The privacy policy text uses a plural form for the enquiry retention period.
+- `block.json` contracts are normalised across all blocks.
 
 ## [0.2.0] – 2026-11-19
 

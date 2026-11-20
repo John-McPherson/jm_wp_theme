@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - dev
+      - staging
       - main
   schedule:
     # Nightly run against WordPress master to catch upstream breakage early.

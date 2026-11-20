@@ -42,7 +42,7 @@ The development site is available at `http://localhost:8888` with username `admi
 - Use one GitHub issue for one independently reviewable outcome.
 - Assign one version milestone, one `type:` label, one `priority:` label, and all relevant `area:` labels.
 - Link the issue in the pull request and update documentation when a command, contract, token, workflow, or supported platform changes.
-- Formal release pull requests merge `dev` into `main`.
+- Release by merging `dev` into `staging`, then `staging` into `main`; see [Releasing](releasing.md#branches).
 
 See [Roadmap and issue workflow](roadmap.md) for milestone scope and label conventions.
 

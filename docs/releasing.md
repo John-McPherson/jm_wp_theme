@@ -20,7 +20,9 @@ Use semantic versioning. The active plan is:
 
 See [Roadmap and issue workflow](roadmap.md) for completion criteria.
 
-Keep versions aligned in `package.json`, `style.css`, and block metadata where applicable. Patch releases contain compatible fixes; `1.0.0` is the first stable supported release.
+Each completed sprint ships as a patch release (for example `0.2.0` → `0.2.1`), versioned and tagged when it reaches `main`. Completing a milestone takes the minor or major version it names.
+
+Keep versions aligned in `package.json`, `style.css`, and block metadata where applicable. Before `1.0.0`, a sprint patch release may include features and breaking changes, which the changelog marks. From `1.0.0`, the first stable supported release, patch releases contain only compatible fixes.
 
 ## Branches
 
