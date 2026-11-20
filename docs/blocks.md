@@ -635,21 +635,23 @@ Without JavaScript, the form posts to `admin-post.php` (action `jmc_enquiry`) an
 `jmc_submit_enquiry()` checks the nonce, then `jmc_handle_enquiry()` applies the remaining checks in this order:
 
 1. **Rate limit** — 10 submissions an hour per visitor, counted in a transient keyed by a hash of the IP address.
-2. **Spam** — the hidden honeypot is filled, the signed timing token is missing or altered, the form was submitted within 3 seconds or more than 2 days after it was rendered, or the message has more than 2 links.
+2. **Bot spam** — the hidden honeypot is filled, the signed timing token is missing or altered, or the form was submitted within 3 seconds or more than 2 days after it was rendered. Only bots trigger these (the script waits 3.5 seconds after fetching a token before it submits), so the submission is discarded.
 3. **Validation.**
 4. **Duplicates** — the same email address and message within 24 hours.
+5. **Possible spam** — the message has more than 2 links. A genuine customer might paste several photo links, so a valid submission is stored with the **Held as spam** status and its reason, but not emailed. Review it under **Enquiries → Spam** (see [Storage and delivery](#storage-and-delivery)). `jmc_enquiry_kept_spam_reasons()` lists the reasons kept this way.
 
-Spam and duplicates are reported to the visitor as sent, but nothing is stored or emailed. Every submission fires `jmc_enquiry_outcome` with one of `sent`, `delivery_failed`, `duplicate`, `spam`, `rate_limited`, `invalid`, `store_failed` or `expired`. The hook carries no personal data, for monitoring (#81). Behind a proxy or CDN, filter `jmc_enquiry_client_ip` with the visitor's real address, or every visitor shares one rate limit. The production setup is tracked in #125.
+Spam and duplicates are reported to the visitor as sent. Bot spam and duplicates are neither stored nor emailed. Every submission fires `jmc_enquiry_outcome` with one of `sent`, `delivery_failed`, `duplicate`, `spam` (bot spam, discarded), `spam_stored` (possible spam, held for review), `rate_limited`, `invalid`, `store_failed` or `expired`. The hook carries no personal data, for monitoring (#81). Behind a proxy or CDN, filter `jmc_enquiry_client_ip` with the visitor's real address, or every visitor shares one rate limit. The production setup is tracked in #125.
 
 ### Storage and delivery
 
 Each accepted enquiry is saved as a private `jmc_enquiry` post before it is emailed (`inc/enquiries.php`), so a failed email is never lost:
 
-- **Delivery** — `jmc_send_enquiry()` emails the business, with `Reply-To` set to the enquirer, and records the status (`sent` or `failed`), the number of attempts and the last mail error. `sent` means the mail provider accepted the message; use an SMTP plugin for reliable delivery. A failure also writes a log line containing only the enquiry ID, and fires `jmc_enquiry_delivery`.
-- **Admin** — **Enquiries** lists name, email, postcode, service, delivery status and date, with a **Failed to send** filter. Each enquiry opens as a read-only view with **Reply by email**, **Resend** and **Move to bin**. Editors and administrators can see enquiries; nobody can create them by hand.
+- **Delivery** — `jmc_send_enquiry()` emails the business, with `Reply-To` set to the enquirer, and records the status (`sent` or `failed`), the number of attempts and the last mail error. Enquiries held as spam (status `spam`) are not sent and are left out of the failed-delivery count and notice. `sent` means the mail provider accepted the message; use an SMTP plugin for reliable delivery. A failure also writes a log line containing only the enquiry ID, and fires `jmc_enquiry_delivery`.
+- **Admin** — **Enquiries** lists name, email, postcode, service, delivery status and date, with **Failed to send** and **Spam** filters, each shown while it has enquiries. Each enquiry opens as a read-only view with **Reply by email**, **Resend** (**Send** for an enquiry held as spam) and **Move to bin**. An enquiry held as spam also shows why it was flagged. Editors and administrators can see enquiries; nobody can create them by hand.
 - **Recovering a failed delivery** — a notice on the dashboard and the Enquiries screens counts failed enquiries. Fix the business email address (**Settings → Business**) or the site's mail settings, then use **Resend**.
-- **Retention** — a daily cron job (`jmc_purge_enquiries`) deletes enquiries older than 365 days; filter `jmc_enquiry_retention_days` to change this. Switching theme unschedules it.
-- **Privacy** — suggested privacy-policy text is added under **Settings → Privacy**. Enquiries are included in **Tools → Export Personal Data** and **Erase Personal Data**, matched by email address.
+- **Recovering a genuine enquiry held as spam** — open **Enquiries → Spam**, check the enquiry and use **Send**. It goes through the normal delivery: it becomes **Sent**, or **Failed** (and is counted in the failed-delivery notice) if the email can't be sent. The spam reason is kept on the enquiry. Delete enquiries that really are spam with **Move to bin**.
+- **Retention** — a daily cron job (`jmc_purge_enquiries`) deletes enquiries older than 365 days, including those held as spam; filter `jmc_enquiry_retention_days` to change this. Switching theme unschedules it.
+- **Privacy** — suggested privacy-policy text is added under **Settings → Privacy**. Enquiries, including those held as spam, are included in **Tools → Export Personal Data** and **Erase Personal Data**, matched by email address.
 
 ## Services grid
 

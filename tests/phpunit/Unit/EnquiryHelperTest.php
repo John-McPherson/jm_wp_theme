@@ -371,6 +371,16 @@ final class EnquiryHelperTest extends TestCase {
 	 * Every delivery status has a label.
 	 */
 	public function test_statuses(): void {
-		self::assertSame( [ 'accepted', 'sent', 'failed' ], array_keys( jmc_enquiry_statuses() ) );
+		self::assertSame( [ 'accepted', 'sent', 'failed', 'spam' ], array_keys( jmc_enquiry_statuses() ) );
+	}
+
+	/**
+	 * Only too many links is kept for review; bot-only reasons are discarded.
+	 */
+	public function test_kept_spam_reasons(): void {
+		$reasons = jmc_enquiry_kept_spam_reasons();
+
+		self::assertSame( [ 'links' ], array_keys( $reasons ) );
+		self::assertStringContainsString( (string) JMC_ENQUIRY_MAX_LINKS, $reasons['links'] );
 	}
 }

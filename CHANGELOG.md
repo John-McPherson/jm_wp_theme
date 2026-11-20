@@ -10,6 +10,7 @@ All notable changes will be documented here. The project follows semantic versio
 
 ### Changed
 
+- A valid enquiry whose message has more than 2 links is kept with a **Held as spam** status instead of being discarded (#203). It isn't emailed or counted as a failed delivery; find it under **Enquiries → Spam**, see why it was flagged, and **Send** it on to the business email if it's genuine. Honeypot and timing-token failures are still discarded. `jmc_enquiry_outcome` reports the new `spam_stored` outcome. See [Enquiry form](docs/blocks.md#storage-and-delivery).
 - The header no longer includes the Site Title as a hidden text fallback; the theme logo always shows, and its link is still named by the Site Title for screen readers.
 
 ## [0.2.2] – 2026-11-20
