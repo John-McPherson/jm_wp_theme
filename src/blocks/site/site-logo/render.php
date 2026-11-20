@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 $svg = jmc_get_inline_svg( get_theme_file_path( 'build/assets/svgs/logo.svg' ) );
 
-// Without the artwork, render nothing so the header's site title shows instead.
+// Without the artwork (a broken build), render nothing rather than an empty link.
 if ( '' === $svg ) {
 	return;
 }

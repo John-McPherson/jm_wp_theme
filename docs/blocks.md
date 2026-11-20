@@ -159,7 +159,7 @@ Kept up to date with each block's `block.json`. All blocks are `apiVersion` 3, v
 | `jmc/footer-legal` | `jmc-site` | parent: footer (inserter: false) | `copyrightHolder` string = `""` | Yes | inserter: false, multiple: false | `jmc-footer-legal` |
 | `jmc/footer-navigation` | `jmc-site` | parent: footer | `navigationId` number = `0` | Yes | — | `jmc-footer-navigation` |
 | `jmc/header-cta` | `jmc-site` | parent: navigation (inserter: false) | Same as `jmc/button` | Yes | inserter: false, multiple: false | `jmc-header-cta` |
-| `jmc/navigation` | `jmc-site` | Header part only (inserter: false) | `navigationId` number = `0` | Yes | customClassName: false, inserter: false | `jmc-navigation` (editor: `jmc-navigation-editor`) |
+| `jmc/navigation` | `jmc-site` | Header part only (inserter: false) | `navigationId` number = `0` | Yes | customClassName: false, inserter: false | `jmc-navigation` |
 | `jmc/site-logo` | `jmc-site` | Header part only (inserter: false) | none; colour via block styles default, brand, mono-dark, mono-light | Yes | inserter: false | `jmc-site-logo` |
 
 ### Deliberate exceptions
@@ -168,7 +168,6 @@ These differ from the [root class convention](#conventions) on purpose:
 
 - `jmc/column` (`jmc-section__column`) and `jmc/list-item` (`jmc-list__item`) are elements of their parent block.
 - `jmc/footer` (`jmc-footer__inner`, with `jmc-footer__container` inside) is an element of the `<footer class="jmc-footer">` template part that holds it, so the page has one `jmc-footer` root.
-- `jmc/navigation`'s editor root is `jmc-navigation-editor`. It wraps the server-rendered `<nav class="jmc-navigation">` preview and the header call to action, so giving it `jmc-navigation` would nest one navigation root inside another.
 
 ## Patterns
 
@@ -324,6 +323,16 @@ The current page's link gets `aria-current="page"` at either level; custom links
 - Closed submenus are `hidden`, so focus never moves into them.
 - **Hover and focus:** primary links, submenu links (in the dropdown and the mobile menu) and submenu toggles share the footer's link hover and keyboard-focus treatment (the `link-hover` mixin): `--jmc-text-highlight` and an underline, with no transition under reduced motion. The toggle's chevron is drawn in `currentcolor`, so it changes with the label. The current page stays bold and ignores the pointer, so it never looks hovered. The highlight meets 4.5:1 on every palette background the header and dropdown use (lowest 4.73:1).
 
+### Editor preview
+
+The editor renders the same markup as `render.php`, in the state `view.ts` leaves it in, so the header template part looks the same in the Site Editor as on the site at every breakpoint. The block's own element is the `<nav class="jmc-navigation">` (without `no-js`), inside `.jmc-header-inner` as on the frontend, and there is no editor-only stylesheet: `style.scss` lays out both.
+
+- `edit.tsx` reads the chosen `wp_navigation` record (saved content, in the edit context), parses it with `parse()` from `@wordpress/block-serialization-default-parser` (the same block shape as PHP's `parse_blocks()`), and normalises it with `navigationTree()` (`src/utils/navigationTree.ts`), which mirrors `jmc_get_navigation_tree()`. Keep the two in step; their unit tests share the same cases. Choosing another menu updates the preview straight away, without a server request.
+- The header call to action is the inner-blocks container, rendered as the last `<li class="jmc-navigation__item jmc-navigation__item--cta">` of the list, so it stays selectable and editable. On the frontend that item is left out when the button renders nothing; the editor always shows it.
+- Submenus are closed (`hidden`), behind their toggles, on desktop; below the tablet breakpoint the menu toggle shows and the list is clipped closed, as on the site. The preview has no open state, so at mobile widths select the call to action from the List View.
+- Menu items and the menu toggle are `inert`, so clicking a link selects the block instead of leaving the editor. The current-page states (`aria-current`, `--current-ancestor`) need a front-end request, so the editor never shows them.
+- While the menu loads, the list shows a spinner; when no menu is chosen or it has no usable links, the editor shows only the call to action, where the frontend renders nothing.
+
 ## Header call-to-action
 
 `jmc/header-cta` is placed in `parts/header.html` as the only inner block of `jmc/navigation`, which renders it as the last `<li>` of the menu list. It therefore appears at the end of the desktop menu and inside the mobile dropdown, and it shares the dropdown's open, close, and Escape behaviour.
@@ -356,7 +365,7 @@ The block is not insertable, so a site whose header template part has been custo
 
 **Accessibility.** The link is named by the Site Title in a visually hidden span (or "Home" when the title is empty); the SVG is `aria-hidden="true"` and `focusable="false"` with no `<title>`, so the name is announced once. The link has `rel="home"` and a 2px `--jmc-text-highlight` focus outline.
 
-**Fallback.** When the artwork is missing from the build the block renders nothing, and the header shows the core Site Title instead (`.jmc-logo:has(.jmc-site-logo)` hides the title only while the logo renders).
+**Missing artwork.** The header always shows the logo and has no Site Title text. If the artwork is missing from the build, the block renders nothing rather than an empty link.
 
 **Colours.** Each group fills from a token: `--jmc-logo-primary`, `--jmc-logo-accent` and `--jmc-logo-secondary`. They default in the semantic tokens and are reassigned in each palette, so a logo inside `jmc-palette--secondary` or `jmc-palette--inverse` changes with no extra markup. Every value aliases a `--jmc-color-*` token, which aliases the `theme.json` palette, so palette edits and global style variations reach the logo. Choose a variant in the Site Editor under the block's **Styles**:
 
@@ -588,7 +597,7 @@ The block outputs no schema.org data, and the theme adds none centrally. Yoast i
 
 ## Editor previews
 
-Blocks that preview their server render (`jmc/contact-details`, `jmc/service-list`, `jmc/navigation`, `jmc/footer-navigation`, and `jmc/site-logo`) wrap `ServerSideRender` in `Disabled`. The preview is inert, so clicking a link, phone number or email address selects the block instead of leaving the editor or opening another app. Other blocks edit their text directly and render no live links in the editor.
+Blocks that preview their server render (`jmc/contact-details`, `jmc/service-list`, `jmc/footer-navigation`, and `jmc/site-logo`) wrap `ServerSideRender` in `Disabled`. `jmc/navigation` renders its preview in the editor instead (see [Editor preview](#editor-preview)) and marks its menu items and menu toggle `inert`. The preview is inert, so clicking a link, phone number or email address selects the block instead of leaving the editor or opening another app. Other blocks edit their text directly and render no live links in the editor.
 
 ## Enquiry form
 
