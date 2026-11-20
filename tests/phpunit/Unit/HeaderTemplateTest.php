@@ -118,9 +118,10 @@ final class HeaderTemplateTest extends TestCase {
 			'The header should not use the core Site Logo block, which prints an uploaded image.'
 		);
 
-		$this->assertStringContainsString(
+		$this->assertStringNotContainsString(
 			'<!-- wp:site-title',
-			$header
+			$header,
+			'The header should not print the site title as text; the logo link is named by it instead.'
 		);
 
 		$this->assertStringContainsString(

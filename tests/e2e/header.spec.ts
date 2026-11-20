@@ -306,7 +306,7 @@ test.describe( 'site identity', () => {
 
 		await expect(
 			page.locator( '.jmc-logo .wp-block-site-title' )
-		).toBeHidden();
+		).toHaveCount( 0 );
 	} );
 
 	test( 'names the logo link with the site title and hides the SVG', async ( {

@@ -173,7 +173,7 @@ final class SiteLogoRenderTest extends TestCase {
 	}
 
 	/**
-	 * Without the artwork the block renders nothing, so the site title shows.
+	 * Without the artwork the block renders nothing rather than an empty link.
 	 */
 	public function test_missing_artwork_renders_nothing(): void {
 		unlink( $this->theme_root . '/build/assets/svgs/logo.svg' );

@@ -365,7 +365,7 @@ The block is not insertable, so a site whose header template part has been custo
 
 **Accessibility.** The link is named by the Site Title in a visually hidden span (or "Home" when the title is empty); the SVG is `aria-hidden="true"` and `focusable="false"` with no `<title>`, so the name is announced once. The link has `rel="home"` and a 2px `--jmc-text-highlight` focus outline.
 
-**Fallback.** When the artwork is missing from the build the block renders nothing, and the header shows the core Site Title instead (`.jmc-logo:has(.jmc-site-logo)` hides the title only while the logo renders).
+**Missing artwork.** The header always shows the logo and has no Site Title text. If the artwork is missing from the build, the block renders nothing rather than an empty link.
 
 **Colours.** Each group fills from a token: `--jmc-logo-primary`, `--jmc-logo-accent` and `--jmc-logo-secondary`. They default in the semantic tokens and are reassigned in each palette, so a logo inside `jmc-palette--secondary` or `jmc-palette--inverse` changes with no extra markup. Every value aliases a `--jmc-color-*` token, which aliases the `theme.json` palette, so palette edits and global style variations reach the logo. Choose a variant in the Site Editor under the block's **Styles**:
 
