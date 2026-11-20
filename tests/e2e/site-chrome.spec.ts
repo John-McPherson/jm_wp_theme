@@ -57,7 +57,8 @@ const navigationShape = ( navigation: Locator ) =>
 		),
 	} ) );
 
-test.describe( 'header and footer workflows', () => {
+// Site Editor journeys: phone projects skip them (see playwright.config.ts).
+test.describe( 'header and footer workflows', { tag: '@desktop' }, () => {
 	let theme: string;
 	let navigationId: number | undefined;
 	let options: Record< string, unknown > | undefined;

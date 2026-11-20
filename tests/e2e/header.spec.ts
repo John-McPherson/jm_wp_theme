@@ -11,6 +11,9 @@ import { loginToWordPress } from './helpers/login';
 
 const headerSelector = '.jmc-header';
 
+// Tests that set a desktop viewport, need the desktop menu, sign in to the
+// admin or open the Site Editor are tagged `@desktop`, so phone projects skip
+// them (see playwright.config.ts).
 test.describe( 'site header', () => {
 	test( 'renders the block-based header', async ( { page } ) => {
 		await page.goto( '/' );
@@ -18,125 +21,139 @@ test.describe( 'site header', () => {
 		await expect( page.locator( headerSelector ) ).toBeVisible();
 	} );
 
-	test( 'uses sticky positioning', async ( { page } ) => {
-		await page.setViewportSize( {
-			width: 1024,
-			height: 800,
-		} );
-
-		await page.goto( '/' );
-
-		await expect( page.locator( headerSelector ) ).toHaveCSS(
-			'position',
-			'sticky'
-		);
-	} );
-
-	test( 'offsets the sticky header below the admin toolbar', async ( {
-		page,
-	} ) => {
-		await page.setViewportSize( {
-			width: 1024,
-			height: 800,
-		} );
-
-		await loginToWordPress( page );
-		await page.goto( '/' );
-
-		await expect( page.locator( 'body' ) ).toHaveClass( /admin-bar/ );
-
-		await expect( page.locator( headerSelector ) ).toHaveCSS(
-			'top',
-			'32px'
-		);
-	} );
-
-	test( 'remains at the viewport edge while scrolling', async ( {
-		page,
-	} ) => {
-		await page.setViewportSize( {
-			width: 1024,
-			height: 800,
-		} );
-
-		await page.goto( '/' );
-		await page.waitForLoadState( 'domcontentloaded' );
-
-		const header = page.locator( '.jmc-header' );
-		const siteBlocks = page.locator( '.wp-site-blocks' );
-
-		await expect( header ).toBeVisible();
-		await expect( siteBlocks ).toBeVisible();
-		await expect( header ).toHaveCSS( 'position', 'sticky' );
-
-		await siteBlocks.evaluate( ( container ) => {
-			const spacer = document.createElement( 'div' );
-
-			spacer.style.height = '3000px';
-			spacer.setAttribute( 'data-e2e-spacer', '' );
-
-			container.appendChild( spacer );
-		} );
-
-		const stickyTop = await header.evaluate( ( element ) => {
-			return (
-				Number.parseFloat( window.getComputedStyle( element ).top ) || 0
-			);
-		} );
-
-		await page.evaluate( () => {
-			window.scrollTo( {
-				top: 800,
-				behavior: 'instant',
+	test(
+		'uses sticky positioning',
+		{ tag: '@desktop' },
+		async ( { page } ) => {
+			await page.setViewportSize( {
+				width: 1024,
+				height: 800,
 			} );
-		} );
 
-		await expect
-			.poll( () => page.evaluate( () => window.scrollY ) )
-			.toBeGreaterThanOrEqual( 798 );
+			await page.goto( '/' );
 
-		await expect
-			.poll( async () => {
-				return header.evaluate( ( element, expectedTop ) => {
-					return Math.abs(
-						element.getBoundingClientRect().top - expectedTop
-					);
-				}, stickyTop );
-			} )
-			.toBeLessThanOrEqual( 2 );
-	} );
+			await expect( page.locator( headerSelector ) ).toHaveCSS(
+				'position',
+				'sticky'
+			);
+		}
+	);
 
-	test( 'disables sticky positioning in a short viewport', async ( {
-		page,
-	} ) => {
-		await page.setViewportSize( {
-			width: 1024,
-			height: 470,
-		} );
+	test(
+		'offsets the sticky header below the admin toolbar',
+		{ tag: '@desktop' },
+		async ( { page } ) => {
+			await page.setViewportSize( {
+				width: 1024,
+				height: 800,
+			} );
 
-		await page.goto( '/' );
+			await loginToWordPress( page );
+			await page.goto( '/' );
 
-		await expect( page.locator( headerSelector ) ).toHaveCSS(
-			'position',
-			'static'
-		);
-	} );
+			await expect( page.locator( 'body' ) ).toHaveClass( /admin-bar/ );
 
-	test( 'remains sticky above the short viewport breakpoint', async ( {
-		page,
-	} ) => {
-		await page.setViewportSize( {
-			width: 1024,
-			height: 490,
-		} );
+			await expect( page.locator( headerSelector ) ).toHaveCSS(
+				'top',
+				'32px'
+			);
+		}
+	);
 
-		await page.goto( '/' );
+	test(
+		'remains at the viewport edge while scrolling',
+		{ tag: '@desktop' },
+		async ( { page } ) => {
+			await page.setViewportSize( {
+				width: 1024,
+				height: 800,
+			} );
 
-		await expect( page.locator( headerSelector ) ).toHaveCSS(
-			'position',
-			'sticky'
-		);
-	} );
+			await page.goto( '/' );
+			await page.waitForLoadState( 'domcontentloaded' );
+
+			const header = page.locator( '.jmc-header' );
+			const siteBlocks = page.locator( '.wp-site-blocks' );
+
+			await expect( header ).toBeVisible();
+			await expect( siteBlocks ).toBeVisible();
+			await expect( header ).toHaveCSS( 'position', 'sticky' );
+
+			await siteBlocks.evaluate( ( container ) => {
+				const spacer = document.createElement( 'div' );
+
+				spacer.style.height = '3000px';
+				spacer.setAttribute( 'data-e2e-spacer', '' );
+
+				container.appendChild( spacer );
+			} );
+
+			const stickyTop = await header.evaluate( ( element ) => {
+				return (
+					Number.parseFloat(
+						window.getComputedStyle( element ).top
+					) || 0
+				);
+			} );
+
+			await page.evaluate( () => {
+				window.scrollTo( {
+					top: 800,
+					behavior: 'instant',
+				} );
+			} );
+
+			await expect
+				.poll( () => page.evaluate( () => window.scrollY ) )
+				.toBeGreaterThanOrEqual( 798 );
+
+			await expect
+				.poll( async () => {
+					return header.evaluate( ( element, expectedTop ) => {
+						return Math.abs(
+							element.getBoundingClientRect().top - expectedTop
+						);
+					}, stickyTop );
+				} )
+				.toBeLessThanOrEqual( 2 );
+		}
+	);
+
+	test(
+		'disables sticky positioning in a short viewport',
+		{ tag: '@desktop' },
+		async ( { page } ) => {
+			await page.setViewportSize( {
+				width: 1024,
+				height: 470,
+			} );
+
+			await page.goto( '/' );
+
+			await expect( page.locator( headerSelector ) ).toHaveCSS(
+				'position',
+				'static'
+			);
+		}
+	);
+
+	test(
+		'remains sticky above the short viewport breakpoint',
+		{ tag: '@desktop' },
+		async ( { page } ) => {
+			await page.setViewportSize( {
+				width: 1024,
+				height: 490,
+			} );
+
+			await page.goto( '/' );
+
+			await expect( page.locator( headerSelector ) ).toHaveCSS(
+				'position',
+				'sticky'
+			);
+		}
+	);
 
 	test( 'does not create horizontal overflow at 320px', async ( {
 		page,
@@ -258,29 +275,35 @@ test.describe( 'theme navigation', () => {
 		await expect( links.nth( 1 ) ).toHaveAttribute( 'href', '/services/' );
 	} );
 
-	test( 'marks only the current page link with aria-current', async ( {
-		page,
-	} ) => {
-		await updateNavigationRecord( navigationId, [
-			{ label: 'Home', url: '/' },
-			{
-				label: 'This page',
-				url: `/?page_id=${ pageId }`,
-				id: pageId,
-			},
-		] );
+	// Reads the links by role, so it needs the desktop menu, shown inline.
+	test(
+		'marks only the current page link with aria-current',
+		{ tag: '@desktop' },
+		async ( { page } ) => {
+			await updateNavigationRecord( navigationId, [
+				{ label: 'Home', url: '/' },
+				{
+					label: 'This page',
+					url: `/?page_id=${ pageId }`,
+					id: pageId,
+				},
+			] );
 
-		await page.goto( `/?page_id=${ pageId }` );
+			await page.goto( `/?page_id=${ pageId }` );
 
-		const navigation = page.locator( '.jmc-navigation' );
+			const navigation = page.locator( '.jmc-navigation' );
 
-		await expect(
-			navigation.getByRole( 'link', { name: 'This page', exact: true } )
-		).toHaveAttribute( 'aria-current', 'page' );
-		await expect(
-			navigation.getByRole( 'link', { name: 'Home', exact: true } )
-		).not.toHaveAttribute( 'aria-current' );
-	} );
+			await expect(
+				navigation.getByRole( 'link', {
+					name: 'This page',
+					exact: true,
+				} )
+			).toHaveAttribute( 'aria-current', 'page' );
+			await expect(
+				navigation.getByRole( 'link', { name: 'Home', exact: true } )
+			).not.toHaveAttribute( 'aria-current' );
+		}
+	);
 } );
 
 test.describe( 'site identity', () => {
@@ -406,7 +429,7 @@ test.describe( 'site identity', () => {
 	} );
 } );
 
-test.describe( 'Site Editor', () => {
+test.describe( 'Site Editor', { tag: '@desktop' }, () => {
 	test( 'administrator can open the Site Editor without recovery UI', async ( {
 		page,
 	} ) => {

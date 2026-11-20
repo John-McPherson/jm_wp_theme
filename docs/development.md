@@ -32,7 +32,7 @@ npm run test:e2e
 npm run env:stop
 ```
 
-The development site is available at `http://localhost:8888` with username `admin` and password `password`. Playwright runs against Chromium, Firefox, and WebKit. Generated reports and failure evidence are written under `artifacts/e2e/` and are not committed.
+The development site is available at `http://localhost:8888` with username `admin` and password `password`. Playwright runs against Chromium, Firefox, and WebKit, and against an emulated Android phone and iPhone. Generated reports and failure evidence are written under `artifacts/e2e/` and are not committed.
 
 `.nvmrc` selects Node 24, and `package.json` `engines` requires 24.18.0 or a later 24.x. `.npmrc` sets `engine-strict`, so `npm install` and `npm ci` fail with `EBADENGINE` on any other version; run `nvm install 24` to update. Supported versions are set out in [Platform support](support.md).
 
