@@ -20,15 +20,28 @@ permissions:
 
 jobs:
   e2e:
-    name: WordPress E2E (${{ matrix.browser }})
+    name: WordPress E2E (${{ matrix.project }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
     strategy:
       fail-fast: false
       matrix:
-        # Every run covers all three browsers, in parallel jobs.
-        browser: [chromium, firefox, webkit]
+        # Every run covers the three desktop browsers and two emulated
+        # phones, in parallel jobs. `project` is the Playwright project;
+        # `browser` is the engine it needs, so each phone job shares its
+        # engine's cached browser and system packages.
+        include:
+          - project: chromium
+            browser: chromium
+          - project: firefox
+            browser: firefox
+          - project: webkit
+            browser: webkit
+          - project: phone-chromium
+            browser: chromium
+          - project: phone-webkit
+            browser: webkit
 
     env:
       CI: true
@@ -208,13 +221,13 @@ jobs:
           '
 
       - name: Run Playwright tests
-        run: npm run test:e2e -- --project=${{ matrix.browser }}
+        run: npm run test:e2e -- --project=${{ matrix.project }}
 
       - name: Upload Playwright report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.browser }}-${{ github.run_id }}
+          name: playwright-report-${{ matrix.project }}-${{ github.run_id }}
           path: artifacts/e2e/report/
           retention-days: 14
           if-no-files-found: ignore
@@ -223,7 +236,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-failures-${{ matrix.browser }}-${{ github.run_id }}
+          name: playwright-failures-${{ matrix.project }}-${{ github.run_id }}
           path: |
             artifacts/e2e/test-results/
             artifacts/e2e/php/

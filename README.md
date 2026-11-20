@@ -48,7 +48,7 @@ npm start
 | `npm run lint:phpcs` | Run WordPress Coding Standards |
 | `npm run env:start` | Start the isolated WordPress environment at `http://localhost:8888` |
 | `npm run env:stop` | Stop the isolated WordPress environment |
-| `npm run test:e2e` | Run Playwright in Chromium, Firefox, and WebKit |
+| `npm run test:e2e` | Run Playwright in Chromium, Firefox, and WebKit, and in emulated Android and iOS phones |
 | `npm run test:e2e:headed` | Run Playwright with visible browser windows |
 | `npm run test:e2e:report` | Open the latest HTML report |
 | `npm run i18n:pot` | Build the block scripts and generate `languages/jmc-theme.pot` |

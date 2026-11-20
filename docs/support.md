@@ -4,16 +4,16 @@ This policy states which WordPress, PHP, Node, browser, device and assistive-tec
 
 ## Support matrix
 
-**Matrix version 1** — adopted 2026-11-19 for theme `0.3.0`.
+**Matrix version 2** — adopted 2026-11-20 for theme `0.3.0`.
 
 | Platform | Supported | Declared in | Tested automatically |
 | --- | --- | --- | --- |
 | WordPress | 7.1 (the current major release) | `style.css` `Requires at least` / `Tested up to`, `.wp-env.json` | Playwright on the pinned 7.1 release; nightly against WordPress `master` |
 | PHP | 8.3 and later, up to the newest stable release (8.5) | `style.css` `Requires PHP`, `composer.json` `require` and `config.platform` | PHPUnit, PHPCS and syntax lint on 8.3 and 8.5; Playwright runs WordPress on 8.3 |
 | Node.js (development only) | 24, from 24.18.0 (with its bundled npm 11.16 or later) | `.nvmrc`, `package.json` `engines` (enforced by `.npmrc`) | Every Node CI job uses the newest 24.x through `.nvmrc` |
-| Browsers | Last two major versions of Chrome, Edge, Firefox and Safari (macOS and iOS); current Chrome for Android and Samsung Internet | This document | Playwright on Chromium, Firefox and WebKit |
-| Viewports | 320 CSS px wide and up, portrait and landscape, at up to 200% zoom | This document | Playwright checks for horizontal overflow at 320 px and header behaviour on short and narrow viewports |
-| Input | Mouse, touch and keyboard only | This document | Playwright keyboard tests for navigation; touch is checked manually |
+| Browsers | Last two major versions of Chrome, Edge, Firefox and Safari (macOS and iOS); current Chrome for Android and Samsung Internet | This document | Playwright on desktop Chromium, Firefox and WebKit, and on an emulated Android phone (Chromium, Pixel 7) and iPhone (WebKit, iPhone 15) |
+| Viewports | 320 CSS px wide and up, portrait and landscape, at up to 200% zoom | This document | Playwright checks for horizontal overflow at 320 px and on each primary template at both phones' screen widths, and header behaviour on short and narrow viewports |
+| Input | Mouse, touch and keyboard only | This document | Playwright keyboard tests for navigation; touch tests on the emulated phones for the menu, contact links and enquiry form |
 | Assistive technology | VoiceOver with Safari (macOS and iOS); NVDA with Chrome or Firefox (Windows) | This document | None. Checked manually at release candidates with the [manual accessibility QA checklist](accessibility-qa.md#test-setups) |
 
 ### Why these versions
@@ -30,7 +30,8 @@ This policy states which WordPress, PHP, Node, browser, device and assistive-tec
 The suites run a matrix chosen by risk, not every combination:
 
 - PHP versions between the floor and the newest (8.4) are not tested; a break that misses both ends is unlikely.
-- Playwright runs each engine at desktop size and resizes the viewport for narrow and short-screen tests. It does not emulate mobile browsers' touch or browser chrome, so touch and iOS/Android behaviour are checked manually at release candidates.
+- Desktop engines run at desktop size and resize the viewport for narrow and short-screen tests. The two phone projects emulate a phone's screen size, pixel density, touch input and mobile user agent, and run only the tests that apply to phones: Site Editor and admin journeys, and tests that set a desktop viewport or need a mouse or the Tab key, are tagged desktop-only. Emulation is not a real device: browser chrome (address bars, the on-screen keyboard), landscape, real iOS and Android builds and gestures beyond a tap are still checked manually at release candidates.
+- There is no Firefox phone project: Playwright cannot emulate mobile Firefox, and Firefox for Android is not in the supported list.
 - Real Edge, Samsung Internet and Safari builds are not run; their engines are.
 - Assistive-technology output cannot be checked automatically.
 
@@ -74,3 +75,4 @@ A change to the matrix is its own pull request that:
 | Reviewed | Matrix version | Outcome |
 | --- | --- | --- |
 | 2026-11-19 | 1 | Policy adopted (#48). |
+| 2026-11-20 | 2 | Playwright runs on an emulated Android phone and iPhone; touch is tested automatically (#175). |

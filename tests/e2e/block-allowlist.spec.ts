@@ -87,7 +87,8 @@ function expectSiteEditorBlocks( allowed: string[] ): void {
 	}
 }
 
-test.describe( 'block allow-list', () => {
+// Editor-only: phone projects skip it (see playwright.config.ts).
+test.describe( 'block allow-list', { tag: '@desktop' }, () => {
 	let theme: string;
 
 	test.beforeAll( async () => {

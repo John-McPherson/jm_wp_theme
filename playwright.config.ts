@@ -40,24 +40,49 @@ export default defineConfig( {
 		video: 'retain-on-failure',
 	},
 
+	/*
+	 * Desktop projects run every test except those tagged `@phone`, which
+	 * need touch. Phone projects emulate a phone (viewport, device scale,
+	 * touch, mobile user agent and `isMobile`) and run every test except
+	 * those tagged `@desktop`: Site Editor and admin journeys, and tests that
+	 * set a desktop viewport or rely on a mouse or Tab key. Firefox has no
+	 * phone project, because Playwright cannot emulate `isMobile` in it.
+	 */
 	projects: [
 		{
 			name: 'chromium',
 			use: {
 				...devices[ 'Desktop Chrome' ],
 			},
+			grepInvert: /@phone/,
 		},
 		{
 			name: 'firefox',
 			use: {
 				...devices[ 'Desktop Firefox' ],
 			},
+			grepInvert: /@phone/,
 		},
 		{
 			name: 'webkit',
 			use: {
 				...devices[ 'Desktop Safari' ],
 			},
+			grepInvert: /@phone/,
+		},
+		{
+			name: 'phone-chromium',
+			use: {
+				...devices[ 'Pixel 7' ],
+			},
+			grepInvert: /@desktop/,
+		},
+		{
+			name: 'phone-webkit',
+			use: {
+				...devices[ 'iPhone 15' ],
+			},
+			grepInvert: /@desktop/,
 		},
 	],
 } );

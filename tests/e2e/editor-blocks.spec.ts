@@ -48,7 +48,8 @@ const SECTIONS: SectionCase[] = [
 	},
 ];
 
-test.describe( 'editor block journeys', () => {
+// Editor-only: phone projects skip it (see playwright.config.ts).
+test.describe( 'editor block journeys', { tag: '@desktop' }, () => {
 	let pageId: number | undefined;
 
 	test.beforeEach( async ( { page } ) => {
