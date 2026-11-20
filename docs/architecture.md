@@ -26,10 +26,11 @@ flowchart TD
 
 - `inc/setup.php` declares theme support and editor styles.
 - `inc/enqueue.php` loads the compiled shared stylesheet when it exists and uses its modification time for cache busting. It also prints the cascade-layer order (see Styling and tokens) at the top of the frontend `<head>` and as a dependency of the shared stylesheet in the editor.
-- `inc/blocks.php` recursively registers compiled block metadata, registers the section category, and applies the current editor allowlist.
+- `inc/blocks.php` recursively registers compiled block metadata, registers the block categories, and limits each editor context to the blocks the theme supports (see [Allowed blocks](blocks.md#allowed-blocks)).
 - `inc/templates.php` keeps one H1 in the page templates by omitting the page title when the content contains a hero (see [Page templates](blocks.md#page-templates)).
 - `inc/contact.php` registers the site-wide business settings (name, address, phone, WhatsApp, email, opening hours, service area) and the **Settings → Business** admin page that edits them (`manage_options` only), and copies the footer's legacy block attributes into them once (see [Business contact settings](blocks.md#business-contact-settings)).
 - `inc/favicons.php` prints the theme's favicons (`src/assets/favicons/`: `favicon.ico`, `favicon.svg` and `apple-touch-icon.png`, copied to `build/assets/favicons/`) in the front-end, admin and login heads, but only when no Site Icon is set in **Settings → General**; a Site Icon replaces them.
+- `inc/helpers/blocks.php` lists the blocks each editor context may insert (`jmc_allowed_blocks_for_context()`).
 - `inc/helpers/svg.php` reads a theme SVG file and filters it through an SVG allow-list for inline output (used by the site logo).
 - `inc/icons.php` registers the theme's `jmc` icon collection with the core icon registry: the Lucide icons and Simple Icons brand logos generated at build time (see [Icons](blocks.md#icons)).
 - `inc/services.php` enables page excerpts, registers the Services page setting and the `jmc_service_icon` page meta, and loads the service icon editor panel (see [Services grid](blocks.md#services-grid)).
@@ -90,7 +91,6 @@ All theme CSS lives in cascade layers. Their order has one source of truth, `src
 
 ## Known constraints
 
-- The global block allowlist exposes only `jmc/` blocks and must become context-aware before header, navigation, query, and broader FSE workflows are completed.
 - Some internal block metadata still uses legacy, unregistered categories.
 - TypeScript strict mode is disabled and existing contracts contain weak typing.
 - Header and footer template parts, the first theme patterns, and the front-page, page, services landing, service, contact and 404 templates exist; other views (posts and archives) still fall back to `index.html`. Front-end search is turned off by `inc/search.php` and answered with the 404 template.

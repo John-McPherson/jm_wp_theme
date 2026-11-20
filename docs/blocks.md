@@ -4,7 +4,7 @@
 
 On `init`, the theme recursively scans `build/js/blocks`. Each directory containing `block.json` is registered with `register_block_type()`. Adding source code without producing compiled metadata will not register a block.
 
-Custom blocks use the `jmc/` namespace. The current global allowlist exposes only registered blocks with that prefix.
+Custom blocks use the `jmc/` namespace. Which blocks each editor can insert is set by the [allowed blocks](#allowed-blocks) policy.
 
 ## Contract rules
 
@@ -56,6 +56,44 @@ This table should be updated whenever a block is added, renamed, deprecated, or 
 - `allowedBlocks`, `ancestor`, and block locking should keep editor composition valid without relying only on author training.
 - A section's editor template must itself satisfy those rules: every block it seeds, at any depth, must be allowed there by its `parent` and `ancestor` lists. Templates bypass the check when they insert blocks, so nothing in the editor catches a mismatch. Each layout block keeps its templates in `template.ts` beside `edit.tsx`, and `src/blocks/layouts/templates.test.ts` checks them against every `block.json`.
 - Section blocks use the registered `jmc-section` category. See [Metadata contracts](#metadata-contracts) for the category each group uses.
+
+## Allowed blocks
+
+`allowed_block_types_all` in `inc/blocks.php` limits what each editor context can insert. The lists come from `jmc_allowed_blocks_for_context()` in `inc/helpers/blocks.php`:
+
+| Editor context                                         | Allowed blocks                                                                                                                                                                                          |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `core/edit-post` (posts and pages)                     | `jmc/*` only                                                                                                                                                                                            |
+| `core/edit-site` (templates, template parts and menus) | `jmc/*`, the template blocks `core/template-part`, `core/group`, `core/post-content`, `core/post-title` and `core/site-title`, and the menu blocks `core/navigation-link` and `core/navigation-submenu` |
+| Any other or unknown context (widgets, Customizer, …)  | `jmc/*` only, the same as the post editor                                                                                                                                                               |
+
+- `jmc/*` covers every registered theme block; `supports.inserter`, `parent` and `ancestor` still decide where each one appears.
+- The core template blocks are the ones the theme's templates and parts use. The menu blocks are what `jmc/navigation`, `jmc/footer-navigation` and `jmc/footer-legal` read from `wp_navigation` menus, which are edited in the Site Editor.
+- `core/breadcrumbs` is rendered by `jmc/hero` on the server and is never inserted, so it is not listed.
+- Synced patterns (`core/block`, `core/pattern`), other core blocks and plugin blocks are not allowed in any context.
+- Allowing a block only affects inserting it: blocks already saved in content still render.
+- If an earlier filter returned a list, only blocks on that list are considered; if it returned `false`, no blocks are allowed.
+
+### Allowing more blocks
+
+Plugin blocks are opt-in. Add them with the `jmc_allowed_blocks` filter, which receives the list and the context name:
+
+```php
+add_filter(
+	'jmc_allowed_blocks',
+	static function ( array $blocks, string $context ): array {
+		if ( 'core/edit-post' === $context ) {
+			$blocks[] = 'yoast/faq-block';
+		}
+
+		return $blocks;
+	},
+	10,
+	2
+);
+```
+
+When a template, part or pattern starts using a new core block, add it to `JMC_TEMPLATE_CORE_BLOCKS` (Site Editor) in `inc/helpers/blocks.php`. `tests/phpunit/Unit/BlockAllowlistTest.php` fails if a block used in `templates/` or `parts/` is not allowed in the Site Editor, or one used in `patterns/` is not allowed in the post editor. `tests/e2e/block-allowlist.spec.ts` checks the lists the real editors receive.
 
 ## Metadata contracts
 
@@ -945,7 +983,3 @@ Before changing saved attributes, saved `InnerBlocks` markup, or block names:
 4. Document the migration and test existing content before release.
 
 Changes confined to a dynamic block's PHP frontend markup normally do not need a Gutenberg deprecation. Site-wide rewrites require a separate, idempotent bulk migration—preferably a dry-run-capable WP-CLI command that recursively transforms parsed blocks, including posts, synced patterns, templates, and template parts.
-
-## Current issues to resolve
-
-- Revisit the `jmc/`-only global allowlist before FSE templates require core blocks.
