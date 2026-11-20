@@ -136,10 +136,11 @@ test.use( {
 
 Errors allowed in every test are listed, each with a reason, in `tests/e2e/fixtures/allowed-errors.ts`. Keep this table in step with that file:
 
-| Kind    | Message                                               | Reason                                                                                                                                                    |
-| ------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Browser | `Prefetch request denied: URL must be secure (HTTPS)` | WebKit refuses the prefetches requested by WordPress core's speculative loading on a non-HTTPS origin. `wp-env` serves plain HTTP; production uses HTTPS. |
-| Browser | `NS_BINDING_ABORTED` from `chrome://juggler/`         | Playwright's Firefox automation layer logs a worker request it aborted when a test navigates away. It comes from the test harness, not the page.          |
+| Kind    | Message                                                                                                               | Reason                                                                                                                                                                                                                    |
+| ------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Browser | `Prefetch request denied: URL must be secure (HTTPS)`                                                                 | WebKit refuses the prefetches requested by WordPress core's speculative loading on a non-HTTPS origin. `wp-env` serves plain HTTP; production uses HTTPS.                                                                 |
+| Browser | `NS_BINDING_ABORTED` from `chrome://juggler/`                                                                         | Playwright's Firefox automation layer logs a worker request it aborted when a test navigates away. It comes from the test harness, not the page.                                                                          |
+| Browser | `XMLHttpRequest cannot load …/wp-admin/admin-ajax.php… due to access control checks.` from `wp-admin/js/dashboard.js` | Logging in lands on the dashboard, whose core widgets start admin-ajax requests; WebKit reports each one a test cancels by navigating away as an access-control error. Limited to requests made by core's `dashboard.js`. |
 
 Tests that request a missing page on purpose (the 404 and search scans) also allow `notFoundPageLoadError` from the same file, the `Failed to load resource: … status of 404` message Chromium and WebKit log for that response. It is not allowed globally, because a 404 anywhere else is a broken link or asset.
 
