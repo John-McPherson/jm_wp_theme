@@ -19,6 +19,7 @@ require_once get_theme_file_path( '/inc/navigation.php' );
 require_once get_theme_file_path( '/inc/services.php' );
 require_once get_theme_file_path( '/inc/breadcrumbs.php' );
 require_once get_theme_file_path( '/inc/contact.php' );
+require_once get_theme_file_path( '/inc/favicons.php' );
 
 // helpers.
 require_once get_theme_file_path( '/inc/helpers/components.php' );
@@ -31,6 +32,7 @@ require_once get_theme_file_path( '/inc/helpers/contact.php' );
 require_once get_theme_file_path( '/inc/helpers/button.php' );
 require_once get_theme_file_path( '/inc/helpers/enquiry.php' );
 require_once get_theme_file_path( '/inc/helpers/svg.php' );
+require_once get_theme_file_path( '/inc/helpers/blocks.php' );
 
 require_once get_theme_file_path( '/inc/helpers/html/attributes.php' );
 

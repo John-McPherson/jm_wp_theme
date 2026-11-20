@@ -43,14 +43,14 @@ $palette_classes = [
 
 $footer_attributes = [
 	'classes' => [
-		'jmc-footer-inner',
+		'jmc-footer__inner',
 		$palette_classes[ $palette ] ?? null,
 		$attributes['className'] ?? null,
 	],
 ];
 ?>
 <div<?php jmc_the_attributes( $footer_attributes ); ?>>
-	<div class="jmc-footer-inner__container">
+	<div class="jmc-footer__container">
 		<?php
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Rendered and filtered inner-block markup supplied by WordPress.
 		echo $content;

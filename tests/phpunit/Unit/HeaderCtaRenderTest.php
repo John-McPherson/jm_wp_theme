@@ -432,7 +432,7 @@ final class HeaderCtaRenderTest extends TestCase {
 	public function button_type_provider(): array {
 		return [
 			'primary'    => [ 'primary', 'jmc-button jmc-button--small jmc-header-cta' ],
-			'secondary'  => [ 'secondary', 'jmc-button jmc-button--small jmc-header-cta jmc-button__secondary' ],
+			'secondary'  => [ 'secondary', 'jmc-button jmc-button--small jmc-header-cta jmc-button--secondary' ],
 			'unknown'    => [ 'tertiary', 'jmc-button jmc-button--small jmc-header-cta' ],
 			'non-string' => [ [ 'secondary' ], 'jmc-button jmc-button--small jmc-header-cta' ],
 		];

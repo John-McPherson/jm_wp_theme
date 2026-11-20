@@ -96,6 +96,13 @@ There is currently no automated token generator; changes shared between `theme.j
 
 Interactive components must define default, hover, active, focus-visible, disabled, and error states where applicable. Focus must remain visible across palettes and must not rely on colour alone.
 
+Shared defaults in the `base` layer give every component a starting point (see [Accessibility](accessibility.md)):
+
+- **Focus:** `:focus-visible` draws a `--jmc-focus-width` (2px) solid ring in `--jmc-text-highlight`, `--jmc-focus-offset` (2px) outside the element. The colour is read where the ring is drawn, so it follows the section palette.
+- **Links:** underlined, with a thicker underline on hover and active. A component that is not body copy (navigation, buttons, cards) sets its own `text-decoration` in its block styles.
+- **Lists:** markers and indent are kept. A navigation or layout list removes them with `list-style: none` and `padding: 0` on its own class.
+- **Motion:** transitions need no reduced-motion query of their own; the reset layer switches them off for `prefers-reduced-motion: reduce`.
+
 ## Guardrails
 
 - No unexplained raw hex values in component styles.

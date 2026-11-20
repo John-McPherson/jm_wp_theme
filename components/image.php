@@ -1,6 +1,6 @@
 <?php
 /**
- * Render an image component with support for optional sizing and lazy loading.
+ * Render an image component with optional sizing and a loading strategy.
  *
  * @package JMC_Theme
  */
@@ -14,7 +14,7 @@ declare(strict_types=1);
  *     image_id?: int|string,
  *     classes?: string|string[],
  *     size?: string,
- *     loading?: string,
+ *     loading?: 'lazy'|'eager'|false,
  *     sizes?: string,
  *     alt?: string
  * } $args
@@ -39,9 +39,25 @@ $classes = jmc_html_classes(
 	]
 );
 
+// `false` omits the attribute and leaves the loading strategy to WordPress.
+$loading = false === ( $args['loading'] ?? null )
+	? false
+	: jmc_html_allowed_value(
+		value: $args['loading'] ?? null,
+		allowed: [ 'lazy', 'eager' ],
+		fallback_value: 'lazy'
+	);
+
+// Unregistered sizes would make WordPress fall back to an arbitrary size.
+$size = jmc_html_allowed_value(
+	value: $args['size'] ?? null,
+	allowed: [ ...get_intermediate_image_sizes(), 'full' ],
+	fallback_value: 'large'
+);
+
 $image_attributes = [
 	'class'   => $classes,
-	'loading' => 'lazy',
+	'loading' => $loading,
 	'sizes'   => jmc_args_string(
 		args: $args,
 		key: 'sizes',
@@ -56,11 +72,7 @@ if ( is_string( $args['alt'] ?? null ) ) {
 
 $image = wp_get_attachment_image(
 	attachment_id: $image_id,
-	size: jmc_args_string(
-		args: $args,
-		key: 'size',
-		fallback_value: 'large'
-	),
+	size: $size,
 	icon: false,
 	attr: $image_attributes
 );

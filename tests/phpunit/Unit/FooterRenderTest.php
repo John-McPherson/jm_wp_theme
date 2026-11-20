@@ -35,12 +35,12 @@ final class FooterRenderTest extends TestCase {
 	 */
 	public function palette_provider(): array {
 		return [
-			'omitted'    => [ [], 'jmc-footer-inner' ],
-			'default'    => [ [ 'palette' => 'default' ], 'jmc-footer-inner' ],
-			'secondary'  => [ [ 'palette' => 'secondary' ], 'jmc-footer-inner jmc-palette--secondary' ],
-			'inverse'    => [ [ 'palette' => 'inverse' ], 'jmc-footer-inner jmc-palette--inverse' ],
-			'unknown'    => [ [ 'palette' => 'neon' ], 'jmc-footer-inner' ],
-			'wrong type' => [ [ 'palette' => [ 'inverse' ] ], 'jmc-footer-inner' ],
+			'omitted'    => [ [], 'jmc-footer__inner' ],
+			'default'    => [ [ 'palette' => 'default' ], 'jmc-footer__inner' ],
+			'secondary'  => [ [ 'palette' => 'secondary' ], 'jmc-footer__inner jmc-palette--secondary' ],
+			'inverse'    => [ [ 'palette' => 'inverse' ], 'jmc-footer__inner jmc-palette--inverse' ],
+			'unknown'    => [ [ 'palette' => 'neon' ], 'jmc-footer__inner' ],
+			'wrong type' => [ [ 'palette' => [ 'inverse' ] ], 'jmc-footer__inner' ],
 		];
 	}
 
@@ -56,9 +56,9 @@ final class FooterRenderTest extends TestCase {
 			'<p>Inner</p>'
 		);
 
-		self::assertStringContainsString( 'class="jmc-footer-inner jmc-palette--inverse is-custom"', $html );
+		self::assertStringContainsString( 'class="jmc-footer__inner jmc-palette--inverse is-custom"', $html );
 		self::assertMatchesRegularExpression(
-			'/<div class="jmc-footer-inner__container">\s*<p>Inner<\/p>\s*<\/div>/',
+			'/<div class="jmc-footer__container">\s*<p>Inner<\/p>\s*<\/div>/',
 			$html
 		);
 	}

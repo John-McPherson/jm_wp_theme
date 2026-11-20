@@ -32,7 +32,7 @@ describe( 'Footer edit', () => {
 		const inner = screen.getByTestId( 'inner-blocks' );
 
 		expect( inner.parentElement?.className ).toBe(
-			'jmc-footer-inner__container'
+			'jmc-footer__container'
 		);
 		expect( JSON.parse( inner.dataset.settings ?? '{}' ) ).toEqual( {
 			allowedBlocks: [
@@ -51,10 +51,10 @@ describe( 'Footer edit', () => {
 	} );
 
 	it.each( [
-		[ 'default', 'jmc-footer-inner' ],
-		[ 'inverse', 'jmc-footer-inner jmc-palette--inverse' ],
-		[ 'secondary', 'jmc-footer-inner jmc-palette--secondary' ],
-		[ 'unknown', 'jmc-footer-inner' ],
+		[ 'default', 'jmc-footer__inner' ],
+		[ 'inverse', 'jmc-footer__inner jmc-palette--inverse' ],
+		[ 'secondary', 'jmc-footer__inner jmc-palette--secondary' ],
+		[ 'unknown', 'jmc-footer__inner' ],
 	] )( 'styles the %s palette', ( palette, classes ) => {
 		renderEdit( palette );
 

@@ -2,8 +2,8 @@
 /**
  * Register theme blocks and configure available editor blocks.
  *
- * Loads theme block registrations from build artifacts, restricts available
- * block choices to theme-owned blocks, and registers a custom block category.
+ * Loads theme block registrations from build artifacts, limits each editor
+ * context to the blocks the theme supports, and registers a custom block category.
  *
  * @package JMC_Theme
  */
@@ -48,36 +48,51 @@ add_action(
 	}
 );
 
-// only allow theme blocks.
+/**
+ * Limit each editor context to the blocks the theme supports.
+ *
+ * See `jmc_allowed_blocks_for_context()` for the per-context lists. An
+ * earlier filter's list narrows the candidates; `false` (no blocks) is kept.
+ */
 add_filter(
 	'allowed_block_types_all',
-	function ( $allowed_blocks, $editor_context ) {
-		// Leave FSE / Site Editor unchanged.
-		if ( isset( $editor_context->name ) && 'core/edit-site' === $editor_context->name ) {
-			return $allowed_blocks;
+	/**
+	 * Filter the blocks an editor context may insert.
+	 *
+	 * @param bool|array<int, string>  $allowed_blocks Allowed block names, or true/false for all/none.
+	 * @param WP_Block_Editor_Context $editor_context Current editor context.
+	 *
+	 * @return bool|list<string>
+	 */
+	function ( bool|array $allowed_blocks, WP_Block_Editor_Context $editor_context ): bool|array {
+		if ( false === $allowed_blocks ) {
+			return false;
 		}
 
-		$registered_blocks = WP_Block_Type_Registry::get_instance()->get_all_registered();
+		$context    = is_string( $editor_context->name ) ? $editor_context->name : '';
+		$candidates = is_array( $allowed_blocks )
+			? $allowed_blocks
+			: array_keys( WP_Block_Type_Registry::get_instance()->get_all_registered() );
 
-		// Respect any existing allowed-block configuration first.
-		$blocks_to_filter = is_array( $allowed_blocks )
-		? $allowed_blocks
-		: array_keys( $registered_blocks );
-
-		// In regular editors, allow only non-core blocks.
-		return array_values(
-			array_filter(
-				$blocks_to_filter,
-				function ( $block_name ) {
-					return 0 !== strpos( $block_name, 'core/' );
-				}
-			)
+		/**
+		 * Filter the blocks the theme allows in an editor context.
+		 *
+		 * Use it to opt plugin blocks in, e.g. `$blocks[] = 'yoast/faq-block';`.
+		 *
+		 * @param list<string> $blocks  Allowed block names.
+		 * @param string       $context Editor context name, e.g. `core/edit-post` or `core/edit-site`.
+		 */
+		$blocks = apply_filters(
+			'jmc_allowed_blocks',
+			jmc_allowed_blocks_for_context( context: $context, registered: $candidates ),
+			$context
 		);
+
+		return is_array( $blocks ) ? array_values( array_unique( array_filter( $blocks, 'is_string' ) ) ) : [];
 	},
 	10,
 	2
 );
-
 
 // register custom block categories.
 add_filter(

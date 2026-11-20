@@ -2,9 +2,9 @@
 
 @layer blocks {
 
-	.jmc-cta {
-		--jmc-cols: 1;
-		--grid-template-areas: "a" "b";
+	.jmc-cta-banner {
+		--jmc-cta-banner-cols: 1;
+		--jmc-cta-banner-areas: "a" "b";
 
 		.jmc-section__column {
 			grid-area: a;
@@ -22,34 +22,34 @@
 		}
 
 		.jmc-section__container {
-			grid-template-columns: repeat(var(--jmc-cols), 1fr);
-			grid-template-areas: var(--grid-template-areas);
+			grid-template-columns: repeat(var(--jmc-cta-banner-cols), 1fr);
+			grid-template-areas: var(--jmc-cta-banner-areas);
 		}
 
 		@include min($tablet) {
-			--jmc-cols: 2;
-			--grid-template-areas: "a b";
+			--jmc-cta-banner-cols: 2;
+			--jmc-cta-banner-areas: "a b";
 
-			.jmc-column-left {
-				--grid-template-areas: "b a";
+			&.jmc-cta-banner--order-left {
+				--jmc-cta-banner-areas: "b a";
 			}
 		}
 
 		// Contact variation: two-thirds copy, one-third details, instead of an
 		// even split. Fixed fractions, because columns are inline-size
 		// containers and so can't be sized to their content.
-		&.jmc-cta--contact {
-			--jmc-cta-columns: minmax(0, 2fr) minmax(0, 1fr);
+		&.jmc-cta-banner--contact {
+			--jmc-cta-banner-columns: minmax(0, 2fr) minmax(0, 1fr);
 
 			@include min($tablet) {
 
 				.jmc-section__container {
-					grid-template-columns: var(--jmc-cta-columns);
+					grid-template-columns: var(--jmc-cta-banner-columns);
 				}
 
 				// Details on the left: swap the column sizes to match.
-				.jmc-column-left {
-					--jmc-cta-columns: minmax(0, 1fr) minmax(0, 2fr);
+				&.jmc-cta-banner--order-left {
+					--jmc-cta-banner-columns: minmax(0, 1fr) minmax(0, 2fr);
 				}
 
 				// The details end level with the copy, leaving the heading to
@@ -61,7 +61,7 @@
 		}
 
 		// Stacked variation: one centred column at every width.
-		&.jmc-cta--stacked {
+		&.jmc-cta-banner--stacked {
 
 			.jmc-section__container {
 				max-width: var(--jmc-container-sm);
@@ -78,8 +78,8 @@
 			}
 
 			@include min($tablet) {
-				--jmc-cols: 1;
-				--grid-template-areas: "a" "b";
+				--jmc-cta-banner-cols: 1;
+				--jmc-cta-banner-areas: "a" "b";
 			}
 		}
 	}

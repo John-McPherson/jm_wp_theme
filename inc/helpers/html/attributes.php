@@ -58,11 +58,13 @@ function jmc_get_the_attributes( array $attributes ): string {
 					value: $value,
 					allowed: [
 						'alternate',
+						'apple-touch-icon',
 						'author',
 						'bookmark',
 						'external',
 						'help',
 						'home',
+						'icon',
 						'license',
 						'next',
 						'nofollow',

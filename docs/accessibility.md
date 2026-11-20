@@ -10,6 +10,8 @@ The project targets WCAG 2.2 Level AA. This is an engineering requirement, not a
 - Focus order must follow the visual and reading order.
 - Use a deliberate, high-contrast `:focus-visible` treatment across every palette.
 - Never remove an outline without providing an equal or better replacement.
+- The shared ring is `:focus-visible` in `src/scss/base/_focus.scss`: a `--jmc-focus-width` solid outline in the section's `--jmc-text-highlight`, `--jmc-focus-offset` from the element. Components keep it unless they draw it somewhere better (a card around its stretched link), and then remove it from the link in their own block styles.
+- The sticky header reserves its height with `scroll-padding-block-start`, so focused content scrolled into view is not hidden beneath it.
 - Composite controls such as menus must follow the appropriate keyboard pattern.
 
 ## Colour and contrast
@@ -25,10 +27,10 @@ The project targets WCAG 2.2 Level AA. This is an engineering requirement, not a
 
 - Use one logical page-level heading and do not skip levels for visual effect.
 - Typography classes control appearance; heading elements control document structure.
-- Preserve visible bullets and numbering for content lists.
-- Links within body copy must have a non-colour affordance, normally an underline.
+- Preserve visible bullets and numbering for content lists. The reset only removes list margins; navigation and component lists remove their markers and padding in their own block styles, scoped to their class.
+- Links within body copy must have a non-colour affordance, normally an underline. Every link is underlined by default (`src/scss/base/_links.scss`), and hover thickens it; navigation, buttons and other components set their own decoration in their block styles.
 - Use one `<main>` landmark and meaningful `<header>`, `<nav>`, and `<footer>` landmarks.
-- Provide a visible-on-focus skip link to the main content.
+- Provide a visible-on-focus skip link to the main content. WordPress adds **Skip to content** to every block template with a `<main>`, so every template wraps its content in one `<main>` Group block. `inc/templates.php` gives that group `tabindex="-1"`, so following the link moves focus into it.
 
 ## Images
 
@@ -41,30 +43,25 @@ The project targets WCAG 2.2 Level AA. This is an engineering requirement, not a
 
 Respect `prefers-reduced-motion: reduce`. Global smooth scrolling and non-essential transitions/animations must be disabled or reduced for that preference.
 
+Smooth scrolling is only turned on under `prefers-reduced-motion: no-preference`. For `reduce`, a rule in the reset layer (`src/scss/base/_reset.scss`) sets every transition and animation to a near-zero duration with no delay, and scrolling to `auto`. It uses `!important` in the first layer, which outranks every later layer, so new block styles are covered without their own media query.
+
 ## Authoring controls
 
 Block defaults should guide editors toward valid heading structures, accessible palettes, and correct image use. Do not rely on documentation alone when the block API can prevent an invalid state.
 
 ## Required checks
 
-For each new or changed user-facing feature:
+The manual keyboard, visual and screen-reader checks, the browser and screen-reader combinations they run on, and how results are recorded and failures reported are in the [manual accessibility QA checklist](accessibility-qa.md). Run the checks for the affected journey on every pull request that changes a user-facing feature, and the whole checklist at every release candidate.
 
-- Navigate the complete flow with keyboard only.
-- Confirm focus is always visible and not obscured.
-- Zoom to 200% and check reflow at a 320 CSS-pixel width.
-- Check text spacing and content resizing without loss.
+In addition, for each new or changed user-facing feature:
+
 - Run an automated axe or equivalent scan.
-- Measure new colour combinations.
-- Test meaningful images, headings, labels, names, roles, and values.
-- Test reduced-motion behaviour.
+- Measure new colour combinations (`npm run test:contrast`).
 
 ## Known gaps
 
-- Global link styles currently inherit text decoration and may make body links indistinguishable.
-- Global list resets currently remove visible bullets and numbering.
-- No deliberate shared `:focus-visible` system has been demonstrated.
-- Global smooth scrolling does not yet include a reduced-motion override.
-- Skip-link, landmark, navigation, and template behaviour remain unverified in a browser. The contact and 404 templates have one `<main>` landmark and one H1 with no skipped heading levels, checked from the template markup by `ContactNotFoundTemplatesTest`. Site search is turned off, so no template has a search form.
-- No automated accessibility check currently runs in CI.
+- The link underline, content list markers, shared focus ring, skip link and reduced-motion rules (#59) are covered by automated tests (see [Testing](testing.md)) but have not yet been through the [manual checks](accessibility-qa.md) (F1.1, F2.5, V1, V4–V6) in each supported browser and screen reader.
+- Landmark, navigation and template behaviour remain unverified with a screen reader. Every template has one `<main>` landmark, checked by `SkipLinkTargetTest`; the contact and 404 templates also have one H1 with no skipped heading levels, checked from the template markup by `ContactNotFoundTemplatesTest`. Site search is turned off, so no template has a search form.
+- No automated axe (or equivalent) scan runs in CI; the Playwright suite checks specific behaviours only.
 
 These gaps must be resolved and manually verified before claiming WCAG 2.2 AA conformance.

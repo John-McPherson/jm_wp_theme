@@ -43,13 +43,13 @@ export default function Edit( { attributes, setAttributes }: EditProps ) {
 	const { palette } = attributes;
 
 	const blockProps = useBlockProps( {
-		className: [ 'jmc-footer-inner', PALETTE_CLASSES[ palette ] ]
+		className: [ 'jmc-footer__inner', PALETTE_CLASSES[ palette ] ]
 			.filter( Boolean )
 			.join( ' ' ),
 	} );
 
 	const innerBlocksProps = useInnerBlocksProps(
-		{ className: 'jmc-footer-inner__container' },
+		{ className: 'jmc-footer__container' },
 		{ allowedBlocks: ALLOWED_BLOCKS, template: TEMPLATE }
 	);
 
