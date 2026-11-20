@@ -1,3 +1,5 @@
+import type { Locator } from '@playwright/test';
+
 import { expect, test } from './fixtures/test';
 import {
 	expectNoInvalidBlocks,
@@ -28,6 +30,31 @@ const MENU_LINKS = [
 	{ label: 'Chrome E2E Services', url: '/services/' },
 	{ label: 'Chrome E2E About', url: '/about/' },
 ];
+
+/**
+ * The navigation's structure, for comparing the editor preview with the
+ * frontend: whether it is enhanced, and each list item's classes and label.
+ *
+ * @param navigation The `.jmc-navigation` element.
+ */
+const navigationShape = ( navigation: Locator ) =>
+	navigation.evaluate( ( element ) => ( {
+		enhanced: ! element.classList.contains( 'no-js' ),
+		items: Array.from(
+			element.querySelectorAll( ':scope > .jmc-navigation__list > li' ),
+			( item ) => ( {
+				classes: Array.from( item.classList )
+					.filter( ( name ) => name.startsWith( 'jmc-navigation__' ) )
+					.sort(),
+				label:
+					item
+						.querySelector(
+							':scope > .jmc-navigation__link, :scope > .jmc-navigation__label'
+						)
+						?.textContent?.trim() ?? '',
+			} )
+		),
+	} ) );
 
 test.describe( 'header and footer workflows', () => {
 	let theme: string;
@@ -98,6 +125,16 @@ test.describe( 'header and footer workflows', () => {
 			await label.fill( 'Call Chrome E2E' );
 			await expect( label ).toHaveText( 'Call Chrome E2E' );
 
+			// The editor previews the menu as the frontend renders it, with
+			// the call to action as the last list item.
+			const preview = editor.canvas.locator( 'nav.jmc-navigation' );
+
+			await expect(
+				preview.locator( '.jmc-navigation__link' ).first()
+			).toHaveText( MENU_LINKS[ 0 ].label );
+
+			const editorShape = await navigationShape( preview );
+
 			await editor.saveSiteEditorEntities( {
 				isOnlyCurrentEntityDirty: true,
 			} );
@@ -128,6 +165,13 @@ test.describe( 'header and footer workflows', () => {
 			await expect(
 				menu.getByRole( 'link', { name: 'Call Chrome E2E' } )
 			).toHaveAttribute( 'href', /^tel:/ );
+
+			await expect( menu ).not.toHaveClass( /no-js/ );
+			expect( await navigationShape( menu ) ).toEqual( editorShape );
+			expect( editorShape.items.at( -1 )?.classes ).toEqual( [
+				'jmc-navigation__item',
+				'jmc-navigation__item--cta',
+			] );
 		} );
 
 		test( 'saves the chosen menu as a number', async ( {
