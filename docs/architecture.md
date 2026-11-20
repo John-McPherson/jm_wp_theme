@@ -29,6 +29,7 @@ flowchart TD
 - `inc/blocks.php` recursively registers compiled block metadata, registers the section category, and applies the current editor allowlist.
 - `inc/templates.php` keeps one H1 in the page templates by omitting the page title when the content contains a hero (see [Page templates](blocks.md#page-templates)).
 - `inc/contact.php` registers the site-wide business settings (name, address, phone, WhatsApp, email, opening hours, service area) and the **Settings → Business** admin page that edits them (`manage_options` only), and copies the footer's legacy block attributes into them once (see [Business contact settings](blocks.md#business-contact-settings)).
+- `inc/favicons.php` prints the theme's favicons (`src/assets/favicons/`: `favicon.ico`, `favicon.svg` and `apple-touch-icon.png`, copied to `build/assets/favicons/`) in the front-end, admin and login heads, but only when no Site Icon is set in **Settings → General**; a Site Icon replaces them.
 - `inc/helpers/svg.php` reads a theme SVG file and filters it through an SVG allow-list for inline output (used by the site logo).
 - `inc/icons.php` registers the theme's `jmc` icon collection with the core icon registry: the Lucide icons and Simple Icons brand logos generated at build time (see [Icons](blocks.md#icons)).
 - `inc/services.php` enables page excerpts, registers the Services page setting and the `jmc_service_icon` page meta, and loads the service icon editor panel (see [Services grid](blocks.md#services-grid)).

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect class="bg" width="512" height="512" rx="96"/>
+  <style>.bg{fill:#091E33}.primary,.secondary{fill:#FFFFFF}.accent{fill:#D22B20}</style>
+  <g transform="translate(5.05 -139.28) scale(0.82009)">
+  <path class="primary" d="M306.0 306.5 L158.5 530.2 L226.5 530.5 L305.8 415.2 L462.0 656.5 L536.5 657.5Z"/>
+  <path class="primary" d="M207.2 558.5 L139.2 559.2 L75.2 657.5 L141.5 657.5Z"/>
+  <path class="accent" d="M209.0 557.8 L318.0 559.8 L339.2 530.5 L227.8 530.0Z"/>
+  </g>
+</svg>
