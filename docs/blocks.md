@@ -116,7 +116,7 @@ Kept up to date with each block's `block.json`. All blocks are `apiVersion` 3, v
 
 | Block | Category | Placement | Attributes | Ex. | Supports | Root class |
 | --- | --- | --- | --- | --- | --- | --- |
-| `jmc/footer` | `jmc-site` | Footer part only (inserter: false) | `palette` [default\|secondary\|inverse] = `default` | Yes | inserter: false, multiple: false | `jmc-footer-inner` |
+| `jmc/footer` | `jmc-site` | Footer part only (inserter: false) | `palette` [default\|secondary\|inverse] = `default` | Yes | inserter: false, multiple: false | `jmc-footer__inner` |
 | `jmc/footer-business` | `jmc-site` | parent: footer (inserter: false) | `companyName`, `address`, `phone`, `email`, `serviceArea` string = `""` (legacy, migration only) | Yes | inserter: false, multiple: false | `jmc-footer-business` |
 | `jmc/footer-legal` | `jmc-site` | parent: footer (inserter: false) | `copyrightHolder` string = `""` | Yes | inserter: false, multiple: false | `jmc-footer-legal` |
 | `jmc/footer-navigation` | `jmc-site` | parent: footer | `navigationId` number = `0` | Yes | — | `jmc-footer-navigation` |
@@ -130,7 +130,7 @@ Each of these breaks a [convention](#conventions) and is left for a follow-up.
 
 **Supports and class names**
 
-- Root classes that are not `jmc-<folder-name>`: `jmc/footer` (`jmc-footer-inner`), `jmc/column` (`jmc-section__column`) and `jmc/list-item` (`jmc-list__item`). `jmc/navigation`'s editor root is `jmc-navigation-editor`. The secondary button style is the element class `jmc-button__secondary` rather than a modifier. Renaming these classes changes the stylesheets and any custom CSS that targets them. The `column` and `list-item` classes are deliberate: those blocks are elements of their parent.
+- Root classes that are not `jmc-<folder-name>`: `jmc/column` (`jmc-section__column`), `jmc/list-item` (`jmc-list__item`) and `jmc/footer` (`jmc-footer__inner`). `jmc/navigation`'s editor root is `jmc-navigation-editor`. The secondary button style is the element class `jmc-button__secondary` rather than a modifier. Renaming these classes changes the stylesheets and any custom CSS that targets them. The `column`, `list-item` and `footer` classes are deliberate: those blocks are elements of their parent. The footer block sits inside the `<footer class="jmc-footer">` template part, so its root and container are `jmc-footer__inner` and `jmc-footer__container`.
 
 ## Patterns
 
@@ -734,7 +734,7 @@ wp eval 'global $wpdb; print_r( $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} W
 
 ## Footer
 
-`parts/footer.html` is the `footer` template part, registered in `theme.json` and placed at the end of every template as a `<footer class="jmc-footer">` landmark. It contains:
+`parts/footer.html` is the `footer` template part, registered in `theme.json` and placed at the end of every template as a `<footer class="jmc-footer">` landmark. The `jmc/footer` block inside it renders as `jmc-footer__inner` (palette and padding) around `jmc-footer__container` (the column layout). It contains:
 
 ```html
 <!-- wp:jmc/footer {"palette":"inverse","lock":{"remove":true}} -->

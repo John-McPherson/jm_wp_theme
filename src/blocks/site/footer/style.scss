@@ -5,7 +5,7 @@
 
 	// Paints the selected palette across the full width; the container keeps
 	// content aligned with the header.
-	.jmc-footer-inner {
+	.jmc-footer__inner {
 
 		@include typography.p4;
 
@@ -25,7 +25,7 @@
 		// top and the legal row along the bottom always take a row of their
 		// own. (A grid with auto-fit can't do this: the full-width
 		// legal row stops empty tracks collapsing.)
-		&__container {
+		.jmc-footer__container {
 			--jmc-footer-column-min: 12rem;
 
 			display: flex;
