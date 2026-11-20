@@ -2,9 +2,9 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "jmc/list",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "title": "List",
-  "category": "jmc-blocks",
+  "category": "jmc-content",
   "icon": "editor-ul",
   "description": "A styled list of short points, marked with an icon, a bullet or a number.",
   "keywords": [ "bullet", "checklist", "numbered", "ticks" ],
@@ -48,7 +48,6 @@
   },
   "supports": {
     "anchor": true,
-    "customClassName": true,
     "html": false,
     "reusable": false
   },

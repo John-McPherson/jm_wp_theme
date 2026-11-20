@@ -2,9 +2,9 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "jmc/credential-list",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "title": "Credential List",
-  "category": "jmc-blocks",
+  "category": "jmc-content",
   "icon": "awards",
   "description": "A list of credentials: accreditation logos, guarantees, experience and review scores.",
   "allowedBlocks": [
@@ -15,7 +15,6 @@
   ],
   "supports": {
     "anchor": true,
-    "customClassName": true,
     "html": false,
     "inserter": false,
     "reusable": false

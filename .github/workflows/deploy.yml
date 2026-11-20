@@ -1,0 +1,155 @@
+name: Deploy
+
+# Deploys the release package to the WP Engine environment that matches the
+# branch:
+#
+#   dev     -> GitHub environment `development` (WP Engine dev install)
+#   staging -> GitHub environment `staging`     (WP Engine staging install)
+#   main    -> GitHub environment `production`  (WP Engine production install)
+#
+# A push includes a merged pull request. Each GitHub environment holds its own
+# deploy key and WP Engine install name, and only allows its own branch.
+# `production` also requires a reviewer to approve each deploy.
+#
+# `dev` and `staging` build the package. `main` never builds: it deploys the
+# exact package staging deployed for the same source tree, so production gets
+# the files that were tested. Merging `staging` into `main` keeps the tree.
+on:
+  push:
+    branches:
+      - dev
+      - staging
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # Find and download the staging package from an earlier run.
+  actions: read
+
+# Deploy one commit at a time per branch and never cancel a deploy part-way
+# through.
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to ${{ github.ref_name == 'main' && 'production' || github.ref_name == 'staging' && 'staging' || 'development' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Any other branch falls through to `development`, whose branch rule
+    # rejects it.
+    environment:
+      name: ${{ github.ref_name == 'main' && 'production' || github.ref_name == 'staging' && 'staging' || 'development' }}
+      url: ${{ vars.WPE_SITE_URL }}
+
+    env:
+      # Theme directory on the server: wp-content/themes/<THEME_DIR>.
+      THEME_DIR: amc_electrical
+      PROMOTE: ${{ github.ref_name == 'main' }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Packages are named by the git tree hash, which identifies the source
+      # files regardless of which commit or branch they are on.
+      - name: Identify source tree
+        id: source
+        run: echo "tree=$(git rev-parse 'HEAD^{tree}')" >> "$GITHUB_OUTPUT"
+
+      # --- Production: reuse the staging package ---------------------------
+
+      - name: Find staging package
+        id: staging
+        if: env.PROMOTE == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PACKAGE: theme-staging-${{ steps.source.outputs.tree }}
+        run: |
+          run_id=$(gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts?name=${PACKAGE}&per_page=100" \
+            --jq '[.artifacts[] | select(.expired | not) | select(.workflow_run.head_branch == "staging")]
+                  | sort_by(.created_at) | last | .workflow_run.id // empty')
+
+          if [ -z "$run_id" ]; then
+            echo "::error::No staging package ${PACKAGE}. Production only deploys what staging deployed: merge the same code into staging and let it deploy first, or re-run that staging deploy if its package has expired."
+            exit 1
+          fi
+
+          echo "run-id=${run_id}" >> "$GITHUB_OUTPUT"
+          echo "Promoting \`${PACKAGE}\` from staging run [${run_id}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${run_id})." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Download staging package
+        if: env.PROMOTE == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: theme-staging-${{ steps.source.outputs.tree }}
+          path: dist/
+          run-id: ${{ steps.staging.outputs.run-id }}
+          github-token: ${{ github.token }}
+
+      # --- Development and staging: build the package ----------------------
+
+      - name: Set up Node.js
+        if: env.PROMOTE != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install locked dependencies
+        if: env.PROMOTE != 'true'
+        run: npm ci
+
+      # `package` generates the translation template with WP-CLI's i18n command.
+      - name: Set up PHP
+        if: env.PROMOTE != 'true'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+
+      - name: Install locked Composer dependencies
+        if: env.PROMOTE != 'true'
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Build release package
+        if: env.PROMOTE != 'true'
+        run: npm run package
+
+      # --- All environments -------------------------------------------------
+
+      - name: Verify packaged theme
+        run: |
+          test -f dist/functions.php
+          test -f dist/style.css
+          test -f dist/theme.json
+          test -f dist/build/css/style.css
+          test -d dist/build/js
+
+      - name: Deploy to WP Engine
+        uses: wpengine/github-action-wpe-site-deploy@v3
+        with:
+          WPE_SSHG_KEY_PRIVATE: ${{ secrets.WPE_SSHG_KEY_PRIVATE }}
+          WPE_ENV: ${{ vars.WPE_ENV }}
+          SRC_PATH: dist/
+          REMOTE_PATH: wp-content/themes/${{ env.THEME_DIR }}/
+          # --delete removes files dropped from the package; it is limited to
+          # the theme directory by REMOTE_PATH.
+          FLAGS: -azvr --inplace --delete --exclude=".*"
+          PHP_LINT: TRUE
+          CACHE_CLEAR: TRUE
+
+      # Uploaded only after a successful deploy, so production can only promote
+      # a package that staging actually deployed. Staging and production keep
+      # theirs longer so a release can be promoted or redeployed later.
+      - name: Upload deployed package
+        uses: actions/upload-artifact@v4
+        with:
+          name: theme-${{ github.ref_name }}-${{ steps.source.outputs.tree }}
+          path: dist/
+          retention-days: ${{ github.ref_name == 'dev' && 30 || 90 }}
+          overwrite: true

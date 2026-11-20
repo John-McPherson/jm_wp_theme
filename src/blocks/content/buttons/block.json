@@ -2,16 +2,39 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "jmc/buttons",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "title": "Buttons",
-  "category": "jm",
+  "category": "jmc-content",
   "icon": "button",
   "description": "A group of one or more call-to-action buttons.",
   "textdomain": "jmc-theme",
   "allowedBlocks": ["jmc/button"],
   "ancestor": ["jmc/cta-banner"],
+  "example": {
+    "innerBlocks": [
+      {
+        "name": "jmc/button",
+        "attributes": {
+          "text": "Get a quote",
+          "link": {
+            "url": "#",
+            "opensInNewTab": false
+          }
+        }
+      },
+      {
+        "name": "jmc/button",
+        "attributes": {
+          "text": "Call us",
+          "buttonType": "secondary",
+          "linkType": "phone"
+        }
+      }
+    ]
+  },
 
   "supports": {
+    "customClassName": false,
     "html": false
   },
 

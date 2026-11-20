@@ -2,7 +2,7 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
 	"name": "jmc/footer-business",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"title": "Footer Business Details",
 	"category": "jmc-site",
 	"icon": "building",
@@ -32,7 +32,6 @@
 	},
 	"example": {},
 	"supports": {
-		"className": true,
 		"html": false,
 		"inserter": false,
 		"multiple": false

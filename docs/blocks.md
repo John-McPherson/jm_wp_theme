@@ -43,9 +43,9 @@ This inventory is pinned to the current `dev` branch. All current blocks are dyn
 | `jmc/cta-banner`      | Call-to-action section with a heading, supporting copy, and one or more buttons     | Dynamic PHP               | Columns, Stacked and Contact Details variations (`layout`); palettes; left/right order (not stacked); defaults to inverse/right/columns; its two columns are fixed but their content is editable; see [Call-to-action banner](#call-to-action-banner) |
 | `jmc/enquiry-form`    | Enquiry form section                                                               | Dynamic PHP + view script | Palettes; single instance; submits without reloading the page and works without JavaScript; stores and emails each enquiry; see [Enquiry form](#enquiry-form) |
 | `jmc/hero`            | Page introduction with composable content and optional decorative background image | Dynamic PHP               | Single-instance support; provides `jmc/variant`; supports default, secondary, and inverse palettes; invalid values fall back to default; on child pages shows breadcrumbs in place of its label (`showBreadcrumbs`); see [Hero breadcrumbs](#hero-breadcrumbs) |
-| `jmc/service-grid`    | Introductory content and service cards in one responsive grid              | Dynamic PHP               | Two locked Column children: the intro and `jmc/service-list`; palettes; defaults to default; the `order` attribute is currently unused |
+| `jmc/service-grid`    | Introductory content and service cards in one responsive grid              | Dynamic PHP               | Two locked Column children: the intro and `jmc/service-list`; palettes; defaults to default |
 | `jmc/trust-credentials` | Strip of credential logos at the top of the site footer                        | Dynamic PHP               | Direct inserter disabled; allows only `jmc/credential-list`; placed and locked in the footer part; palettes, defaulting to the surrounding palette; renders nothing without logos |
-| `jmc/text-with-image` | Composable text content paired with an image                                       | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; unlocked: allows `jmc/heading`, `jmc/paragraph`, `jmc/list` and `jmc/button`; contains legacy-looking attributes that need contract review |
+| `jmc/text-with-image` | Composable text content paired with an image                                       | Dynamic PHP + view script | Palettes and left/right order; defaults to default/right; unlocked: allows `jmc/heading`, `jmc/paragraph`, `jmc/list` and `jmc/button` |
 
 This table should be updated whenever a block is added, renamed, deprecated, or removed.
 
@@ -55,7 +55,82 @@ This table should be updated whenever a block is added, renamed, deprecated, or 
 - Content blocks are used inside sections. Those authors add themselves (`jmc/heading`, `jmc/paragraph`, `jmc/button`, `jmc/buttons`, `jmc/list`) are in the inserter but declare an `ancestor` list, so they appear only inside the sections that use them and never at the top level of a page. Purely structural blocks such as `jmc/column` keep `supports.inserter: false`.
 - `allowedBlocks`, `ancestor`, and block locking should keep editor composition valid without relying only on author training.
 - A section's editor template must itself satisfy those rules: every block it seeds, at any depth, must be allowed there by its `parent` and `ancestor` lists. Templates bypass the check when they insert blocks, so nothing in the editor catches a mismatch. Each layout block keeps its templates in `template.ts` beside `edit.tsx`, and `src/blocks/layouts/templates.test.ts` checks them against every `block.json`.
-- Section blocks use the registered `jmc-section` category. Internal content-block metadata still contains legacy `jm` and `jmc-blocks` categories and should be normalised.
+- Section blocks use the registered `jmc-section` category. See [Metadata contracts](#metadata-contracts) for the category each group uses.
+
+## Metadata contracts
+
+### Conventions
+
+Every `block.json` follows these rules. Each rule names the code it must agree with; a block that breaks one is listed under [Mismatches](#mismatches) until it is fixed.
+
+- **Schema.** `$schema` is `https://schemas.wp.org/trunk/block.json` and the file validates against it (`src/blocks/schema.test.ts`; see [testing](testing.md#block-metadata)). `apiVersion` is `3`, `textdomain` is `jmc-theme`, and `version` is the theme version the contract last changed in.
+- **Name.** `jmc/<folder-name>`: the block's folder under `src/blocks/<group>/` matches the part after `jmc/`.
+- **Category.** One registered category per group, registered in `inc/blocks.php`:
+
+  | Group                    | Category      | Inserter title |
+  | ------------------------ | ------------- | -------------- |
+  | `src/blocks/layouts/`    | `jmc-section` | Sections       |
+  | `src/blocks/content/`    | `jmc-content` | Content        |
+  | `src/blocks/site/`       | `jmc-site`    | Site           |
+
+  `src/blocks/registration.test.ts` checks that each block uses its folder's category and that `inc/blocks.php` registers it.
+- **Placement.** A block authors add from the inserter either sits at the top level (sections) or declares `parent` (a direct child) or `ancestor` (anywhere inside). A block that only templates or patterns insert sets `supports.inserter: false`.
+- **Attributes.** Every attribute declares a `type` and a `default`. The default is a valid value that both the editor and `render.php` accept. An attribute with a fixed set of values declares an `enum`, and the same values appear in the editor options, the PHP allowlist (`jmc_html_allowed_value()`) and the SCSS selectors. An attribute that neither `edit.tsx` nor `render.php` reads is removed, unless it is kept on purpose for a migration, which its `render.php` docblock says. (`jmc/footer-business` keeps five such attributes for the business settings upgrade.) `src/blocks/registration.test.ts` checks that every attribute declares a type and a default, and that the default is one of its `enum` values.
+- **Text defaults.** Editable text defaults to `""`; the editor shows a placeholder instead. Visible defaults, such as a submit label, are real copy, never test values.
+- **Examples.** Every block that can appear in the inserter has an `example`, with attributes and `innerBlocks` that render without notices, so the inserter preview shows realistic content. `src/blocks/registration.test.ts` checks that every block without `supports.inserter: false` has one. Blocks whose content comes from settings or the Media Library (`jmc/contact-details`, `jmc/credential`) use an empty example, which previews the live settings or the image picker.
+- **Supports.** Declare only supports that differ from WordPress's defaults or that the render code implements. `anchor: true` means `render.php` outputs the anchor as the root `id`. `className` and `customClassName` default to `true`: a block that does not print `$attributes['className']` on its root sets `customClassName: false`. `html: false` on every block.
+- **Root class.** The rendered root carries `jmc-<folder-name>`, the same class the editor's `useBlockProps()` adds; sections also carry `jmc-section`. Element and modifier classes are BEM: `jmc-<block>__<element>`, `jmc-<block>--<modifier>`. Palettes use the shared `jmc-palette--<palette>` classes.
+
+### Inventory
+
+Kept up to date with each block's `block.json`. All blocks are `apiVersion` 3, version `0.2.1`, text domain `jmc-theme`, dynamic, with `html: false`. Defaults are shown after `=`; `""` is an empty string. **Ex.** is whether the block has an `example`. Supports lists what is declared beyond `html: false`. Root class is the class the frontend root carries, with the editor's where it differs.
+
+#### Sections (`src/blocks/layouts/`)
+
+| Block | Category | Placement | Attributes | Ex. | Supports | Root class |
+| --- | --- | --- | --- | --- | --- | --- |
+| `jmc/cta-banner` | `jmc-section` | Top level | `palette` [default\|secondary\|inverse] = `inverse`; `order` [left\|right] = `right`; `layout` [columns\|stacked\|contact] = `columns` | Yes | anchor | `jmc-section jmc-cta` |
+| `jmc/enquiry-form` | `jmc-section` | Top level | `palette` [default\|secondary\|inverse] = `default`; `submitText` string = `Send enquiry` | Yes | anchor, multiple: false | `jmc-section jmc-enquiry-form` |
+| `jmc/hero` | `jmc-section` | Top level | `imageId` number = `0`; `imageUrl` string = `""`; `variant` [hero] = `hero`; `palette` [default\|secondary\|inverse] = `default`; `showBreadcrumbs` boolean = `true` | Yes | anchor, multiple: false | `jmc-section jmc-hero` |
+| `jmc/service-grid` | `jmc-section` | Top level | `palette` [default\|secondary\|inverse] = `default` | Yes | anchor | `jmc-section jmc-service-grid` |
+| `jmc/text-with-image` | `jmc-section` | Top level | `palette` [default\|secondary\|inverse] = `default`; `order` [left\|right] = `right`; `imageId` number = `0`; `imageUrl` string = `""` | Yes | anchor | `jmc-section jmc-text-with-image` |
+| `jmc/trust-credentials` | `jmc-section` | Footer part only (inserter: false) | `palette` [default\|secondary\|inverse] = `default` | Yes | anchor, inserter: false | `jmc-section jmc-trust-credentials` |
+
+#### Content (`src/blocks/content/`)
+
+| Block | Category | Placement | Attributes | Ex. | Supports | Root class |
+| --- | --- | --- | --- | --- | --- | --- |
+| `jmc/button` | `jmc-content` | ancestor: text-with-image, hero, buttons | `text` string = `""`; `buttonType` [primary\|secondary] = `primary`; `link` object = `{url: "", opensInNewTab: false}`; `linkType` [link\|phone\|email\|whatsapp] = `link`; `emailSubject`, `emailBody`, `whatsappMessage` string = `""` | Yes | anchor | `jmc-button` |
+| `jmc/buttons` | `jmc-content` | ancestor: cta-banner | none | Yes | customClassName: false | `jmc-buttons` |
+| `jmc/column` | `jmc-content` | Templates only (inserter: false) | none | No | customClassName: false, inserter: false | `jmc-section__column` |
+| `jmc/contact-details` | `jmc-content` | parent: column | `showPhone`, `showWhatsApp`, `showEmail`, `showHours`, `showServiceArea` boolean = `true` | Yes | — | `jmc-contact-details` |
+| `jmc/credential` | `jmc-content` | parent: credential-list | `imageId` number = `0`; `link` object = `{url: "", opensInNewTab: false}` | Yes | anchor, reusable: false | `jmc-credential` |
+| `jmc/credential-list` | `jmc-content` | parent: trust-credentials (inserter: false) | none | No | anchor, reusable: false | `jmc-credential-list` |
+| `jmc/heading` | `jmc-content` | ancestor: text-with-image, hero, cta-banner, service-grid | `text` string = `""`; `level` [1–6] = `2`; `lockLevel` boolean = `false` | Yes | anchor | `jmc-heading` |
+| `jmc/list` | `jmc-content` | ancestor: text-with-image, cta-banner | `listStyle` [icon\|bullet\|number] = `icon`; `icon` [check\|circle-check\|shield-check\|plus\|zap\|arrow-right] = `check` | Yes | anchor, reusable: false | `jmc-list jmc-list--<listStyle>` |
+| `jmc/list-item` | `jmc-content` | parent: list | `text` string = `""` | Yes | anchor, reusable: false, splitting | `jmc-list__item` |
+| `jmc/paragraph` | `jmc-content` | ancestor: text-with-image, hero, cta-banner, service-grid | `text` string = `""`; `variant` [default\|label] = `default` | Yes | anchor | `jmc-paragraph` |
+| `jmc/service-list` | `jmc-content` | ancestor: service-grid (inserter: false) | `headingLevel` [2–6] = `3`; `source` [children\|chosen] = `children`; `parentId` number = `0`; `moreText` string = `""`; `pageIds` array = `[]` | No | anchor, inserter: false, reusable: false | `jmc-service-list` |
+
+#### Site chrome (`src/blocks/site/`)
+
+| Block | Category | Placement | Attributes | Ex. | Supports | Root class |
+| --- | --- | --- | --- | --- | --- | --- |
+| `jmc/footer` | `jmc-site` | Footer part only (inserter: false) | `palette` [default\|secondary\|inverse] = `default` | Yes | inserter: false, multiple: false | `jmc-footer-inner` |
+| `jmc/footer-business` | `jmc-site` | parent: footer (inserter: false) | `companyName`, `address`, `phone`, `email`, `serviceArea` string = `""` (legacy, migration only) | Yes | inserter: false, multiple: false | `jmc-footer-business` |
+| `jmc/footer-legal` | `jmc-site` | parent: footer (inserter: false) | `copyrightHolder` string = `""` | Yes | inserter: false, multiple: false | `jmc-footer-legal` |
+| `jmc/footer-navigation` | `jmc-site` | parent: footer | `navigationId` number = `0` | Yes | — | `jmc-footer-navigation` |
+| `jmc/header-cta` | `jmc-site` | parent: navigation (inserter: false) | Same as `jmc/button` | Yes | inserter: false, multiple: false | `jmc-header-cta` |
+| `jmc/navigation` | `jmc-site` | Header part only (inserter: false) | `navigationId` number = `0` | Yes | customClassName: false, inserter: false | `jmc-navigation` (editor: `jmc-navigation-editor`) |
+| `jmc/site-logo` | `jmc-site` | Header part only (inserter: false) | none; colour via block styles default, brand, mono-dark, mono-light | Yes | inserter: false | `jmc-site-logo` |
+
+### Mismatches
+
+Each of these breaks a [convention](#conventions) and is left for a follow-up.
+
+**Supports and class names**
+
+- Root classes that are not `jmc-<folder-name>`: `jmc/cta-banner` (`jmc-cta`, with `jmc-column-left`/`jmc-column-right` instead of BEM modifiers), `jmc/footer` (`jmc-footer-inner`), `jmc/column` (`jmc-section__column`) and `jmc/list-item` (`jmc-list__item`). `jmc/navigation`'s editor root is `jmc-navigation-editor`. The secondary button style is the element class `jmc-button__secondary` rather than a modifier. Renaming these classes changes the stylesheets and any custom CSS that targets them. The `column` and `list-item` classes are deliberate: those blocks are elements of their parent.
 
 ## Patterns
 
@@ -132,7 +207,7 @@ To bring search back, remove `inc/search.php` (and its `require_once` in `functi
 ## Adding a block
 
 1. Create the source directory and `block.json`.
-2. Use the `jmc/<name>` namespace and appropriate `jmc-*` category.
+2. Use the `jmc/<name>` namespace and the category for its folder (see [Conventions](#conventions)).
 3. Define attributes with valid defaults and explicit types.
 4. Implement and type the editor component.
 5. Implement server rendering and validate every incoming attribute.
@@ -873,8 +948,5 @@ Changes confined to a dynamic block's PHP frontend markup normally do not need a
 
 ## Current issues to resolve
 
-- Normalise internal content-block categories to one registered category, or remove category metadata where it has no effect.
 - Revisit the `jmc/`-only global allowlist before FSE templates require core blocks.
-- Change the `style.css` text-domain header from `jmc-custom-theme` to the canonical `jmc-theme` used by translations and block metadata.
-- Review and remove or formally support the older top-level content attributes still declared by `jmc/text-with-image`.
-- Remove or implement the `order` attribute declared by `jmc/service-grid`; it has no effect, and the editor looks it up in the palette class map.
+- Fix the metadata [mismatches](#mismatches).

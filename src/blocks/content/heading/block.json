@@ -2,15 +2,15 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "jmc/heading",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "title": "Heading",
-  "category": "jmc-blocks",
+  "category": "jmc-content",
   "icon": "layout",
   "description": "Heading content block with heading",
   "attributes": {
     "text": {
       "type": "string",
-      "default": "test"
+      "default": ""
     },
     "level": {
       "type": "string",
@@ -33,7 +33,6 @@
 
   "supports": {
     "anchor": true,
-    "className": true,
     "html": false
   },
   "textdomain": "jmc-theme",

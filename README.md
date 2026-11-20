@@ -6,9 +6,9 @@ Custom Full Site Editing WordPress theme for AMC Electrical, built with PHP, Typ
 
 ## Requirements
 
-- WordPress 7.1 or later, as declared in `style.css`
-- PHP 8.0 or later
-- Node.js 24, as declared in `.nvmrc`
+- WordPress 7.1, as declared in `style.css`
+- PHP 8.3 or later
+- Node.js 24.18.0 or a later 24.x, as declared in `.nvmrc` and `package.json` `engines` (npm refuses other versions)
 - npm
 - Composer 2
 - `rsync` for asset builds and packaging
@@ -51,7 +51,9 @@ npm start
 | `npm run test:e2e` | Run Playwright in Chromium, Firefox, and WebKit |
 | `npm run test:e2e:headed` | Run Playwright with visible browser windows |
 | `npm run test:e2e:report` | Open the latest HTML report |
-| `npm run package` | Build and assemble the release directory in `dist/` |
+| `npm run i18n:pot` | Build the block scripts and generate `languages/jmc-theme.pot` |
+| `npm run i18n:make-pot` | Generate `languages/jmc-theme.pot` from the current build |
+| `npm run package` | Build, generate the translation template, and assemble the release directory in `dist/` |
 
 ## Structure
 
@@ -79,6 +81,7 @@ npm start
 - [Design system](docs/design-system.md)
 - [Accessibility](docs/accessibility.md)
 - [Testing](docs/testing.md)
+- [Platform support](docs/support.md)
 - [Roadmap and issue workflow](docs/roadmap.md)
 - [Releasing](docs/releasing.md)
 - [Contributing](CONTRIBUTING.md)
@@ -92,7 +95,7 @@ The site-identity header template part and cross-browser Playwright smoke covera
 
 ## Browser support
 
-No formal browser matrix has been approved. Until one is documented and tested, target current stable Chrome, Edge, Firefox, Safari, and current iOS Safari.
+The last two major versions of Chrome, Edge, Firefox and Safari (macOS and iOS), plus current Chrome for Android and Samsung Internet, from 320 CSS px wide. See [Platform support](docs/support.md) for the full matrix of WordPress, PHP, Node, browser, device and assistive-technology versions, and how it changes.
 
 ## Licence
 

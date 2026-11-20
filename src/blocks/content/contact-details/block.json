@@ -2,9 +2,9 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "jmc/contact-details",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "title": "Contact Details",
-  "category": "jmc-section",
+  "category": "jmc-content",
   "icon": "phone",
   "parent": ["jmc/column"],
   "description": "The business phone number, WhatsApp number, email address, opening hours and service area, from Settings → Business.",
@@ -30,8 +30,8 @@
       "default": true
     }
   },
+  "example": {},
   "supports": {
-    "className": true,
     "html": false
   },
   "textdomain": "jmc-theme",

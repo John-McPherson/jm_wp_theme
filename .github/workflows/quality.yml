@@ -1,10 +1,6 @@
 name: Quality checks
 
 on:
-  push:
-    branches:
-      - dev
-      - main
   pull_request:
 
 permissions:
@@ -23,10 +19,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Minimum supported version (composer.json / style.css) and a current one.
+        # The supported floor (composer.json / style.css) and the newest stable
+        # release, as set out in docs/support.md.
         php:
-          - "8.0"
           - "8.3"
+          - "8.5"
 
     steps:
       - name: Check out repository
@@ -86,6 +83,17 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
+      # `package` generates the translation template with WP-CLI's i18n command.
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer:v2
+          coverage: none
+
+      - name: Install locked Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
       - name: Run Vitest unit tests with coverage
         run: npm run test:unit:coverage
 
@@ -139,3 +147,4 @@ jobs:
           test -d dist/parts
           test -f dist/parts/header.html
           test -f dist/patterns/hero.php
+          test -s dist/languages/jmc-theme.pot

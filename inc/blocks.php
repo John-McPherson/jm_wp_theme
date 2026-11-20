@@ -97,6 +97,12 @@ add_filter(
 
 		];
 		$categories[] = [
+			'slug'  => 'jmc-content',
+			'title' => __( 'Content', 'jmc-theme' ),
+			'icon'  => 'text',
+
+		];
+		$categories[] = [
 			'slug'  => 'jmc-site',
 			'title' => __( 'Site', 'jmc-theme' ),
 			'icon'  => 'admin-site-alt3',

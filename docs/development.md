@@ -2,9 +2,9 @@
 
 ## Prerequisites
 
-- A local WordPress version matching the minimum declared in `style.css`
-- PHP 8.0+
-- Node.js 24, selected through `.nvmrc`
+- A local WordPress version matching the one declared in `style.css`
+- PHP 8.3+
+- Node.js 24.18.0 or a later 24.x, selected through `.nvmrc`
 - npm and Composer 2
 - `rsync`
 - Docker Desktop or another Docker-compatible runtime for `wp-env`
@@ -34,7 +34,7 @@ npm run env:stop
 
 The development site is available at `http://localhost:8888` with username `admin` and password `password`. Playwright runs against Chromium, Firefox, and WebKit. Generated reports and failure evidence are written under `artifacts/e2e/` and are not committed.
 
-`.nvmrc` is the current Node contract. `package.json` does not yet declare an `engines` range, so non-nvm environments must select the matching major version explicitly.
+`.nvmrc` selects Node 24, and `package.json` `engines` requires 24.18.0 or a later 24.x. `.npmrc` sets `engine-strict`, so `npm install` and `npm ci` fail with `EBADENGINE` on any other version; run `nvm install 24` to update. Supported versions are set out in [Platform support](support.md).
 
 ## Branch and issue workflow
 
@@ -42,7 +42,7 @@ The development site is available at `http://localhost:8888` with username `admi
 - Use one GitHub issue for one independently reviewable outcome.
 - Assign one version milestone, one `type:` label, one `priority:` label, and all relevant `area:` labels.
 - Link the issue in the pull request and update documentation when a command, contract, token, workflow, or supported platform changes.
-- Formal release pull requests merge `dev` into `main`.
+- Release by merging `dev` into `staging`, then `staging` into `main`; see [Releasing](releasing.md#branches).
 
 See [Roadmap and issue workflow](roadmap.md) for milestone scope and label conventions.
 
@@ -104,6 +104,57 @@ Every npm dependency is a development dependency, so `npm audit --omit=dev` must
 | `picomatch` | Linters, bundlers and test tooling | ReDoS through repeated extglobs ([GHSA-fc5q-39xc-vjpf](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)) | No patched release yet. Only matches our own glob patterns. |
 
 When upgrading dependencies, re-run `npm audit` and remove a row once its fix arrives through the parent package.
+
+## Translations
+
+Every translatable string uses the `jmc-theme` text domain: the `style.css` header, `__()` and friends in PHP and TypeScript, and `textdomain` in each `block.json`. `inc/setup.php` loads translations from `languages/`, which `style.css` declares as its `Domain Path`.
+
+### Writing translatable strings
+
+- Pass whole sentences, not fragments joined together, so translators can reorder them.
+- Put a `/* translators: … */` comment directly above any call whose string contains a placeholder, and number placeholders (`%1$s`, `%2$s`) when there is more than one.
+- Use `_n()` whenever a number decides the wording, even if the number is usually more than one.
+- Use `_x()` when a short string could be translated more than one way.
+
+### Validation
+
+CI rejects the wrong or a missing text domain in three places:
+
+- PHP: PHPCS's `WordPress.WP.I18n` sniff (`npm run lint:phpcs`), which also flags missing translator comments and unordered placeholders.
+- TypeScript: the `@wordpress/i18n-text-domain` ESLint rule, pinned to `jmc-theme` in `eslint.config.mjs` (`npm run lint:js`). The rest of `@wordpress/eslint-plugin`'s i18n rules check translator comments and placeholders.
+- Metadata: `TextDomainTest` checks the `style.css` header and every `block.json` (`composer test`).
+
+### Extracting the translation template
+
+```bash
+npm run i18n:pot
+```
+
+This builds the block scripts and writes `languages/jmc-theme.pot` with WP-CLI's `make-pot`, installed as a Composer dev dependency, so `composer install` must have run. It reads PHP, `block.json`, `theme.json`, the palette style variations and patterns from source, and editor strings from the compiled scripts in `build/js`: WP-CLI cannot parse TypeScript, and the build keeps `translators:` comments. `npm run i18n:make-pot` skips the build when `build/js` is already current. Both commands delete `dist/` first, because `make-pot` reads the theme header from `dist/style.css` when it exists, even though `dist/` is excluded.
+
+The POT file is generated, so it is not committed. `npm run package` generates it and ships it in `dist/languages/`.
+
+### Testing a locale
+
+Check translations with a test locale in `wp-env` (`npm run env:start`):
+
+1. Generate the template with `npm run i18n:pot`.
+2. Copy `languages/jmc-theme.pot` to `languages/fr_FR.po` and translate a few representative strings with a visible marker such as `[FR] `. Cover a PHP-rendered block (the enquiry form), a template part (the footer's "Site created by %s"), a block title from `block.json`, and an editor control (Hero's "Palette Settings"). Set the `Language` header to `fr_FR`.
+3. Compile it, the `.mo` file first, because `make-json` removes the editor strings from the `.po` file:
+
+   ```bash
+   vendor/bin/wp i18n make-mo languages/fr_FR.po
+   vendor/bin/wp i18n make-json languages/fr_FR.po
+   ```
+
+4. Switch the site language. WordPress only accepts an installed locale:
+
+   ```bash
+   npx wp-env run cli wp language core install fr_FR --activate
+   ```
+
+5. Check the frontend and the block editor for the marked strings. Editor controls are translated from the generated `jmc-theme-fr_FR-<hash>.json` files, and block titles and descriptions from the `.mo` file, server-side.
+6. Clean up: `npx wp-env run cli wp language core uninstall fr_FR`, `npx wp-env run cli wp option delete WPLANG`, and delete the `fr_FR` files from `languages/` so they don't end up in a package.
 
 ## Debugging
 
