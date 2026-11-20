@@ -18,12 +18,21 @@ final class EnquiryHandlerTest extends TestCase {
 
 	private const NOW = 1893456000;
 
+	private const LINKS_MESSAGE = 'Photos: https://example.com/1 https://example.com/2 https://example.com/3';
+
 	/**
 	 * Values passed to the store callable.
 	 *
 	 * @var array<int, array<string,string>>
 	 */
 	private array $stored = [];
+
+	/**
+	 * Spam reasons passed to the store callable, in the same order as `$stored`.
+	 *
+	 * @var string[]
+	 */
+	private array $stored_reasons = [];
 
 	/**
 	 * IDs passed to the send callable.
@@ -82,8 +91,9 @@ final class EnquiryHandlerTest extends TestCase {
 			key: self::KEY,
 			hit_limit: static fn (): bool => $over_limit,
 			is_repeat: static fn ( string $fingerprint ): bool => $repeat && '' !== $fingerprint,
-			store: function ( array $values ) use ( $stored_id ): int {
-				$this->stored[] = $values;
+			store: function ( array $values, string $spam_reason ) use ( $stored_id ): int {
+				$this->stored[]         = $values;
+				$this->stored_reasons[] = $spam_reason;
 
 				return $stored_id;
 			},
@@ -106,6 +116,7 @@ final class EnquiryHandlerTest extends TestCase {
 		self::assertSame( [], $result['errors'] );
 		self::assertCount( 1, $this->stored );
 		self::assertSame( 'SW1A 1AA', $this->stored[0]['postcode'] );
+		self::assertSame( [ '' ], $this->stored_reasons );
 		self::assertSame( [ 7 ], $this->sent );
 	}
 
@@ -126,7 +137,7 @@ final class EnquiryHandlerTest extends TestCase {
 	}
 
 	/**
-	 * Spam-like submissions are silently dropped: reported as sent, never stored.
+	 * Bot-only spam is silently dropped: reported as sent, never stored.
 	 *
 	 * @dataProvider spam_provider
 	 *
@@ -151,7 +162,17 @@ final class EnquiryHandlerTest extends TestCase {
 		return [
 			'honeypot filled'    => [ [ JMC_ENQUIRY_HONEYPOT_FIELD => 'https://spam.test' ] ],
 			'timing missing'     => [ [ JMC_ENQUIRY_TIMING_FIELD => '' ] ],
+			'timing forged'      => [ [ JMC_ENQUIRY_TIMING_FIELD => jmc_enquiry_timing_token( self::NOW - 60, 'wrong-key' ) ] ],
 			'submitted too fast' => [ [ JMC_ENQUIRY_TIMING_FIELD => jmc_enquiry_timing_token( self::NOW, self::KEY ) ] ],
+			'form expired'       => [ [ JMC_ENQUIRY_TIMING_FIELD => jmc_enquiry_timing_token( self::NOW - JMC_ENQUIRY_MAX_SECONDS - 1, self::KEY ) ] ],
+			'bot with links'     => [
+				[
+					JMC_ENQUIRY_HONEYPOT_FIELD => 'x',
+					'jmc_enquiry'              => [
+						'message' => self::LINKS_MESSAGE,
+					],
+				],
+			],
 			'invalid and spam'   => [
 				[
 					JMC_ENQUIRY_HONEYPOT_FIELD => 'x',
@@ -159,6 +180,70 @@ final class EnquiryHandlerTest extends TestCase {
 				],
 			],
 		];
+	}
+
+	/**
+	 * A valid message with too many links is held as spam: stored with its
+	 * reason, not sent, and reported to the visitor as sent.
+	 */
+	public function test_valid_spam_with_links_is_stored_and_not_sent(): void {
+		$post                           = self::post();
+		$post['jmc_enquiry']['message'] = self::LINKS_MESSAGE;
+
+		$result = $this->handle( $post );
+
+		self::assertSame( 'sent', $result['status'] );
+		self::assertSame( 'spam_stored', $result['outcome'] );
+		self::assertSame( [], $result['errors'] );
+		self::assertCount( 1, $this->stored );
+		self::assertSame( self::LINKS_MESSAGE, $this->stored[0]['message'] );
+		self::assertSame( [ 'links' ], $this->stored_reasons );
+		self::assertSame( [], $this->sent );
+	}
+
+	/**
+	 * An invalid message with too many links gets the usual errors, so a person can correct it.
+	 */
+	public function test_invalid_spam_with_links_reports_errors(): void {
+		$post                           = self::post();
+		$post['jmc_enquiry']['message'] = self::LINKS_MESSAGE;
+		$post['jmc_enquiry']['email']   = 'alex@';
+
+		$result = $this->handle( $post );
+
+		self::assertSame( 'invalid', $result['status'] );
+		self::assertSame( [ 'email' ], array_keys( $result['errors'] ) );
+		self::assertSame( [], $this->stored );
+		self::assertSame( [], $this->sent );
+	}
+
+	/**
+	 * A repeat of a message held as spam isn't stored again.
+	 */
+	public function test_duplicate_spam_with_links_is_not_stored_again(): void {
+		$post                           = self::post();
+		$post['jmc_enquiry']['message'] = self::LINKS_MESSAGE;
+
+		$result = $this->handle( post: $post, repeat: true );
+
+		self::assertSame( 'sent', $result['status'] );
+		self::assertSame( 'duplicate', $result['outcome'] );
+		self::assertSame( [], $this->stored );
+		self::assertSame( [], $this->sent );
+	}
+
+	/**
+	 * When a message held as spam can't be stored, the visitor is told, as for any other enquiry.
+	 */
+	public function test_spam_with_links_store_failure_is_an_error(): void {
+		$post                           = self::post();
+		$post['jmc_enquiry']['message'] = self::LINKS_MESSAGE;
+
+		$result = $this->handle( post: $post, stored_id: 0 );
+
+		self::assertSame( 'error', $result['status'] );
+		self::assertSame( 'store_failed', $result['outcome'] );
+		self::assertSame( [], $this->sent );
 	}
 
 	/**
