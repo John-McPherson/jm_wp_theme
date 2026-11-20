@@ -121,7 +121,7 @@ Every `block.json` follows these rules. Each rule names the code it must agree w
 
 ### Inventory
 
-Kept up to date with each block's `block.json`. All blocks are `apiVersion` 3, version `0.2.1`, text domain `jmc-theme`, dynamic, with `html: false`. Defaults are shown after `=`; `""` is an empty string. **Ex.** is whether the block has an `example`. Supports lists what is declared beyond `html: false`. Root class is the class the frontend root carries, with the editor's where it differs.
+Kept up to date with each block's `block.json`. All blocks are `apiVersion` 3, version `0.2.2`, text domain `jmc-theme`, dynamic, with `html: false`. Defaults are shown after `=`; `""` is an empty string. **Ex.** is whether the block has an `example`. Supports lists what is declared beyond `html: false`. Root class is the class the frontend root carries, with the editor's where it differs.
 
 #### Sections (`src/blocks/layouts/`)
 

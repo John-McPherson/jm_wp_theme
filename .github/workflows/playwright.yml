@@ -230,7 +230,7 @@ jobs:
 
       - name: Show WordPress logs
         if: ${{ failure() }}
-        run: npx wp-env logs || true
+        run: npx wp-env logs --no-watch || true
 
       - name: Stop WordPress
         if: ${{ always() }}
