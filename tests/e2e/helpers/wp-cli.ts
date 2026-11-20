@@ -176,12 +176,18 @@ type PostFields = {
 	type: string;
 	title: string;
 	content: string;
+	parent?: number;
+	excerpt?: string;
+	template?: string;
 };
 
 export async function createPost( {
 	type,
 	title,
 	content,
+	parent,
+	excerpt,
+	template,
 }: PostFields ): Promise< number > {
 	const { stdout } = await runWpCli( [
 		'post',
@@ -190,6 +196,9 @@ export async function createPost( {
 		'--post_status=publish',
 		`--post_title=${ title }`,
 		`--post_content=${ content }`,
+		...( parent ? [ `--post_parent=${ parent }` ] : [] ),
+		...( excerpt ? [ `--post_excerpt=${ excerpt }` ] : [] ),
+		...( template ? [ `--page_template=${ template }` ] : [] ),
 		'--porcelain',
 	] );
 
@@ -204,4 +213,113 @@ export async function createPost( {
 
 export async function deletePost( postId: number ): Promise< void > {
 	await runWpCli( [ 'post', 'delete', String( postId ), '--force' ] );
+}
+
+export async function getPermalink( postId: number ): Promise< string > {
+	const { stdout } = await runWpCli( [
+		'eval',
+		`echo get_permalink(${ Number( postId ) });`,
+	] );
+
+	return stdout;
+}
+
+/**
+ * Run PHP with a JSON value decoded into `$value`, passed as base64 so the
+ * value never needs shell or PHP string escaping.
+ *
+ * @param value Value available to the code as `$value`.
+ * @param code  PHP code to run.
+ */
+async function evalWithValue(
+	value: unknown,
+	code: string
+): Promise< string > {
+	const encoded = Buffer.from( JSON.stringify( value ) ).toString( 'base64' );
+	const { stdout } = await runWpCli( [
+		'eval',
+		`$value = json_decode(base64_decode('${ encoded }'), true); ${ code }`,
+	] );
+
+	return stdout;
+}
+
+/**
+ * Read options so tests can restore them afterwards, including options that
+ * do not exist yet (`wp option get` fails for those).
+ *
+ * @param names Option names.
+ * @return Each option's value as JSON, or `null` when it is not set.
+ */
+export async function snapshotOptions(
+	names: string[]
+): Promise< Record< string, unknown > > {
+	const stdout = await evalWithValue(
+		names,
+		'$sentinel = new stdClass(); $result = []; foreach ($value as $name) { $option = get_option($name, $sentinel); $result[$name] = $option === $sentinel ? null : $option; } echo wp_json_encode($result);'
+	);
+
+	return JSON.parse( stdout ) as Record< string, unknown >;
+}
+
+/**
+ * Restore options read by snapshotOptions(), deleting those that were unset.
+ *
+ * @param snapshot Values from snapshotOptions().
+ */
+export async function restoreOptions(
+	snapshot: Record< string, unknown >
+): Promise< void > {
+	await evalWithValue(
+		snapshot,
+		'foreach ($value as $name => $option) { if (null === $option) { delete_option($name); } else { update_option($name, $option); } }'
+	);
+}
+
+/**
+ * Set options to JSON-compatible values, such as arrays.
+ *
+ * @param options Values keyed by option name.
+ */
+export async function setOptions(
+	options: Record< string, unknown >
+): Promise< void > {
+	await evalWithValue(
+		options,
+		'foreach ($value as $name => $option) { update_option($name, $option); }'
+	);
+}
+
+/**
+ * Read the content of the active theme's customised template part, if any.
+ *
+ * @param slug Template part slug, such as `header`.
+ * @return The saved customisation, or `null` while the theme file is used.
+ */
+export async function snapshotTemplatePart(
+	slug: string
+): Promise< { id: number; content: string } | null > {
+	const stdout = await evalWithValue(
+		slug,
+		'$part = get_block_template(get_stylesheet() . "//" . $value, "wp_template_part"); echo wp_json_encode($part && $part->wp_id ? ["id" => $part->wp_id, "content" => $part->content] : null);'
+	);
+
+	return JSON.parse( stdout ) as { id: number; content: string } | null;
+}
+
+/**
+ * Undo Site Editor changes to a template part: put a saved customisation back,
+ * or delete the customisation so the theme file is used again.
+ *
+ * @param slug     Template part slug, such as `header`.
+ * @param snapshot Value from snapshotTemplatePart().
+ */
+export async function restoreTemplatePart(
+	slug: string,
+	snapshot: { id: number; content: string } | null
+): Promise< void > {
+	await evalWithValue(
+		{ slug, snapshot },
+		'$part = get_block_template(get_stylesheet() . "//" . $value["slug"], "wp_template_part"); if ($value["snapshot"]) { wp_update_post(["ID" => $value["snapshot"]["id"], "post_content" => wp_slash($value["snapshot"]["content"])]); } elseif ($part && $part->wp_id) { wp_delete_post($part->wp_id, true); }'
+	);
 }
