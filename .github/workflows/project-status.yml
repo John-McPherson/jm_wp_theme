@@ -4,6 +4,8 @@ name: Project board status
 # lifecycle (see docs/development.md):
 #   - a new `<issue>-…` branch on GitHub moves the issue to "In progress";
 #   - a pull request merged into `dev` moves its issues to "Release candidate";
+#   - a pull request merged into `main` moves the issues of every pull request
+#     it carries to "Released";
 #   - hourly (or on demand), Backlog cards in the active Sprint move to "Ready".
 # Cards only ever move forwards. Requires the PROJECT_TOKEN secret: a classic
 # personal access token with the `project` and `repo` scopes, because the
@@ -16,6 +18,7 @@ on:
       - closed
     branches:
       - dev
+      - main
   # GitHub sends no Actions event when a user-owned project's fields change, so
   # sprint assignments are picked up by polling. Schedules run from `main` only.
   schedule:
@@ -55,22 +58,39 @@ jobs:
               const n = issueFromBranch( context.payload.ref );
               if ( n ) issues.add( Number( n ) );
             } else {
-              target = 'Release candidate';
               const pr = context.payload.pull_request;
-              const n = issueFromBranch( pr.head.ref );
-              if ( n ) issues.add( Number( n ) );
-              const { repository } = await github.graphql(
-                `query($owner: String!, $repo: String!, $pr: Int!) {
-                  repository(owner: $owner, name: $repo) {
-                    pullRequest(number: $pr) {
-                      closingIssuesReferences(first: 50) { nodes { number } }
+              target = pr.base.ref === 'main' ? 'Released' : 'Release candidate';
+
+              // The merged PR itself, plus (for a release into `main`) every
+              // feature PR it carries, found from their "Merge pull request
+              // #N from owner/<issue>-…" commits. Lists up to 250 commits.
+              const prs = new Map( [ [ pr.number, pr.head.ref ] ] );
+              if ( pr.base.ref === 'main' ) {
+                const commits = await github.paginate( github.rest.pulls.listCommits, {
+                  owner, repo, pull_number: pr.number, per_page: 100,
+                } );
+                for ( const { commit } of commits ) {
+                  const m = commit.message.match( /^Merge pull request #(\d+) from [^/\s]+\/(\S+)/ );
+                  if ( m ) prs.set( Number( m[ 1 ] ), m[ 2 ] );
+                }
+              }
+
+              for ( const [ number, branch ] of prs ) {
+                const n = issueFromBranch( branch );
+                if ( n ) issues.add( Number( n ) );
+                const { repository } = await github.graphql(
+                  `query($owner: String!, $repo: String!, $pr: Int!) {
+                    repository(owner: $owner, name: $repo) {
+                      pullRequest(number: $pr) {
+                        closingIssuesReferences(first: 50) { nodes { number } }
+                      }
                     }
-                  }
-                }`,
-                { owner, repo, pr: pr.number }
-              );
-              for ( const { number } of repository.pullRequest.closingIssuesReferences.nodes ) {
-                issues.add( number );
+                  }`,
+                  { owner, repo, pr: number }
+                ).catch( () => null );
+                for ( const { number: issue } of repository?.pullRequest?.closingIssuesReferences.nodes ?? [] ) {
+                  issues.add( issue );
+                }
               }
             }
 
