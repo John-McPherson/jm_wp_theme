@@ -136,7 +136,7 @@ For every changed block, component, template, or pattern:
 - Test every supported palette, order, and variant.
 - Verify allowed parent/child composition and block locking.
 - When the [allowed blocks](blocks.md#allowed-blocks) change, update `tests/e2e/block-allowlist.spec.ts` and open the inserter in each editor to confirm it offers only the listed blocks.
-- Test keyboard operation, visible focus, reduced motion, zoom, and reflow.
+- Run the checks for the affected journey in the [manual accessibility QA checklist](accessibility-qa.md).
 
 ## Planned automated coverage
 
@@ -154,13 +154,7 @@ Do not describe planned checks as configured until they run in CI.
 
 ## Accessibility release matrix
 
-Automated scans cannot validate reading order, usable focus, meaningful alternative text, or sensible assistive-technology output. At release candidates, test:
-
-- Keyboard-only navigation.
-- 200% zoom and 320 CSS-pixel reflow.
-- Reduced-motion preference.
-- At least one desktop screen-reader and browser combination.
-- VoiceOver with iOS Safari for primary navigation and contact journeys.
+Automated scans cannot validate reading order, usable focus, meaningful alternative text, or sensible assistive-technology output. At every release candidate, run the whole [manual accessibility QA checklist](accessibility-qa.md) on staging, on each keyboard-only and screen-reader setup it lists, and record the results in `docs/accessibility-qa/v<version>.md` from its [template](accessibility-qa/template.md). The checklist marks the checks the automated suites already cover.
 
 ## Compatibility and package verification
 

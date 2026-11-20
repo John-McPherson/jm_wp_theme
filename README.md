@@ -80,6 +80,7 @@ npm start
 - [Blocks](docs/blocks.md)
 - [Design system](docs/design-system.md)
 - [Accessibility](docs/accessibility.md)
+- [Manual accessibility QA checklist](docs/accessibility-qa.md)
 - [Testing](docs/testing.md)
 - [Platform support](docs/support.md)
 - [Roadmap and issue workflow](docs/roadmap.md)

@@ -47,16 +47,12 @@ Block defaults should guide editors toward valid heading structures, accessible 
 
 ## Required checks
 
-For each new or changed user-facing feature:
+The manual keyboard, visual and screen-reader checks, the browser and screen-reader combinations they run on, and how results are recorded and failures reported are in the [manual accessibility QA checklist](accessibility-qa.md). Run the checks for the affected journey on every pull request that changes a user-facing feature, and the whole checklist at every release candidate.
 
-- Navigate the complete flow with keyboard only.
-- Confirm focus is always visible and not obscured.
-- Zoom to 200% and check reflow at a 320 CSS-pixel width.
-- Check text spacing and content resizing without loss.
+In addition, for each new or changed user-facing feature:
+
 - Run an automated axe or equivalent scan.
-- Measure new colour combinations.
-- Test meaningful images, headings, labels, names, roles, and values.
-- Test reduced-motion behaviour.
+- Measure new colour combinations (`npm run test:contrast`).
 
 ## Known gaps
 
