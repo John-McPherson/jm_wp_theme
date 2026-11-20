@@ -2,7 +2,7 @@
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "jmc/cta-banner",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "title": "CTA Banner",
   "category": "jmc-section",
   "icon": "megaphone",
