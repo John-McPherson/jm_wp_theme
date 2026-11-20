@@ -22,6 +22,12 @@
 		--jmc-border-color: var(--jmc-color-base-300);
 		--jmc-shadow-color: color-mix(in srgb, var(--jmc-color-base-900) 12%, transparent);
 
+		// Keyboard focus ring (base/_focus.scss). Its colour is the section's
+		// `--jmc-text-highlight`, read where the ring is drawn so it follows
+		// the section palette.
+		--jmc-focus-width: 2px;
+		--jmc-focus-offset: 2px;
+
 		// Secondary buttons
 		--jmc-button-secondary-background: transparent;
 		--jmc-button-secondary-color: var(--jmc-color-brand-700);

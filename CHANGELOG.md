@@ -8,6 +8,10 @@ All notable changes will be documented here. The project follows semantic versio
 
 - [Manual accessibility QA checklist](docs/accessibility-qa.md): keyboard, visual, screen-reader and editor checks, the supported browser and screen-reader setups, a [results template](docs/accessibility-qa/template.md) recorded for each release, and how to report failures. [Releasing](docs/releasing.md#release-checklist) requires it for every release candidate.
 
+### Fixed
+
+- Accessibility foundations (#59): links are underlined by default in every state; content lists keep their bullets and numbers, with navigation and component lists removing them in their own styles; one shared `:focus-visible` ring across the theme; the **Skip to content** link moves focus into `<main>`, and the fallback `index.html` template now has one; smooth scrolling, transitions and animations are switched off for `prefers-reduced-motion: reduce`.
+
 ## [0.2.1] – 2026-11-19
 
 ### Added

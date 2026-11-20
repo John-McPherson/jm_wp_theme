@@ -48,6 +48,9 @@
 
 		border: 1.5px solid currentcolor;
 
+		// The shape marks it as a button; links are underlined by default.
+		text-decoration: none;
+
 		font-weight: 600;
 		letter-spacing: 0.02em;
 

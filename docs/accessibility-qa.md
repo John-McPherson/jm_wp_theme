@@ -51,6 +51,7 @@ Run each journey with keyboard only (**D1–D3**), then with each screen reader 
 Pages: any page, at desktop width and at 320 CSS px.
 
 - [ ] **F1.1** The first Tab press shows a visible **Skip to content** link; activating it moves focus to the start of `<main>`.
+  _Partly automated: `tests/e2e/accessibility.spec.ts` checks the link is the first Tab stop, has a visible size on focus and moves focus to `<main>`; it does not check what is announced._
 - [ ] **F1.2** Focus then moves through the logo link, the primary navigation and the header call to action in visual order, with a visible focus indicator on each that is never hidden behind the sticky header.
 - [ ] **F1.3** The logo link is announced as a link named after the site (or "Home"); the logo artwork itself is not announced.
   _Partly automated: `tests/e2e/header.spec.ts` checks the link's name and that the SVG is hidden from assistive technology._
@@ -75,6 +76,7 @@ Page: the static front page.
 - [ ] **F2.3** Every link and button in the hero, service grid, text-with-image, trust and credentials and call-to-action sections is reachable in reading order and has a name that makes sense out of context. "Learn more" cues in the service grid are announced together with the service name.
 - [ ] **F2.4** Meaningful images (text-with-image, credential logos) are announced with useful alt text; decorative images, icons and the hero background are not announced.
 - [ ] **F2.5** Icon lists, bulleted lists and numbered lists are announced as lists with the right item count.
+  _Partly automated: `tests/e2e/accessibility.spec.ts` checks core bulleted and numbered lists keep their markers, not what is announced._
 - [ ] **F2.6** Credential logos that link elsewhere and open in a new tab announce that they open in a new tab.
 
 ### F3 — Services landing and service pages
@@ -124,12 +126,16 @@ Page: any URL that does not exist.
 Run on **D1** at desktop width unless the check names another setup.
 
 - [ ] **V1** Focus is visible on every interactive element, in every palette and section palette (default, secondary, inverse), and is never hidden behind the sticky header or another element.
+  _Partly automated: `tests/e2e/accessibility.spec.ts` checks the focus ring on a body link and a navigation link, and that a focused link is not under the sticky header, in the default palette only; `npm run test:contrast` measures the ring colour in every palette._
 - [ ] **V2** At 200% browser zoom, and at 320 CSS px wide, all content and controls are available without horizontal scrolling (except content that needs two dimensions) and nothing overlaps or is cut off.
   _Partly automated: `tests/e2e/header.spec.ts` and `tests/e2e/front-page.spec.ts` check for horizontal overflow at 320 CSS px on the front page only._
 - [ ] **V3** With the [text spacing bookmarklet](https://www.html5accessibility.com/tests/tsbookmarklet.html) applied (line height 1.5, paragraph spacing 2×, letter spacing 0.12em, word spacing 0.16em), no text is cut off or overlaps.
 - [ ] **V4** With **Reduce motion** turned on in the operating system, page scrolling is not smooth-animated and no non-essential animation or transition plays (menus, submenus, form messages).
+  _Partly automated: `tests/e2e/accessibility.spec.ts` emulates the preference and checks scrolling is not smooth and no element has a transition; it does not cover the editor or a real operating-system setting._
 - [ ] **V5** Body-copy links can be told apart from surrounding text without relying on colour.
+  _Partly automated: `tests/e2e/accessibility.spec.ts` checks a body link is underlined at rest, on hover and on focus._
 - [ ] **V6** Bulleted and numbered lists show their bullets and numbers.
+  _Partly automated: `tests/e2e/accessibility.spec.ts` checks core lists; `src/scss/foundations.test.ts` checks the List block's bullet and number styles._
 - [ ] **V7** On iOS (**SR2**) in portrait and landscape, every tap target in the header, navigation, call-to-action buttons and form can be activated, and the page does not need horizontal scrolling.
 
 ## Editor checks
