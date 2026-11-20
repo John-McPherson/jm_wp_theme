@@ -20,9 +20,9 @@ final class CtaBannerRenderTest extends TestCase {
 	public function test_defaults_to_inverse_columns(): void {
 		$html = $this->render_banner( [] );
 
-		self::assertStringContainsString( 'class="jmc-section jmc-cta jmc-palette--inverse"', $html );
-		self::assertStringContainsString( 'class="jmc-section__container jmc-column-right"', $html );
-		self::assertStringNotContainsString( 'jmc-cta--stacked', $html );
+		self::assertStringContainsString( 'class="jmc-section jmc-cta-banner jmc-cta-banner--order-right jmc-palette--inverse"', $html );
+		self::assertStringContainsString( 'class="jmc-section__container"', $html );
+		self::assertStringNotContainsString( 'jmc-cta-banner--stacked', $html );
 	}
 
 	/**
@@ -36,7 +36,7 @@ final class CtaBannerRenderTest extends TestCase {
 			]
 		);
 
-		self::assertStringContainsString( 'class="jmc-section__container jmc-column-left"', $html );
+		self::assertStringContainsString( 'class="jmc-section jmc-cta-banner jmc-cta-banner--order-left jmc-palette--inverse"', $html );
 	}
 
 	/**
@@ -50,8 +50,7 @@ final class CtaBannerRenderTest extends TestCase {
 			]
 		);
 
-		self::assertStringContainsString( 'class="jmc-section jmc-cta jmc-cta--contact jmc-palette--inverse"', $html );
-		self::assertStringContainsString( 'class="jmc-section__container jmc-column-left"', $html );
+		self::assertStringContainsString( 'class="jmc-section jmc-cta-banner jmc-cta-banner--contact jmc-cta-banner--order-left jmc-palette--inverse"', $html );
 	}
 
 	/**
@@ -66,9 +65,9 @@ final class CtaBannerRenderTest extends TestCase {
 			]
 		);
 
-		self::assertStringContainsString( 'class="jmc-section jmc-cta jmc-cta--stacked jmc-palette--secondary"', $html );
+		self::assertStringContainsString( 'class="jmc-section jmc-cta-banner jmc-cta-banner--stacked jmc-palette--secondary"', $html );
 		self::assertStringContainsString( 'class="jmc-section__container"', $html );
-		self::assertStringNotContainsString( 'jmc-column-', $html );
+		self::assertStringNotContainsString( '--order-', $html );
 	}
 
 	/**
@@ -81,8 +80,8 @@ final class CtaBannerRenderTest extends TestCase {
 	public function test_malformed_layout_falls_back_to_columns( mixed $layout ): void {
 		$html = $this->render_banner( [ 'layout' => $layout ] );
 
-		self::assertStringNotContainsString( 'jmc-cta--stacked', $html );
-		self::assertStringContainsString( 'jmc-column-right', $html );
+		self::assertStringNotContainsString( 'jmc-cta-banner--stacked', $html );
+		self::assertStringContainsString( 'jmc-cta-banner--order-right', $html );
 	}
 
 	/**

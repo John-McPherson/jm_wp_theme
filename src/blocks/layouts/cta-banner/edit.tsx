@@ -20,8 +20,8 @@ const VARIANT_CLASSES = {
 	default: '',
 	inverse: 'jmc-palette--inverse',
 	secondary: 'jmc-palette--secondary',
-	left: 'jmc-column-left',
-	right: 'jmc-column-right',
+	left: 'jmc-cta-banner--order-left',
+	right: 'jmc-cta-banner--order-right',
 };
 
 const ALLOWED_BLOCKS = [ 'jmc/column' ];
@@ -65,9 +65,11 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 	const blockProps = useBlockProps( {
 		className: [
 			'jmc-section',
-			'jmc-cta',
-			isStacked && 'jmc-cta--stacked',
-			'contact' === layout && 'jmc-cta--contact',
+			'jmc-cta-banner',
+			isStacked && 'jmc-cta-banner--stacked',
+			'contact' === layout && 'jmc-cta-banner--contact',
+			// Column order only applies side by side.
+			! isStacked && VARIANT_CLASSES[ order ],
 			VARIANT_CLASSES[ palette ],
 		]
 			.filter( Boolean )
@@ -76,13 +78,7 @@ export default function Edit( { attributes, setAttributes, clientId } ) {
 
 	const innerBlocksProps = useInnerBlocksProps(
 		{
-			className: [
-				'jmc-section__container',
-				// Column order only applies side by side.
-				! isStacked && VARIANT_CLASSES[ order ],
-			]
-				.filter( Boolean )
-				.join( ' ' ),
+			className: 'jmc-section__container',
 		},
 		{
 			allowedBlocks: ALLOWED_BLOCKS,

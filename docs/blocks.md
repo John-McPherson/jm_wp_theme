@@ -89,7 +89,7 @@ Kept up to date with each block's `block.json`. All blocks are `apiVersion` 3, v
 
 | Block | Category | Placement | Attributes | Ex. | Supports | Root class |
 | --- | --- | --- | --- | --- | --- | --- |
-| `jmc/cta-banner` | `jmc-section` | Top level | `palette` [default\|secondary\|inverse] = `inverse`; `order` [left\|right] = `right`; `layout` [columns\|stacked\|contact] = `columns` | Yes | anchor | `jmc-section jmc-cta` |
+| `jmc/cta-banner` | `jmc-section` | Top level | `palette` [default\|secondary\|inverse] = `inverse`; `order` [left\|right] = `right`; `layout` [columns\|stacked\|contact] = `columns` | Yes | anchor | `jmc-section jmc-cta-banner` |
 | `jmc/enquiry-form` | `jmc-section` | Top level | `palette` [default\|secondary\|inverse] = `default`; `submitText` string = `Send enquiry` | Yes | anchor, multiple: false | `jmc-section jmc-enquiry-form` |
 | `jmc/hero` | `jmc-section` | Top level | `imageId` number = `0`; `imageUrl` string = `""`; `variant` [hero] = `hero`; `palette` [default\|secondary\|inverse] = `default`; `showBreadcrumbs` boolean = `true` | Yes | anchor, multiple: false | `jmc-section jmc-hero` |
 | `jmc/service-grid` | `jmc-section` | Top level | `palette` [default\|secondary\|inverse] = `default` | Yes | anchor | `jmc-section jmc-service-grid` |
@@ -130,7 +130,7 @@ Each of these breaks a [convention](#conventions) and is left for a follow-up.
 
 **Supports and class names**
 
-- Root classes that are not `jmc-<folder-name>`: `jmc/cta-banner` (`jmc-cta`, with `jmc-column-left`/`jmc-column-right` instead of BEM modifiers), `jmc/footer` (`jmc-footer-inner`), `jmc/column` (`jmc-section__column`) and `jmc/list-item` (`jmc-list__item`). `jmc/navigation`'s editor root is `jmc-navigation-editor`. The secondary button style is the element class `jmc-button__secondary` rather than a modifier. Renaming these classes changes the stylesheets and any custom CSS that targets them. The `column` and `list-item` classes are deliberate: those blocks are elements of their parent.
+- Root classes that are not `jmc-<folder-name>`: `jmc/footer` (`jmc-footer-inner`), `jmc/column` (`jmc-section__column`) and `jmc/list-item` (`jmc-list__item`). `jmc/navigation`'s editor root is `jmc-navigation-editor`. The secondary button style is the element class `jmc-button__secondary` rather than a modifier. Renaming these classes changes the stylesheets and any custom CSS that targets them. The `column` and `list-item` classes are deliberate: those blocks are elements of their parent.
 
 ## Patterns
 
@@ -383,9 +383,9 @@ jmc/cta-banner (layout: contact)
 
 | Attribute | Values | Default | Output |
 | --- | --- | --- | --- |
-| `layout` | `columns`, `stacked`, `contact` | `columns` | `stacked` adds `jmc-cta--stacked`; `contact` adds `jmc-cta--contact` |
+| `layout` | `columns`, `stacked`, `contact` | `columns` | `stacked` adds `jmc-cta-banner--stacked`; `contact` adds `jmc-cta-banner--contact` |
 | `palette` | `default`, `secondary`, `inverse` | `inverse` | No class, `jmc-palette--secondary`, or `jmc-palette--inverse` |
-| `order` | `left`, `right` | `right` | `jmc-column-left` or `jmc-column-right` on the container; not used by the stacked layout |
+| `order` | `left`, `right` | `right` | `jmc-cta-banner--order-left` or `jmc-cta-banner--order-right` on the section; not used by the stacked layout |
 
 Unknown or malformed values fall back to the default. The `layout` attribute is exposed as three block variations, **CTA Banner** (columns, the default), **CTA Banner (Stacked)** and **CTA Banner (Contact Details)**, which can be chosen in the inserter or switched from the block's variation control.
 

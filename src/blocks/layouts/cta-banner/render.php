@@ -68,8 +68,8 @@ $palette_classes = [
 ];
 
 $order_classes = [
-	'left'  => 'jmc-column-left',
-	'right' => 'jmc-column-right',
+	'left'  => 'jmc-cta-banner--order-left',
+	'right' => 'jmc-cta-banner--order-right',
 ];
 
 
@@ -81,9 +81,11 @@ $section_attributes = [
 	'classes' => array_filter(
 		[
 			'jmc-section',
-			'jmc-cta',
-			'stacked' === $layout ? 'jmc-cta--stacked' : null,
-			'contact' === $layout ? 'jmc-cta--contact' : null,
+			'jmc-cta-banner',
+			'stacked' === $layout ? 'jmc-cta-banner--stacked' : null,
+			'contact' === $layout ? 'jmc-cta-banner--contact' : null,
+			// Column order only applies side by side.
+			'stacked' !== $layout ? $order_classes[ $col_order ] : null,
 			$palette_classes[ $palette ],
 			...$custom_classes,
 		]
@@ -91,14 +93,7 @@ $section_attributes = [
 ];
 
 $container_attributes = [
-	'classes' => array_filter(
-		[
-			'jmc-section__container',
-			// Column order only applies side by side.
-			'stacked' !== $layout ? $order_classes[ $col_order ] : null,
-		]
-	),
-
+	'classes' => [ 'jmc-section__container' ],
 ];
 
 if ( ! empty( $attributes['anchor'] ) ) {
