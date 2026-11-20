@@ -29,6 +29,11 @@ export const allowedBrowserErrors: AllowedError[] = [
 		pattern: /NS_BINDING_ABORTED.*chrome:\/\/juggler\//,
 		reason: "Playwright's Firefox automation layer (Juggler) logs a worker request it aborted when a test navigates away. It comes from the test harness, not the page.",
 	},
+	{
+		pattern:
+			/XMLHttpRequest cannot load \S+\/wp-admin\/admin-ajax\.php\S* due to access control checks\.[\s\S]*\/wp-admin\/js\/dashboard\.js/,
+		reason: "Logging in lands on the dashboard, whose core widgets (events, news) start admin-ajax requests. When a test navigates away before they finish, WebKit reports each cancelled request as an access-control error. Limited to requests made by core's dashboard.js.",
+	},
 ];
 
 /**
