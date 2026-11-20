@@ -31,8 +31,8 @@ export const allowedBrowserErrors: AllowedError[] = [
 	},
 	{
 		pattern:
-			/XMLHttpRequest cannot load \S+\/wp-admin\/admin-ajax\.php\S* due to access control checks\.[\s\S]*\/wp-admin\/js\/dashboard\.js/,
-		reason: "Logging in lands on the dashboard, whose core widgets (events, news) start admin-ajax requests. When a test navigates away before they finish, WebKit reports each cancelled request as an access-control error. Limited to requests made by core's dashboard.js.",
+			/XMLHttpRequest cannot load \S+\/wp-admin\/admin-ajax\.php\S* due to access control checks\.[\s\S]*\/wp-admin\/(?:js\/dashboard\.js|:\d)/,
+		reason: "Logging in lands on the dashboard, whose core scripts start admin-ajax requests (the events and news widgets in dashboard.js, and the inline compression test). When a test navigates away before they finish, WebKit reports each cancelled request as an access-control error. Limited to requests made from the dashboard page's own scripts.",
 	},
 ];
 
