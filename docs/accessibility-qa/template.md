@@ -1,0 +1,113 @@
+# Accessibility QA results — v<version>
+
+<!--
+Copy this file to docs/accessibility-qa/v<version>.md for each release candidate and fill it in.
+The checks are defined in docs/accessibility-qa.md; keep the IDs in step with it.
+
+In each result cell write one of:
+  Pass
+  Fail #<issue>      — open an issue first; see "Reporting failures" in the checklist
+  N/A: <reason>      — the check does not apply to this setup or build
+  Not run: <reason>  — the check applies but was not done
+  Auto               — skipped on a keyboard-only setup (D1–D3) because the check is marked "Automated" and CI passed
+Leave a cell as "—" where the checklist does not ask for that setup.
+-->
+
+## Build
+
+| Field | Value |
+| --- | --- |
+| Theme version | |
+| Commit | |
+| Environment and URL | |
+| CI run for the commit | |
+| Colour palettes tested | |
+| Tester | |
+| Dates tested | |
+
+## Setups
+
+| ID | Device and OS version | Browser and version | Assistive technology and version |
+| --- | --- | --- | --- |
+| D1 | | | — |
+| D2 | | | — |
+| D3 | | | — |
+| SR1 | | | |
+| SR2 | | | |
+| SR3 | | | |
+
+## Summary
+
+- **Result:** Pass / Pass with known issues / Fail
+- **Failures:** <!-- list issue links, or "None" -->
+- **Checks not run:** <!-- list check IDs with reasons, or "None" -->
+- **Notes:**
+
+## Frontend
+
+| Check | D1 | D2 | D3 | SR1 | SR2 | SR3 |
+| --- | --- | --- | --- | --- | --- | --- |
+| F1.1 Skip link | | | | | | |
+| F1.2 Header focus order | | | | | | |
+| F1.3 Logo link name | | | | | | |
+| F1.4 Navigation landmark and current page | | | | | | |
+| F1.5 Desktop submenus | | | | | — | |
+| F1.6 Mobile menu | | | | | | |
+| F1.7 Header call to action | | | | | | |
+| F1.8 Navigation without JavaScript | | | | | | |
+| F2.1 Home page headings | | | | | | |
+| F2.2 Home page landmarks | | | | | | |
+| F2.3 Section links and buttons | | | | | | |
+| F2.4 Images | | | | | | |
+| F2.5 Lists | | | | | | |
+| F2.6 New-tab credential links | | | | | | |
+| F3.1 Breadcrumbs | | | | | | |
+| F3.2 Service cards | | | | | | |
+| F3.3 Service list headings | | | | | | |
+| F4.1 Contact details | | | | | | |
+| F4.2 Form labels, required fields and hints | | | | | | |
+| F4.3 Spam-trap field hidden | | | | | | |
+| F4.4 Error summary | | | | | | |
+| F4.5 Clearing errors and success message | | | | | | |
+| F4.6 Form without JavaScript | | | | | | |
+| F4.7 iOS keyboards and autofill | — | — | — | — | | — |
+| F5.1 Footer landmarks | | | | | | |
+| F5.2 Footer menu groups | | | | | | |
+| F5.3 Footer business details | | | | | | |
+| F5.4 Footer legal reading order | | | | | | |
+| F6.1 404 heading and title | | | | | | |
+| F6.2 404 links | | | | | | |
+
+## Visual
+
+Record a result per palette where the check asks for every palette, for example "Default: Pass; Alternate 1: Fail #123".
+
+| Check | Setup | Result |
+| --- | --- | --- |
+| V1 Focus visible in every palette | D1 | |
+| V2 200% zoom and 320 CSS px reflow | D1 | |
+| V3 Text spacing | D1 | |
+| V4 Reduced motion | D1 | |
+| V5 Body links distinguishable | D1 | |
+| V6 List markers | D1 | |
+| V7 iOS tap targets and orientation | SR2 | |
+
+## Editor
+
+| Check | D1 | SR1 | SR3 |
+| --- | --- | --- | --- |
+| E1.1 Insert layout blocks | | | |
+| E1.2 Block settings controls | | | |
+| E1.3 Text with Image media | | | |
+| E1.4 Service Grid pages | | | |
+| E1.5 Theme patterns | | | |
+| E2.1 Moving between content blocks | | | |
+| E2.2 Heading level | | | |
+| E2.3 Button link and type | | | |
+| E2.4 List style and items | | | |
+| E2.5 Buttons add menu | | | |
+| E2.6 Locked blocks | | | |
+| E3.1 Header part | | | |
+| E3.2 Footer part | | | |
+| E3.3 Saving a template part | | | |
+| E4.1 Business settings | | | |

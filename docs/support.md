@@ -14,7 +14,7 @@ This policy states which WordPress, PHP, Node, browser, device and assistive-tec
 | Browsers | Last two major versions of Chrome, Edge, Firefox and Safari (macOS and iOS); current Chrome for Android and Samsung Internet | This document | Playwright on Chromium, Firefox and WebKit |
 | Viewports | 320 CSS px wide and up, portrait and landscape, at up to 200% zoom | This document | Playwright checks for horizontal overflow at 320 px and header behaviour on short and narrow viewports |
 | Input | Mouse, touch and keyboard only | This document | Playwright keyboard tests for navigation; touch is checked manually |
-| Assistive technology | VoiceOver with Safari (macOS and iOS); NVDA with Chrome or Firefox (Windows) | This document | None. Checked manually at release candidates; see [Testing](testing.md#accessibility-release-matrix) |
+| Assistive technology | VoiceOver with Safari (macOS and iOS); NVDA with Chrome or Firefox (Windows) | This document | None. Checked manually at release candidates with the [manual accessibility QA checklist](accessibility-qa.md#test-setups) |
 
 ### Why these versions
 
