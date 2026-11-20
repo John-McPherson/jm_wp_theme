@@ -196,21 +196,31 @@ test.describe( 'accessibility foundations', () => {
 		await page.setViewportSize( { width: 1280, height: 600 } );
 		await page.goto( url );
 
-		// Scroll to the end, then move focus back up to a link near the top.
-		await page.getByRole( 'link', { name: 'the last link' } ).focus();
-		await page
-			.getByRole( 'main' )
-			.getByRole( 'link', { name: bodyLink } )
-			.focus();
-
-		const header = await page.locator( '.jmc-header' ).boundingBox();
+		// Scroll to the end, then move focus back up to a link near the top
+		// with the keyboard. Wait for the smooth scroll to the end to finish
+		// first: WebKit drops a focus scroll that starts mid-animation.
+		const lastLink = page.getByRole( 'link', { name: 'the last link' } );
 		const link = page.getByRole( 'main' ).getByRole( 'link', {
 			name: bodyLink,
 		} );
 
+		await lastLink.focus();
+		await expect
+			.poll( () =>
+				page.evaluate(
+					() =>
+						Math.ceil( window.scrollY + window.innerHeight ) >=
+						document.documentElement.scrollHeight
+				)
+			)
+			.toBe( true );
+		await page.keyboard.press( 'Shift+Tab' );
+		await expect( link ).toBeFocused();
+
+		const header = await page.locator( '.jmc-header' ).boundingBox();
+
 		expect( header ).not.toBeNull();
-		// WebKit animates the focus scroll (`scroll-behavior: smooth`), so wait
-		// for the link to settle rather than reading it mid-scroll.
+		// Poll: the focus scroll is smooth-animated too.
 		await expect
 			.poll( async () => ( await link.boundingBox() )?.y )
 			.toBeGreaterThanOrEqual(
