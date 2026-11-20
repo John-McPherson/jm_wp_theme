@@ -3,8 +3,8 @@
 @layer blocks {
 
 	.jmc-cta-banner {
-		--jmc-cols: 1;
-		--grid-template-areas: "a" "b";
+		--jmc-cta-banner-cols: 1;
+		--jmc-cta-banner-areas: "a" "b";
 
 		.jmc-section__column {
 			grid-area: a;
@@ -22,16 +22,16 @@
 		}
 
 		.jmc-section__container {
-			grid-template-columns: repeat(var(--jmc-cols), 1fr);
-			grid-template-areas: var(--grid-template-areas);
+			grid-template-columns: repeat(var(--jmc-cta-banner-cols), 1fr);
+			grid-template-areas: var(--jmc-cta-banner-areas);
 		}
 
 		@include min($tablet) {
-			--jmc-cols: 2;
-			--grid-template-areas: "a b";
+			--jmc-cta-banner-cols: 2;
+			--jmc-cta-banner-areas: "a b";
 
 			&.jmc-cta-banner--order-left {
-				--grid-template-areas: "b a";
+				--jmc-cta-banner-areas: "b a";
 			}
 		}
 
@@ -78,8 +78,8 @@
 			}
 
 			@include min($tablet) {
-				--jmc-cols: 1;
-				--grid-template-areas: "a" "b";
+				--jmc-cta-banner-cols: 1;
+				--jmc-cta-banner-areas: "a" "b";
 			}
 		}
 	}
