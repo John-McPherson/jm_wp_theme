@@ -153,6 +153,28 @@ function sanitize_html_class( string $classname ): string {
 }
 
 /**
+ * Sanitize a string for use as a slug or HTML ID.
+ *
+ * Test double approximating core's `sanitize_title_with_dashes()` for ASCII
+ * text: tags and entities are removed, the text is lowercased, whitespace and
+ * dots become single dashes, and anything other than a–z, 0–9, `_` and `-`
+ * is dropped.
+ *
+ * @param string $title Text to sanitize.
+ *
+ * @return string The sanitized slug.
+ */
+function sanitize_title( string $title ): string {
+	$title = strtolower( wp_strip_all_tags( $title ) );
+	$title = (string) preg_replace( '/&.+?;/', '', $title );
+	$title = str_replace( '.', '-', $title );
+	$title = (string) preg_replace( '/[^a-z0-9\s_-]/', '', $title );
+	$title = (string) preg_replace( '/[\s-]+/', '-', $title );
+
+	return trim( $title, '-' );
+}
+
+/**
  * Retrieve a post.
  *
  * Test double that reads fixtures from `$GLOBALS['jmc_test_posts']`, keyed by
