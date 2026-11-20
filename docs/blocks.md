@@ -61,7 +61,7 @@ This table should be updated whenever a block is added, renamed, deprecated, or 
 
 ### Conventions
 
-Every `block.json` follows these rules. Each rule names the code it must agree with; a block that breaks one is listed under [Mismatches](#mismatches) until it is fixed.
+Every `block.json` follows these rules. Each rule names the code it must agree with. The few names that differ on purpose are listed under [Deliberate exceptions](#deliberate-exceptions).
 
 - **Schema.** `$schema` is `https://schemas.wp.org/trunk/block.json` and the file validates against it (`src/blocks/schema.test.ts`; see [testing](testing.md#block-metadata)). `apiVersion` is `3`, `textdomain` is `jmc-theme`, and `version` is the theme version the contract last changed in.
 - **Name.** `jmc/<folder-name>`: the block's folder under `src/blocks/<group>/` matches the part after `jmc/`.
@@ -79,7 +79,7 @@ Every `block.json` follows these rules. Each rule names the code it must agree w
 - **Text defaults.** Editable text defaults to `""`; the editor shows a placeholder instead. Visible defaults, such as a submit label, are real copy, never test values.
 - **Examples.** Every block that can appear in the inserter has an `example`, with attributes and `innerBlocks` that render without notices, so the inserter preview shows realistic content. `src/blocks/registration.test.ts` checks that every block without `supports.inserter: false` has one. Blocks whose content comes from settings or the Media Library (`jmc/contact-details`, `jmc/credential`) use an empty example, which previews the live settings or the image picker.
 - **Supports.** Declare only supports that differ from WordPress's defaults or that the render code implements. `anchor: true` means `render.php` outputs the anchor as the root `id`. `className` and `customClassName` default to `true`: a block that does not print `$attributes['className']` on its root sets `customClassName: false`. `html: false` on every block.
-- **Root class.** The rendered root carries `jmc-<folder-name>`, the same class the editor's `useBlockProps()` adds; sections also carry `jmc-section`. Element and modifier classes are BEM: `jmc-<block>__<element>`, `jmc-<block>--<modifier>`. Palettes use the shared `jmc-palette--<palette>` classes.
+- **Root class.** The rendered root carries `jmc-<folder-name>`, the same class the editor's `useBlockProps()` adds; sections also carry `jmc-section`. Element and modifier classes are BEM: `jmc-<block>__<element>`, `jmc-<block>--<modifier>`. Palettes use the shared `jmc-palette--<palette>` classes. See [Deliberate exceptions](#deliberate-exceptions) for the blocks whose root is an element of something else.
 
 ### Inventory
 
@@ -89,7 +89,7 @@ Kept up to date with each block's `block.json`. All blocks are `apiVersion` 3, v
 
 | Block | Category | Placement | Attributes | Ex. | Supports | Root class |
 | --- | --- | --- | --- | --- | --- | --- |
-| `jmc/cta-banner` | `jmc-section` | Top level | `palette` [default\|secondary\|inverse] = `inverse`; `order` [left\|right] = `right`; `layout` [columns\|stacked\|contact] = `columns` | Yes | anchor | `jmc-section jmc-cta` |
+| `jmc/cta-banner` | `jmc-section` | Top level | `palette` [default\|secondary\|inverse] = `inverse`; `order` [left\|right] = `right`; `layout` [columns\|stacked\|contact] = `columns` | Yes | anchor | `jmc-section jmc-cta-banner` |
 | `jmc/enquiry-form` | `jmc-section` | Top level | `palette` [default\|secondary\|inverse] = `default`; `submitText` string = `Send enquiry` | Yes | anchor, multiple: false | `jmc-section jmc-enquiry-form` |
 | `jmc/hero` | `jmc-section` | Top level | `imageId` number = `0`; `imageUrl` string = `""`; `variant` [hero] = `hero`; `palette` [default\|secondary\|inverse] = `default`; `showBreadcrumbs` boolean = `true` | Yes | anchor, multiple: false | `jmc-section jmc-hero` |
 | `jmc/service-grid` | `jmc-section` | Top level | `palette` [default\|secondary\|inverse] = `default` | Yes | anchor | `jmc-section jmc-service-grid` |
@@ -116,7 +116,7 @@ Kept up to date with each block's `block.json`. All blocks are `apiVersion` 3, v
 
 | Block | Category | Placement | Attributes | Ex. | Supports | Root class |
 | --- | --- | --- | --- | --- | --- | --- |
-| `jmc/footer` | `jmc-site` | Footer part only (inserter: false) | `palette` [default\|secondary\|inverse] = `default` | Yes | inserter: false, multiple: false | `jmc-footer-inner` |
+| `jmc/footer` | `jmc-site` | Footer part only (inserter: false) | `palette` [default\|secondary\|inverse] = `default` | Yes | inserter: false, multiple: false | `jmc-footer__inner` |
 | `jmc/footer-business` | `jmc-site` | parent: footer (inserter: false) | `companyName`, `address`, `phone`, `email`, `serviceArea` string = `""` (legacy, migration only) | Yes | inserter: false, multiple: false | `jmc-footer-business` |
 | `jmc/footer-legal` | `jmc-site` | parent: footer (inserter: false) | `copyrightHolder` string = `""` | Yes | inserter: false, multiple: false | `jmc-footer-legal` |
 | `jmc/footer-navigation` | `jmc-site` | parent: footer | `navigationId` number = `0` | Yes | — | `jmc-footer-navigation` |
@@ -124,13 +124,13 @@ Kept up to date with each block's `block.json`. All blocks are `apiVersion` 3, v
 | `jmc/navigation` | `jmc-site` | Header part only (inserter: false) | `navigationId` number = `0` | Yes | customClassName: false, inserter: false | `jmc-navigation` (editor: `jmc-navigation-editor`) |
 | `jmc/site-logo` | `jmc-site` | Header part only (inserter: false) | none; colour via block styles default, brand, mono-dark, mono-light | Yes | inserter: false | `jmc-site-logo` |
 
-### Mismatches
+### Deliberate exceptions
 
-Each of these breaks a [convention](#conventions) and is left for a follow-up.
+These differ from the [root class convention](#conventions) on purpose:
 
-**Supports and class names**
-
-- Root classes that are not `jmc-<folder-name>`: `jmc/cta-banner` (`jmc-cta`, with `jmc-column-left`/`jmc-column-right` instead of BEM modifiers), `jmc/footer` (`jmc-footer-inner`), `jmc/column` (`jmc-section__column`) and `jmc/list-item` (`jmc-list__item`). `jmc/navigation`'s editor root is `jmc-navigation-editor`. The secondary button style is the element class `jmc-button__secondary` rather than a modifier. Renaming these classes changes the stylesheets and any custom CSS that targets them. The `column` and `list-item` classes are deliberate: those blocks are elements of their parent.
+- `jmc/column` (`jmc-section__column`) and `jmc/list-item` (`jmc-list__item`) are elements of their parent block.
+- `jmc/footer` (`jmc-footer__inner`, with `jmc-footer__container` inside) is an element of the `<footer class="jmc-footer">` template part that holds it, so the page has one `jmc-footer` root.
+- `jmc/navigation`'s editor root is `jmc-navigation-editor`. It wraps the server-rendered `<nav class="jmc-navigation">` preview and the header call to action, so giving it `jmc-navigation` would nest one navigation root inside another.
 
 ## Patterns
 
@@ -295,7 +295,7 @@ It is a small [button](#buttons) with the same attributes and behaviour as `jmc/
 | Attribute | Values |
 | --- | --- |
 | `text` | The label |
-| `buttonType` | `primary` (default) or `secondary` (`jmc-button__secondary`) |
+| `buttonType` | `primary` (default) or `secondary` (`jmc-button--secondary`) |
 | `linkType` | `link` (default), `phone`, `email` or `whatsapp`, chosen with the block variations below; see [Link types](#link-types) |
 | `link` | The button's own `{ url, opensInNewTab }`, used by `link` buttons and validated as in [Link validation](#link-validation), so `mailto:` links are accepted |
 | `emailSubject`, `emailBody`, `whatsappMessage` | Optional [pre-filled messages](#pre-filled-messages) |
@@ -383,9 +383,9 @@ jmc/cta-banner (layout: contact)
 
 | Attribute | Values | Default | Output |
 | --- | --- | --- | --- |
-| `layout` | `columns`, `stacked`, `contact` | `columns` | `stacked` adds `jmc-cta--stacked`; `contact` adds `jmc-cta--contact` |
+| `layout` | `columns`, `stacked`, `contact` | `columns` | `stacked` adds `jmc-cta-banner--stacked`; `contact` adds `jmc-cta-banner--contact` |
 | `palette` | `default`, `secondary`, `inverse` | `inverse` | No class, `jmc-palette--secondary`, or `jmc-palette--inverse` |
-| `order` | `left`, `right` | `right` | `jmc-column-left` or `jmc-column-right` on the container; not used by the stacked layout |
+| `order` | `left`, `right` | `right` | `jmc-cta-banner--order-left` or `jmc-cta-banner--order-right` on the section; not used by the stacked layout |
 
 Unknown or malformed values fall back to the default. The `layout` attribute is exposed as three block variations, **CTA Banner** (columns, the default), **CTA Banner (Stacked)** and **CTA Banner (Contact Details)**, which can be chosen in the inserter or switched from the block's variation control.
 
@@ -403,7 +403,7 @@ Banners saved before `jmc/buttons` was introduced hold `jmc/button` directly in 
 
 ## Buttons
 
-`jmc/button` renders a single `.jmc-button` link through the `button-link` component. It is in the inserter only inside `jmc/text-with-image`, `jmc/hero` and `jmc/buttons` (its `ancestor` list). Inside `jmc/buttons`, new buttons are usually added from the group's **+** menu (**Button**, **Phone button**, **Email button**, or **WhatsApp button**), which presets the link type. Its `buttonType` attribute selects `primary` (default) or `secondary` (`jmc-button__secondary`).
+`jmc/button` renders a single `.jmc-button` link through the `button-link` component. It is in the inserter only inside `jmc/text-with-image`, `jmc/hero` and `jmc/buttons` (its `ancestor` list). Inside `jmc/buttons`, new buttons are usually added from the group's **+** menu (**Button**, **Phone button**, **Email button**, or **WhatsApp button**), which presets the link type. Its `buttonType` attribute selects `primary` (default) or `secondary` (`jmc-button--secondary`).
 
 The render resolves the button's style, destination and icon with `jmc_button_link_args()` (`inc/helpers/button.php`), and the editor is `ButtonEditor` (`src/components/ButtonEditor.tsx`). [`jmc/header-cta`](#header-call-to-action) shares both.
 
@@ -734,7 +734,7 @@ wp eval 'global $wpdb; print_r( $wpdb->get_col( "SELECT ID FROM {$wpdb->posts} W
 
 ## Footer
 
-`parts/footer.html` is the `footer` template part, registered in `theme.json` and placed at the end of every template as a `<footer class="jmc-footer">` landmark. It contains:
+`parts/footer.html` is the `footer` template part, registered in `theme.json` and placed at the end of every template as a `<footer class="jmc-footer">` landmark. The `jmc/footer` block inside it renders as `jmc-footer__inner` (palette and padding) around `jmc-footer__container` (the column layout). It contains:
 
 ```html
 <!-- wp:jmc/footer {"palette":"inverse","lock":{"remove":true}} -->
@@ -923,7 +923,7 @@ No deprecation is needed: `jmc/button` and `jmc/header-cta` are dynamic, so exis
 
 ## Button sizes
 
-`.jmc-button` is the default size. Add `.jmc-button--small` for dense UI such as the header; it changes only padding, type size, and border width, never colours, so it combines with `.jmc-button__secondary` and every palette.
+`.jmc-button` is the default size. Add `.jmc-button--small` for dense UI such as the header; it changes only padding, type size, and border width, never colours, so it combines with `.jmc-button--secondary` and every palette.
 
 Keyboard focus (`:focus-visible`) uses the hover colours plus a 2px `--jmc-text-highlight` outline offset by 2px. Every button colour pair meets WCAG AA in the default, secondary, and inverse palettes (lowest text pair 8.15:1), and the focus outline is at least 3:1 against each palette background (lowest 4.92:1, secondary palette).
 
@@ -949,4 +949,3 @@ Changes confined to a dynamic block's PHP frontend markup normally do not need a
 ## Current issues to resolve
 
 - Revisit the `jmc/`-only global allowlist before FSE templates require core blocks.
-- Fix the metadata [mismatches](#mismatches).

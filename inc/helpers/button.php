@@ -18,7 +18,7 @@ const JMC_BUTTON_LINK_TYPES = [ 'link', 'phone', 'email', 'whatsapp' ];
  */
 const JMC_BUTTON_VARIANT_CLASSES = [
 	'primary'   => null,
-	'secondary' => 'jmc-button__secondary',
+	'secondary' => 'jmc-button--secondary',
 ];
 
 /**

@@ -71,26 +71,30 @@ describe( 'CTA banner edit', () => {
 	} );
 
 	it.each( [
-		[ 'side by side', {}, 'jmc-section jmc-cta' ],
+		[
+			'side by side',
+			{},
+			'jmc-section jmc-cta-banner jmc-cta-banner--order-left',
+		],
 		[
 			'stacked',
 			{ layout: 'stacked' },
-			'jmc-section jmc-cta jmc-cta--stacked',
+			'jmc-section jmc-cta-banner jmc-cta-banner--stacked',
 		],
 		[
 			'contact',
 			{ layout: 'contact' },
-			'jmc-section jmc-cta jmc-cta--contact',
+			'jmc-section jmc-cta-banner jmc-cta-banner--contact jmc-cta-banner--order-left',
 		],
 		[
 			'inverse',
 			{ palette: 'inverse' },
-			'jmc-section jmc-cta jmc-palette--inverse',
+			'jmc-section jmc-cta-banner jmc-cta-banner--order-left jmc-palette--inverse',
 		],
 		[
 			'secondary',
 			{ palette: 'secondary' },
-			'jmc-section jmc-cta jmc-palette--secondary',
+			'jmc-section jmc-cta-banner jmc-cta-banner--order-left jmc-palette--secondary',
 		],
 	] )( 'styles the %s section', ( _label, attributes, classes ) => {
 		render( element( attributes ) );
@@ -99,19 +103,20 @@ describe( 'CTA banner edit', () => {
 	} );
 
 	it.each( [
-		[ 'left', 'jmc-section__container jmc-column-left' ],
-		[ 'right', 'jmc-section__container jmc-column-right' ],
-		[ 'unknown', 'jmc-section__container' ],
+		[ 'left', 'jmc-section jmc-cta-banner jmc-cta-banner--order-left' ],
+		[ 'right', 'jmc-section jmc-cta-banner jmc-cta-banner--order-right' ],
+		[ 'unknown', 'jmc-section jmc-cta-banner' ],
 	] )( 'orders the columns %s', ( order, classes ) => {
 		render( element( { order } ) );
 
-		expect( container().className ).toBe( classes );
+		expect( section().className ).toBe( classes );
+		expect( container().className ).toBe( 'jmc-section__container' );
 	} );
 
 	it( 'ignores the order when stacked', () => {
 		render( element( { layout: 'stacked', order: 'right' } ) );
 
-		expect( container().className ).toBe( 'jmc-section__container' );
+		expect( section().className ).not.toContain( '--order-' );
 		expect( screen.queryByText( 'Order Settings' ) ).toBeNull();
 	} );
 
