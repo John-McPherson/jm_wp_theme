@@ -14,6 +14,7 @@ import {
 	restoreTemplatePart,
 	setOptions,
 	snapshotTemplatePart,
+	type TemplatePartSnapshot,
 } from './helpers/wp-cli';
 
 // Business settings read by the header button and the footer.
@@ -56,14 +57,18 @@ test.describe( 'header and footer workflows', () => {
 	} );
 
 	test.describe( 'header', () => {
-		let part: Awaited< ReturnType< typeof snapshotTemplatePart > >;
+		let part: TemplatePartSnapshot | undefined;
 
 		test.beforeEach( async () => {
 			part = await snapshotTemplatePart( 'header' );
 		} );
 
 		test.afterEach( async () => {
-			await restoreTemplatePart( 'header', part );
+			// Nothing to restore if the snapshot was never taken.
+			if ( undefined !== part ) {
+				await restoreTemplatePart( 'header', part );
+				part = undefined;
+			}
 		} );
 
 		test( 'chooses a menu and call to action in the Site Editor', async ( {
@@ -166,14 +171,18 @@ test.describe( 'header and footer workflows', () => {
 	} );
 
 	test.describe( 'footer', () => {
-		let part: Awaited< ReturnType< typeof snapshotTemplatePart > >;
+		let part: TemplatePartSnapshot | undefined;
 
 		test.beforeEach( async () => {
 			part = await snapshotTemplatePart( 'footer' );
 		} );
 
 		test.afterEach( async () => {
-			await restoreTemplatePart( 'footer', part );
+			// Nothing to restore if the snapshot was never taken.
+			if ( undefined !== part ) {
+				await restoreTemplatePart( 'footer', part );
+				part = undefined;
+			}
 		} );
 
 		test( 'shows the business details, chosen menu and legal row', async ( {
