@@ -16,6 +16,8 @@ require_once get_theme_file_path( '/inc/templates.php' );
 require_once get_theme_file_path( '/inc/search.php' );
 require_once get_theme_file_path( '/inc/icons.php' );
 require_once get_theme_file_path( '/inc/navigation.php' );
+require_once get_theme_file_path( '/inc/legal-pages.php' );
+require_once get_theme_file_path( '/inc/legal-pages-settings.php' );
 require_once get_theme_file_path( '/inc/services.php' );
 require_once get_theme_file_path( '/inc/breadcrumbs.php' );
 require_once get_theme_file_path( '/inc/contact.php' );

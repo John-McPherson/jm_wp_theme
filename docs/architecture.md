@@ -57,7 +57,7 @@ Attributes crossing from the editor into PHP are untrusted. Render code must val
 
 `jmc_component()` resolves names beneath `components/` and delegates to WordPress template-part loading. Components own reusable markup; blocks own Gutenberg attributes, context, and composition. For example, `components/link-list.php` renders the link list, with `aria-current` on the current page, for both `footer-navigation` and `footer-legal`, each passing its own BEM block class.
 
-`inc/navigation.php` registers the theme's navigation menus by slug and creates any that are missing; see [Navigation menus](blocks.md#navigation-menus).
+`inc/navigation.php` registers the theme's navigation menus by slug and creates any that are missing; see [Navigation menus](blocks.md#navigation-menus). `inc/legal-pages.php` creates the legal pages as drafts and links them from the `legal` menu, and `inc/legal-pages-settings.php` adds **Settings → Legal pages** to tick them on and off; see [Legal pages](blocks.md#legal-pages).
 
 Use the typed argument helpers in `inc/helpers/component-args.php` and escaped HTML-attribute helpers in `inc/helpers/html/attributes.php`. Do not concatenate raw attributes into markup. `href` values are escaped with `jmc_esc_href()` (`inc/helpers/link.php`), which is `esc_url()` except that it keeps encoded line breaks in pre-filled email and WhatsApp messages (see [Link escaping](blocks.md#link-escaping)).
 

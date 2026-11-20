@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
+require_once dirname( __DIR__ ) . '/doubles/legal-pages.php';
+
 /**
  * Test the footer legal block render callback.
  */
@@ -148,6 +150,56 @@ final class FooterLegalRenderTest extends TestCase {
 	}
 
 	/**
+	 * Page links are only shown for published pages, at their current
+	 * permalink; custom links are kept as they are.
+	 */
+	public function test_links_only_published_pages(): void {
+		$GLOBALS['jmc_test_posts'] += [
+			3 => $this->page( id: 3, status: 'publish', permalink: 'https://example.com/privacy/' ),
+			4 => $this->page( id: 4, status: 'draft', permalink: 'https://example.com/?page_id=4' ),
+			5 => $this->page( id: 5, status: 'trash', permalink: 'https://example.com/?page_id=5' ),
+			6 => $this->page( id: 6, status: 'private', permalink: 'https://example.com/statement/' ),
+		];
+
+		$GLOBALS['jmc_test_posts'][10] = $this->legal_menu(
+			title: 'Legal',
+			blocks: [
+				$this->link_block( id: 3, label: 'Privacy Policy', url: 'https://example.com/privacy-policy/', kind: 'post-type' ),
+				$this->link_block( id: 4, label: 'Cookie Policy', url: 'https://example.com/?page_id=4', kind: 'post-type' ),
+				$this->link_block( id: 5, label: 'Terms and Conditions', url: 'https://example.com/?page_id=5', kind: 'post-type' ),
+				$this->link_block( id: 6, label: 'Accessibility Statement', url: 'https://example.com/statement/', kind: 'post-type' ),
+				$this->link_block( id: 9, label: 'Deleted Page', url: 'https://example.com/deleted/', kind: 'post-type' ),
+				$this->link_block( id: 0, label: 'Sitemap', url: 'https://example.com/sitemap/', kind: 'custom' ),
+			]
+		);
+
+		$html = $this->render_legal( [] );
+
+		self::assertStringContainsString( '<a href="https://example.com/privacy/" class="jmc-footer-legal__link">Privacy Policy</a>', $html );
+		self::assertStringContainsString( '<a href="https://example.com/sitemap/" class="jmc-footer-legal__link">Sitemap</a>', $html );
+		self::assertSame( 2, substr_count( $html, '<li class="jmc-footer-legal__item">' ) );
+
+		foreach ( [ 'Cookie Policy', 'Terms and Conditions', 'Accessibility Statement', 'Deleted Page' ] as $label ) {
+			self::assertStringNotContainsString( $label, $html );
+		}
+	}
+
+	/**
+	 * The links are omitted when every page link is unpublished.
+	 */
+	public function test_omits_links_when_no_page_is_published(): void {
+		$GLOBALS['jmc_test_posts'] = [
+			4  => $this->page( id: 4, status: 'draft', permalink: 'https://example.com/?page_id=4' ),
+			10 => $this->legal_menu(
+				title: 'Legal',
+				blocks: [ $this->link_block( id: 4, label: 'Cookie Policy', url: 'https://example.com/?page_id=4', kind: 'post-type' ) ]
+			),
+		];
+
+		self::assertStringNotContainsString( '<nav', $this->render_legal( [] ) );
+	}
+
+	/**
 	 * Only the published `legal` menu is used.
 	 */
 	public function test_looks_up_published_legal_menu(): void {
@@ -219,22 +271,47 @@ final class FooterLegalRenderTest extends TestCase {
 	}
 
 	/**
+	 * Build a page fixture.
+	 *
+	 * @param int    $id        Page ID.
+	 * @param string $status    Post status.
+	 * @param string $permalink Page permalink.
+	 *
+	 * @return object Post fixture.
+	 */
+	private function page( int $id, string $status, string $permalink ): object {
+		return (object) [
+			'ID'          => $id,
+			'post_type'   => 'page',
+			'post_status' => $status,
+			'permalink'   => $permalink,
+		];
+	}
+
+	/**
 	 * Build a parsed `core/navigation-link` block.
 	 *
-	 * @param int    $id    Linked post ID, or 0 for a custom link.
-	 * @param string $label Link label.
-	 * @param string $url   Link destination.
+	 * @param int         $id    Linked post ID, or 0 for a custom link.
+	 * @param string      $label Link label.
+	 * @param string      $url   Link destination.
+	 * @param string|null $kind  Link kind, such as `post-type` or `custom`; omitted when null.
 	 *
 	 * @return array<string,mixed> Parsed block.
 	 */
-	private function link_block( int $id, string $label, string $url ): array {
+	private function link_block( int $id, string $label, string $url, ?string $kind = null ): array {
+		$attributes = [
+			'id'    => $id,
+			'label' => $label,
+			'url'   => $url,
+		];
+
+		if ( null !== $kind ) {
+			$attributes['kind'] = $kind;
+		}
+
 		return [
 			'blockName'   => 'core/navigation-link',
-			'attrs'       => [
-				'id'    => $id,
-				'label' => $label,
-				'url'   => $url,
-			],
+			'attrs'       => $attributes,
 			'innerBlocks' => [],
 		];
 	}
