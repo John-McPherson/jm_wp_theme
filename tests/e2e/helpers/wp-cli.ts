@@ -432,8 +432,9 @@ export async function restoreTemplatePart(
 	await evalWithArgs(
 		[
 			'$part = get_block_template( get_stylesheet() . "//" . $args["slug"], "wp_template_part" );',
-			'if ( $args["snapshot"] ) {',
-			'wp_update_post( [ "ID" => $args["snapshot"]["id"], "post_content" => wp_slash( $args["snapshot"]["content"] ) ] );',
+			'$snapshot = $args["snapshot"] ?? null;',
+			'if ( $snapshot ) {',
+			'wp_update_post( [ "ID" => $snapshot["id"], "post_content" => wp_slash( $snapshot["content"] ) ] );',
 			'} elseif ( $part && $part->wp_id ) {',
 			'wp_delete_post( $part->wp_id, true );',
 			'}',
