@@ -224,7 +224,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-failures-${{ matrix.browser }}-${{ github.run_id }}
-          path: artifacts/e2e/test-results/
+          path: |
+            artifacts/e2e/test-results/
+            artifacts/e2e/php/
           retention-days: 14
           if-no-files-found: ignore
 

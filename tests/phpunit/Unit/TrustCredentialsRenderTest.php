@@ -42,6 +42,22 @@ final class TrustCredentialsRenderTest extends TestCase {
 	}
 
 	/**
+	 * The list's anchor is escaped and its custom class sanitised.
+	 */
+	public function test_list_escapes_anchor_and_class_name(): void {
+		$html = $this->render_list(
+			[
+				'anchor'    => '"><script>',
+				'className' => 'is-compact" onclick="alert(1)',
+			],
+			self::ITEM
+		);
+
+		self::assertStringContainsString( '<ul id="&quot;&gt;&lt;script&gt;" class="jmc-credential-list is-compact onclickalert1" role="list">', $html );
+		self::assertStringNotContainsString( '<script>', $html );
+	}
+
+	/**
 	 * A list whose credentials all rendered nothing is omitted.
 	 *
 	 * @dataProvider empty_content_provider

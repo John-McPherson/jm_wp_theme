@@ -25,7 +25,7 @@
     "test:unit:coverage": "wp-scripts test-unit-js --coverage",
     "test:contrast": "node scripts/palettes/contrast.js",
     "schema:update": "curl -fsSL https://schemas.wp.org/trunk/block.json -o tests/unit/schemas/block.json",
-    "env:start": "wp-env start",
+    "env:start": "mkdir -p artifacts/e2e/php && wp-env start",
     "env:stop": "wp-env stop",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
@@ -47,6 +47,7 @@
   "homepage": "https://github.com/John-McPherson/jm_wp_theme#readme",
   "prettier": "@wordpress/prettier-config",
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.62.1",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",

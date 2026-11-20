@@ -10,10 +10,9 @@ import {
 	createNavigationRecord,
 	deletePost,
 	getOption,
-	restoreOptions,
+	getOptions,
 	restoreTemplatePart,
 	setOptions,
-	snapshotOptions,
 	snapshotTemplatePart,
 } from './helpers/wp-cli';
 
@@ -37,7 +36,7 @@ test.describe( 'header and footer workflows', () => {
 
 	test.beforeAll( async () => {
 		theme = await getOption( 'stylesheet' );
-		options = await snapshotOptions( Object.keys( BUSINESS ) );
+		options = await getOptions( Object.keys( BUSINESS ) );
 		await setOptions( BUSINESS );
 		navigationId = await createNavigationRecord( MENU_LINKS );
 	} );
@@ -48,7 +47,7 @@ test.describe( 'header and footer workflows', () => {
 		}
 
 		if ( options ) {
-			await restoreOptions( options );
+			await setOptions( options );
 		}
 	} );
 

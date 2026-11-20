@@ -55,13 +55,29 @@ The manual keyboard, visual and screen-reader checks, the browser and screen-rea
 
 In addition, for each new or changed user-facing feature:
 
-- Run an automated axe or equivalent scan.
+- Make sure the axe scans in `tests/e2e/axe.spec.ts` cover it: add a scan for a new template or interactive state (see [Testing](testing.md)).
 - Measure new colour combinations (`npm run test:contrast`).
+
+## Automated scans
+
+Every pull request runs axe over the primary templates, the navigation states, every custom block and the enquiry form, in Chromium, Firefox and WebKit (`tests/e2e/axe.spec.ts`; what each scan covers is in [Testing](testing.md)). A serious or critical violation fails the build. Minor and moderate ones are reported in the Playwright report without failing; fix them when you touch the code. A passing scan does not mean a page is accessible: axe cannot judge reading order, usable focus, meaningful alternative text or what a screen reader announces, which is what the [manual checks](accessibility-qa.md) are for.
+
+### Accessibility exceptions
+
+Fix a violation rather than accepting it. When that is not yet possible, record an exception in `tests/e2e/accessibility-exceptions.ts`, in the same pull request, so it is code-reviewed. Each entry names:
+
+- the axe rule and the exact element selectors it covers, as the failure prints them (and, optionally, the scans), so the same rule still fails anywhere else;
+- the **rationale**: why it is accepted for now and what fixing it needs;
+- the **owner**: the GitHub user responsible for resolving it;
+- the **review date** (`YYYY-MM-DD`): the spec fails once it has passed, so the exception is fixed or deliberately renewed;
+- the **issue** tracking the fix.
+
+Remove the entry in the pull request that fixes the violation. There are currently no exceptions.
 
 ## Known gaps
 
 - The link underline, content list markers, shared focus ring, skip link and reduced-motion rules (#59) are covered by automated tests (see [Testing](testing.md)) but have not yet been through the [manual checks](accessibility-qa.md) (F1.1, F2.5, V1, V4–V6) in each supported browser and screen reader.
 - Landmark, navigation and template behaviour remain unverified with a screen reader. Every template has one `<main>` landmark, checked by `SkipLinkTargetTest`; the contact and 404 templates also have one H1 with no skipped heading levels, checked from the template markup by `ContactNotFoundTemplatesTest`. Site search is turned off, so no template has a search form.
-- No automated axe (or equivalent) scan runs in CI; the Playwright suite checks specific behaviours only.
+- The axe scans cover the frontend in the default colour palette only, with representative pattern content; editor states and the other palettes are not scanned (`npm run test:contrast` measures every palette's colour pairs).
 
 These gaps must be resolved and manually verified before claiming WCAG 2.2 AA conformance.

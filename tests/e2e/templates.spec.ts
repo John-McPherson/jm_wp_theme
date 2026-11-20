@@ -1,13 +1,13 @@
 import type { Page } from '@playwright/test';
 
+import { notFoundPageLoadError } from './fixtures/allowed-errors';
 import { expect, test } from './fixtures/test';
 import {
 	createPost,
 	deletePost,
 	getPermalink,
-	restoreOptions,
+	getOptions,
 	setOptions,
-	snapshotOptions,
 } from './helpers/wp-cli';
 
 /**
@@ -97,7 +97,7 @@ test.describe( 'primary templates', () => {
 		let options: Record< string, unknown > | undefined;
 
 		test.beforeAll( async () => {
-			options = await snapshotOptions( [ 'jmc_services_page_id' ] );
+			options = await getOptions( [ 'jmc_services_page_id' ] );
 
 			landingId = await createPage( {
 				title: 'Services E2E',
@@ -122,7 +122,7 @@ test.describe( 'primary templates', () => {
 
 		test.afterAll( async () => {
 			if ( options ) {
-				await restoreOptions( options );
+				await setOptions( options );
 			}
 		} );
 
@@ -199,22 +199,29 @@ test.describe( 'primary templates', () => {
 		).toBeVisible();
 	} );
 
-	test( 'a missing page answers 404 with the not-found template', async ( {
-		page,
-	} ) => {
-		const response = await page.goto( '/e2e-page-that-does-not-exist/' );
+	test.describe( 'not found', () => {
+		// These pages answer 404 on purpose, which the browser logs.
+		test.use( { allowedBrowserErrors: [ notFoundPageLoadError ] } );
 
-		expect( response?.status() ).toBe( 404 );
-		await expectNotFound( page );
-	} );
+		test( 'a missing page answers 404 with the not-found template', async ( {
+			page,
+		} ) => {
+			const response = await page.goto(
+				'/e2e-page-that-does-not-exist/'
+			);
 
-	test( 'a search answers 404 with the not-found template', async ( {
-		page,
-	} ) => {
-		const response = await page.goto( '/?s=electrician' );
+			expect( response?.status() ).toBe( 404 );
+			await expectNotFound( page );
+		} );
 
-		expect( response?.status() ).toBe( 404 );
-		await expectNotFound( page );
+		test( 'a search answers 404 with the not-found template', async ( {
+			page,
+		} ) => {
+			const response = await page.goto( '/?s=electrician' );
+
+			expect( response?.status() ).toBe( 404 );
+			await expectNotFound( page );
+		} );
 	} );
 } );
 
