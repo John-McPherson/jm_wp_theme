@@ -1,3 +1,4 @@
+import { useEntityRecord } from '@wordpress/core-data';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -8,6 +9,7 @@ vi.mock(
 	'@wordpress/block-editor',
 	() => import( '../../../../tests/unit/mocks/block-editor' )
 );
+vi.mock( '@wordpress/core-data', () => ( { useEntityRecord: vi.fn() } ) );
 
 type Attributes = {
 	palette?: string;
@@ -16,12 +18,24 @@ type Attributes = {
 	imageUrl?: string;
 };
 
-const renderEdit = ( attributes: Attributes = {} ) => {
+const renderEdit = (
+	attributes: Attributes = {},
+	record: unknown = undefined
+) => {
 	const setAttributes = vi.fn();
+
+	vi.mocked( useEntityRecord ).mockReturnValue( {
+		record,
+	} as ReturnType< typeof useEntityRecord > );
 
 	render(
 		<Edit
-			attributes={ { palette: 'default', order: 'left', ...attributes } }
+			attributes={ {
+				palette: 'default',
+				order: 'left',
+				imageId: 0,
+				...attributes,
+			} }
 			setAttributes={ setAttributes }
 		/>
 	);
@@ -110,9 +124,48 @@ describe( 'Text with image edit', () => {
 		).toBeTruthy();
 	} );
 
+	it( 'gives the image the attachment alternative text, trimmed', () => {
+		renderEdit(
+			{ imageId: 4, imageUrl: 'https://example.com/van.jpg' },
+			{ alt_text: ' Electrician fitting a consumer unit ' }
+		);
+
+		expect( useEntityRecord ).toHaveBeenCalledWith( 'root', 'media', 4, {
+			enabled: true,
+		} );
+		expect(
+			document
+				.querySelector( '.jmc-text-with-image__image img' )
+				?.getAttribute( 'alt' )
+		).toBe( 'Electrician fitting a consumer unit' );
+	} );
+
+	it.each( [
+		[ 'is loading', undefined ],
+		[ 'has no alternative text', { alt_text: '' } ],
+		[ 'has blank alternative text', { alt_text: '   ' } ],
+	] )(
+		'gives the image empty alt while the attachment %s',
+		( _label, record ) => {
+			renderEdit(
+				{ imageId: 4, imageUrl: 'https://example.com/van.jpg' },
+				record
+			);
+
+			expect(
+				document
+					.querySelector( '.jmc-text-with-image__image img' )
+					?.getAttribute( 'alt' )
+			).toBe( '' );
+		}
+	);
+
 	it( 'shows no image until one is chosen, then saves its ID and URL', () => {
 		const setAttributes = renderEdit();
 
+		expect( useEntityRecord ).toHaveBeenCalledWith( 'root', 'media', 0, {
+			enabled: false,
+		} );
 		expect(
 			document.querySelector( '.jmc-text-with-image__image img' )
 		).toBeNull();
