@@ -30,9 +30,12 @@ $copyright = trim( '© ' . wp_date( 'Y' ) . ' ' . $copyright_holder );
 // The theme registers the `legal` menu (see inc/navigation.php).
 $navigation = jmc_get_navigation_by_slug( slug: 'legal' );
 
+// Links to draft or trashed legal pages are left out (see inc/legal-pages.php).
 $links = $navigation
 	? get_navigation_links(
-		menu_blocks: parse_blocks( $navigation->post_content )
+		menu_blocks: jmc_get_published_navigation_blocks(
+			menu_blocks: parse_blocks( $navigation->post_content )
+		)
 	)
 	: [];
 

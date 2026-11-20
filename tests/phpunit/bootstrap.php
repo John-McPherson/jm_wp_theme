@@ -306,8 +306,8 @@ function sanitize_key( string $key ): string {
  * Retrieve posts.
  *
  * Test double that filters the `$GLOBALS['jmc_test_posts']` fixtures by
- * `post_type`, `name`, `post_parent`, `post_status`, `post__in` and
- * `has_password`, and records each query's arguments in
+ * `post_type`, `name`, `post_name__in`, `post_parent`, `post_status`,
+ * `post__in` and `has_password`, and records each query's arguments in
  * `$GLOBALS['jmc_test_get_posts_queries']`. An `orderby` of `post__in` keeps
  * the given ID order, and a `posts_per_page` of -1 returns every match, as in
  * core.
@@ -326,6 +326,7 @@ function get_posts( array $args = [] ): array {
 		static fn ( mixed $post ): bool => is_object( $post )
 			&& ( $post->post_type ?? '' ) === ( $args['post_type'] ?? 'post' )
 			&& ( ! isset( $args['name'] ) || ( $post->post_name ?? '' ) === $args['name'] )
+			&& ( ! isset( $args['post_name__in'] ) || in_array( $post->post_name ?? '', (array) $args['post_name__in'], true ) )
 			&& ( ! isset( $args['post_parent'] ) || ( $post->post_parent ?? 0 ) === $args['post_parent'] )
 			&& in_array( $post->post_status ?? 'publish', $statuses, true )
 			&& ( ! isset( $args['post__in'] ) || in_array( $post->ID ?? 0, (array) $args['post__in'], true ) )
@@ -428,7 +429,8 @@ function update_option( string $option, mixed $value, ?bool $autoload = null ): 
  * Insert a post.
  *
  * Test double that records the post data in
- * `$GLOBALS['jmc_test_inserted_posts']`.
+ * `$GLOBALS['jmc_test_inserted_posts']` and adds the new post to the
+ * `$GLOBALS['jmc_test_posts']` fixtures, so `get_post()` finds it.
  *
  * @param array<string,mixed> $postarr Post data.
  *
@@ -437,7 +439,11 @@ function update_option( string $option, mixed $value, ?bool $autoload = null ): 
 function wp_insert_post( array $postarr ): int {
 	$GLOBALS['jmc_test_inserted_posts'][] = $postarr;
 
-	return 1000 + count( $GLOBALS['jmc_test_inserted_posts'] );
+	$post_id = 1000 + count( $GLOBALS['jmc_test_inserted_posts'] );
+
+	$GLOBALS['jmc_test_posts'][ $post_id ] = (object) ( [ 'ID' => $post_id ] + $postarr );
+
+	return $post_id;
 }
 
 /**

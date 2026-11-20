@@ -875,11 +875,11 @@ wp post create --post_type=wp_navigation --post_status=publish --post_title="Ser
 
 1. **Site credit** — "Site created by John McPherson", linking to `mailto:mcpherso@pm.me`. The name and email are set in `render.php` (and mirrored in `edit.tsx`), not stored as attributes, because the credit is not site content.
 2. **Copyright notice** — `© {year} {holder}`. The year comes from `wp_date( 'Y' )` on every render, in the site's timezone, so it never needs updating. The holder is the `copyrightHolder` attribute, edited inline on the block; when it is empty the site title (**Settings → General**) is used, and when both are empty the notice shows the year alone. The holder is normalised with `jmc_plain_text()` and escaped.
-3. **Legal links** — the links from the theme-registered `legal` menu (see [Navigation menus](#navigation-menus)), in a `<nav>` labelled with the menu title, or "Legal" when it has none. Links follow the footer navigation contract: submenus are flattened, and the current page's link gets `aria-current="page"`. The `<nav>` is omitted when the menu is missing, unpublished, or has no links; the credit and copyright always render.
+3. **Legal links** — the links from the theme-registered `legal` menu (see [Navigation menus](#navigation-menus)), in a `<nav>` labelled with the menu title, or "Legal" when it has none. Links follow the footer navigation contract: submenus are flattened, and the current page's link gets `aria-current="page"`. Links to pages and posts are only shown while the page is published, at its current permalink, so a draft, private, trashed or deleted legal page is never linked (`jmc_get_published_navigation_blocks()`, `inc/helpers/navigation.php`); custom links are shown as entered. The `<nav>` is omitted when the menu is missing, unpublished, or has no links to show; the credit and copyright always render.
 
 The credit sits directly above the copyright. On narrow screens the links stack beneath them; from the `$mobile` container width the links sit to the right, aligned with the copyright line.
 
-To change the legal links, edit the **Legal** menu in **Appearance → Editor → Navigation**. The block has no menu setting: it always uses the `legal` slug, so the same template part works in every environment.
+To change the legal links, edit the **Legal** menu in **Appearance → Editor → Navigation**. The block has no menu setting: it always uses the `legal` slug, so the same template part works in every environment. The theme creates the legal pages and their links; see [Legal pages](#legal-pages).
 
 ### Customised footer parts
 
@@ -900,6 +900,48 @@ Block themes have no menu locations: menus are `wp_navigation` posts. `inc/navig
 Look a menu up with `jmc_get_navigation_by_slug( slug: 'legal' )` (`inc/helpers/navigation.php`), which returns the published menu or `null`; pass `post_status` to include other statuses. Reference menus by slug rather than post ID in blocks and template parts, because IDs differ between environments.
 
 To add a menu, add its slug and title to `jmc_navigation_menus()`; the changed slug list makes the next request create it.
+
+## Legal pages
+
+`inc/legal-pages.php` creates the site's legal pages and links them from the `legal` menu, so every environment starts with the same legal footer. The pages, in menu order, are defined in `jmc_legal_pages()`:
+
+| Slug | Title |
+| --- | --- |
+| `privacy-policy` | Privacy Policy |
+| `cookie-policy` | Cookie Policy |
+| `terms-and-conditions` | Terms and Conditions |
+| `accessibility-statement` | Accessibility Statement |
+
+`jmc_ensure_legal_pages()` handles each page once:
+
+- **Privacy Policy** is the page set in **Settings → Privacy** (`wp_page_for_privacy_policy`) whenever that setting points at a page, whatever its slug or status, so WordPress's own privacy page is reused rather than duplicated. Otherwise an existing `privacy-policy` page is used, and only when there is neither is a new page created and set as the privacy policy page.
+- **Other pages** are found by slug, in any status, including trashed pages (whose slug WordPress suffixes with `__trashed`). A page is created only when none exists. Existing pages are never changed.
+- **New pages** are drafts titled as in the table, with one paragraph of placeholder text that says it must be replaced and reviewed. The theme supplies no legal text.
+- **Menu links** are appended to the published `legal` menu as page links (`core/navigation-link` with `type` `page`, `kind` `post-type` and the page `id`), in the table's order, after any links already there. A page the menu already links to, at any depth, is not linked again; trashed pages are not linked; existing links are left as they are. When the menu is missing or unpublished, the pages are still created but no links are added.
+
+The footer links a page only once it is published (see [Legal row](#legal-row)), so the new drafts stay off the site until someone publishes them. Links follow the page by ID: the URL is the page's current permalink, so slug changes are picked up; the link label is the page title when the link is added, and is changed in the menu like any other link label.
+
+Setup runs on `after_switch_theme` (after the menus are created) and on `init`, but only does work when the registered slugs change. The slugs already handled are recorded in the `jmc_legal_pages` option, and only slugs missing from it are handled, so a page or link an editor deletes, trashes or moves is never restored. Pages unticked in **Settings → Legal pages** are skipped. To add a legal page, add its slug and title to `jmc_legal_pages()`: the next request creates and links that page only, and it is ticked by default.
+
+### Choosing the legal pages
+
+**Settings → Legal pages** (`inc/legal-pages-settings.php`, administrators only: `manage_options`) lists every page from `jmc_legal_pages()` with a checkbox, its status (Published, Draft, Pending review, Private, Scheduled, Trashed or Not created) and a link to edit it, or to the Trash for a trashed page. Every page is ticked by default, so theme activation sets up the full list.
+
+Saving posts to `admin-post.php`, is nonce-protected and capability-checked, and applies the whole choice with `jmc_save_legal_pages()`. An administrator's save is the source of truth, so it can restore a link an editor removed:
+
+- **Ticked:** if no page with the slug exists in any status, it is created as a placeholder draft, as above (a new privacy policy also becomes the privacy policy page). The page is then linked from the `legal` menu unless the menu already links to it. A trashed page is never duplicated or linked; restore it from the Trash and save again to link it.
+- **Unticked:** only the page's `core/navigation-link` blocks are removed from the `legal` menu, at any depth, matched by page ID. Submenus, custom links, other pages' links and the rest of the menu are kept as they are. The page itself is never changed, unpublished, trashed or deleted, and a missing page is not created.
+
+Re-ticking a page reuses the existing page and links it again. Saving the same choice twice changes nothing. Unticked slugs are stored in the `jmc_legal_pages_disabled` option, and saving records every slug as handled, so the automatic setup leaves the choice alone.
+
+### Writing and publishing the legal pages
+
+1. Open each page in **Pages** (they are drafts named as above) or, for the privacy policy, from **Settings → Privacy**, which also offers WordPress's policy guide.
+2. Replace the placeholder paragraph with the final text.
+3. Have the text written or reviewed by someone qualified, and approved by the client, before publishing. The pages are legal documents: do not publish placeholder or unreviewed text.
+4. Publish the page. Its link then appears in the footer's legal row, in menu order.
+
+To leave a page out, untick it in **Settings → Legal pages**, or keep it as a draft: either way its link is never shown. Removing the link from the **Legal** menu by hand also works; the automatic setup will not add it back, though ticking the page and saving will.
 
 ## Icons
 
