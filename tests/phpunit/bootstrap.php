@@ -490,6 +490,17 @@ function get_the_title( mixed $post = 0 ): string {
 }
 
 /**
+ * Return the registered intermediate image size names.
+ *
+ * Test double listing core's default sizes.
+ *
+ * @return string[] Image size names.
+ */
+function get_intermediate_image_sizes(): array {
+	return [ 'thumbnail', 'medium', 'medium_large', 'large', '1536x1536', '2048x2048' ];
+}
+
+/**
  * Render an attachment image.
  *
  * Test double for registered attachment fixtures. The size is written into
@@ -521,6 +532,11 @@ function wp_get_attachment_image( int $attachment_id, string $size = 'thumbnail'
 	$html = '<img';
 
 	foreach ( $attr as $name => $value ) {
+		// Core omits a `false` loading attribute.
+		if ( false === $value ) {
+			continue;
+		}
+
 		$html .= sprintf( ' %s="%s"', $name, esc_attr( (string) $value ) );
 	}
 
