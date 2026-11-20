@@ -32,6 +32,7 @@ require_once get_theme_file_path( '/inc/helpers/contact.php' );
 require_once get_theme_file_path( '/inc/helpers/button.php' );
 require_once get_theme_file_path( '/inc/helpers/enquiry.php' );
 require_once get_theme_file_path( '/inc/helpers/svg.php' );
+require_once get_theme_file_path( '/inc/helpers/blocks.php' );
 
 require_once get_theme_file_path( '/inc/helpers/html/attributes.php' );
 
