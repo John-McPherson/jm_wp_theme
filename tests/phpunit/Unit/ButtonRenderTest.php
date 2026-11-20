@@ -362,7 +362,7 @@ final class ButtonRenderTest extends TestCase {
 		$link = [ 'url' => '/contact/' ];
 
 		self::assertStringContainsString(
-			'class="jmc-button jmc-button__secondary"',
+			'class="jmc-button jmc-button--secondary"',
 			$this->render_button(
 				[
 					'text'       => 'Contact',

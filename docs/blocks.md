@@ -61,7 +61,7 @@ This table should be updated whenever a block is added, renamed, deprecated, or 
 
 ### Conventions
 
-Every `block.json` follows these rules. Each rule names the code it must agree with; a block that breaks one is listed under [Mismatches](#mismatches) until it is fixed.
+Every `block.json` follows these rules. Each rule names the code it must agree with. The few names that differ on purpose are listed under [Deliberate exceptions](#deliberate-exceptions).
 
 - **Schema.** `$schema` is `https://schemas.wp.org/trunk/block.json` and the file validates against it (`src/blocks/schema.test.ts`; see [testing](testing.md#block-metadata)). `apiVersion` is `3`, `textdomain` is `jmc-theme`, and `version` is the theme version the contract last changed in.
 - **Name.** `jmc/<folder-name>`: the block's folder under `src/blocks/<group>/` matches the part after `jmc/`.
@@ -79,7 +79,7 @@ Every `block.json` follows these rules. Each rule names the code it must agree w
 - **Text defaults.** Editable text defaults to `""`; the editor shows a placeholder instead. Visible defaults, such as a submit label, are real copy, never test values.
 - **Examples.** Every block that can appear in the inserter has an `example`, with attributes and `innerBlocks` that render without notices, so the inserter preview shows realistic content. `src/blocks/registration.test.ts` checks that every block without `supports.inserter: false` has one. Blocks whose content comes from settings or the Media Library (`jmc/contact-details`, `jmc/credential`) use an empty example, which previews the live settings or the image picker.
 - **Supports.** Declare only supports that differ from WordPress's defaults or that the render code implements. `anchor: true` means `render.php` outputs the anchor as the root `id`. `className` and `customClassName` default to `true`: a block that does not print `$attributes['className']` on its root sets `customClassName: false`. `html: false` on every block.
-- **Root class.** The rendered root carries `jmc-<folder-name>`, the same class the editor's `useBlockProps()` adds; sections also carry `jmc-section`. Element and modifier classes are BEM: `jmc-<block>__<element>`, `jmc-<block>--<modifier>`. Palettes use the shared `jmc-palette--<palette>` classes.
+- **Root class.** The rendered root carries `jmc-<folder-name>`, the same class the editor's `useBlockProps()` adds; sections also carry `jmc-section`. Element and modifier classes are BEM: `jmc-<block>__<element>`, `jmc-<block>--<modifier>`. Palettes use the shared `jmc-palette--<palette>` classes. See [Deliberate exceptions](#deliberate-exceptions) for the blocks whose root is an element of something else.
 
 ### Inventory
 
@@ -123,14 +123,6 @@ Kept up to date with each block's `block.json`. All blocks are `apiVersion` 3, v
 | `jmc/header-cta` | `jmc-site` | parent: navigation (inserter: false) | Same as `jmc/button` | Yes | inserter: false, multiple: false | `jmc-header-cta` |
 | `jmc/navigation` | `jmc-site` | Header part only (inserter: false) | `navigationId` number = `0` | Yes | customClassName: false, inserter: false | `jmc-navigation` (editor: `jmc-navigation-editor`) |
 | `jmc/site-logo` | `jmc-site` | Header part only (inserter: false) | none; colour via block styles default, brand, mono-dark, mono-light | Yes | inserter: false | `jmc-site-logo` |
-
-### Mismatches
-
-Each of these breaks a [convention](#conventions) and is left for a follow-up.
-
-**Supports and class names**
-
-- The secondary button style is the element class `jmc-button__secondary` rather than a modifier. Renaming it changes the stylesheets and any custom CSS that targets it.
 
 ### Deliberate exceptions
 
@@ -303,7 +295,7 @@ It is a small [button](#buttons) with the same attributes and behaviour as `jmc/
 | Attribute | Values |
 | --- | --- |
 | `text` | The label |
-| `buttonType` | `primary` (default) or `secondary` (`jmc-button__secondary`) |
+| `buttonType` | `primary` (default) or `secondary` (`jmc-button--secondary`) |
 | `linkType` | `link` (default), `phone`, `email` or `whatsapp`, chosen with the block variations below; see [Link types](#link-types) |
 | `link` | The button's own `{ url, opensInNewTab }`, used by `link` buttons and validated as in [Link validation](#link-validation), so `mailto:` links are accepted |
 | `emailSubject`, `emailBody`, `whatsappMessage` | Optional [pre-filled messages](#pre-filled-messages) |
@@ -411,7 +403,7 @@ Banners saved before `jmc/buttons` was introduced hold `jmc/button` directly in 
 
 ## Buttons
 
-`jmc/button` renders a single `.jmc-button` link through the `button-link` component. It is in the inserter only inside `jmc/text-with-image`, `jmc/hero` and `jmc/buttons` (its `ancestor` list). Inside `jmc/buttons`, new buttons are usually added from the group's **+** menu (**Button**, **Phone button**, **Email button**, or **WhatsApp button**), which presets the link type. Its `buttonType` attribute selects `primary` (default) or `secondary` (`jmc-button__secondary`).
+`jmc/button` renders a single `.jmc-button` link through the `button-link` component. It is in the inserter only inside `jmc/text-with-image`, `jmc/hero` and `jmc/buttons` (its `ancestor` list). Inside `jmc/buttons`, new buttons are usually added from the group's **+** menu (**Button**, **Phone button**, **Email button**, or **WhatsApp button**), which presets the link type. Its `buttonType` attribute selects `primary` (default) or `secondary` (`jmc-button--secondary`).
 
 The render resolves the button's style, destination and icon with `jmc_button_link_args()` (`inc/helpers/button.php`), and the editor is `ButtonEditor` (`src/components/ButtonEditor.tsx`). [`jmc/header-cta`](#header-call-to-action) shares both.
 
@@ -931,7 +923,7 @@ No deprecation is needed: `jmc/button` and `jmc/header-cta` are dynamic, so exis
 
 ## Button sizes
 
-`.jmc-button` is the default size. Add `.jmc-button--small` for dense UI such as the header; it changes only padding, type size, and border width, never colours, so it combines with `.jmc-button__secondary` and every palette.
+`.jmc-button` is the default size. Add `.jmc-button--small` for dense UI such as the header; it changes only padding, type size, and border width, never colours, so it combines with `.jmc-button--secondary` and every palette.
 
 Keyboard focus (`:focus-visible`) uses the hover colours plus a 2px `--jmc-text-highlight` outline offset by 2px. Every button colour pair meets WCAG AA in the default, secondary, and inverse palettes (lowest text pair 8.15:1), and the focus outline is at least 3:1 against each palette background (lowest 4.92:1, secondary palette).
 
@@ -957,4 +949,3 @@ Changes confined to a dynamic block's PHP frontend markup normally do not need a
 ## Current issues to resolve
 
 - Revisit the `jmc/`-only global allowlist before FSE templates require core blocks.
-- Fix the metadata [mismatches](#mismatches).
