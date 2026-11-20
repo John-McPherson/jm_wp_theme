@@ -14,6 +14,18 @@ export type AllowedError = {
 	reason: string;
 };
 
+/** The origin of the WordPress site under test, as in playwright.config.ts. */
+const siteOrigin = new URL( process.env.WP_BASE_URL ?? 'http://localhost:8888' )
+	.origin;
+
+/**
+ * Escapes text for use inside a regular expression.
+ *
+ * @param text Text to escape.
+ */
+const escapeRegExp = ( text: string ): string =>
+	text.replace( /[.*+?^${}()|[\]\\]/g, '\\$&' );
+
 /**
  * Browser console errors and uncaught page errors allowed in every test.
  *
@@ -30,9 +42,12 @@ export const allowedBrowserErrors: AllowedError[] = [
 		reason: "Playwright's Firefox automation layer (Juggler) logs a worker request it aborted when a test navigates away. It comes from the test harness, not the page.",
 	},
 	{
-		pattern:
-			/XMLHttpRequest cannot load \S+\/wp-admin\/admin-ajax\.php\S* due to access control checks\.[\s\S]*\/wp-admin\/js\/dashboard\.js/,
-		reason: "Logging in lands on the dashboard, whose core widgets (events, news) start admin-ajax requests. When a test navigates away before they finish, WebKit reports each cancelled request as an access-control error. Limited to requests made by core's dashboard.js.",
+		pattern: new RegExp(
+			`(?:XMLHttpRequest|Fetch API) cannot load ${ escapeRegExp(
+				siteOrigin
+			) }/\\S* due to access control checks\\.`
+		),
+		reason: "WebKit reports a request it cancels because the page navigated away (dashboard widgets, editor previews) as an access-control error. Requests to the test site's own origin are never subject to CORS, so on that origin the message only means a cancelled request. Cross-origin access-control failures still fail.",
 	},
 ];
 

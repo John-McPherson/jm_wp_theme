@@ -336,6 +336,26 @@ function jmc_enquiry_spam_reason(
 }
 
 /**
+ * Describe the spam reasons that are kept for review instead of discarded.
+ *
+ * Only reasons a genuine visitor can trigger are kept: a customer may paste
+ * several photo links into the message. Honeypot and timing-token failures
+ * (including a form sent faster than the enquiry form's script allows) only
+ * come from bots, so those submissions are still discarded.
+ *
+ * @return array<string, string> Reason from `jmc_enquiry_spam_reason()` => explanation for reviewers.
+ */
+function jmc_enquiry_kept_spam_reasons(): array {
+	return [
+		'links' => sprintf(
+			/* translators: %d: most links a genuine message is expected to contain. */
+			__( 'The message contains more than %d links.', 'jmc-theme' ),
+			JMC_ENQUIRY_MAX_LINKS
+		),
+	];
+}
+
+/**
  * Fingerprint an enquiry so repeated submissions of the same message can be spotted.
  *
  * Built from the email address and message, ignoring case and whitespace, so
@@ -393,6 +413,12 @@ const JMC_ENQUIRY_FINGERPRINT_META = '_jmc_enquiry_fingerprint';
 const JMC_ENQUIRY_STATUS_META = '_jmc_enquiry_status';
 
 /**
+ * Meta key holding why an enquiry was held as spam, a key of
+ * `jmc_enquiry_kept_spam_reasons()`.
+ */
+const JMC_ENQUIRY_SPAM_REASON_META = '_jmc_enquiry_spam_reason';
+
+/**
  * Meta key holding the number of delivery attempts.
  */
 const JMC_ENQUIRY_ATTEMPTS_META = '_jmc_enquiry_attempts';
@@ -411,8 +437,10 @@ const JMC_ENQUIRY_RETENTION_DAYS = 365;
  * Describe the delivery statuses an enquiry can have.
  *
  * `accepted` means stored but not yet handed to the mail provider, `sent`
- * means the mail provider accepted it (not that it reached the inbox), and
- * `failed` means the hand-off failed and the enquiry needs resending.
+ * means the mail provider accepted it (not that it reached the inbox),
+ * `failed` means the hand-off failed and the enquiry needs resending, and
+ * `spam` means it was flagged as spam and stored without being sent; sending
+ * it on moves it to `sent` or `failed`.
  *
  * @return array<string, string> Status => label.
  */
@@ -421,6 +449,7 @@ function jmc_enquiry_statuses(): array {
 		'accepted' => __( 'Not sent yet', 'jmc-theme' ),
 		'sent'     => __( 'Sent', 'jmc-theme' ),
 		'failed'   => __( 'Failed', 'jmc-theme' ),
+		'spam'     => __( 'Held as spam', 'jmc-theme' ),
 	];
 }
 
@@ -507,6 +536,11 @@ const JMC_ENQUIRY_DUPLICATE_WINDOW = 86400;
  * callables so every path can be tested in isolation. The nonce is checked
  * by the caller before this runs.
  *
+ * Spam a genuine visitor could trigger (see `jmc_enquiry_kept_spam_reasons()`)
+ * is validated like any other submission, then stored with its reason and
+ * not sent, so it can be reviewed and sent on from WordPress admin. Other
+ * spam is discarded before validation.
+ *
  * The returned `outcome` is the operational state for monitoring. `status`
  * is what the visitor is told: spam and duplicates are reported as `sent`
  * so bots learn nothing and a repeated click looks like a success, and a
@@ -519,12 +553,13 @@ const JMC_ENQUIRY_DUPLICATE_WINDOW = 86400;
  * @param string              $key       Secret signing key for the timing token.
  * @param callable            $hit_limit `(): bool` Record the attempt; return whether the visitor is over the limit.
  * @param callable            $is_repeat `(string $fingerprint): bool` Whether a matching enquiry was stored recently.
- * @param callable            $store     `(array $values): int` Store the enquiry; return its ID, or 0 on failure.
+ * @param callable            $store     `(array $values, string $spam_reason): int` Store the enquiry, held as spam
+ *                                       when a reason is given; return its ID, or 0 on failure.
  * @param callable            $send      `(int $post_id): bool` Send the stored enquiry; return whether it was handed off.
  *
  * @return array{
  *     status: 'sent'|'invalid'|'rate_limited'|'error',
- *     outcome: 'sent'|'delivery_failed'|'duplicate'|'spam'|'rate_limited'|'invalid'|'store_failed',
+ *     outcome: 'sent'|'delivery_failed'|'duplicate'|'spam'|'spam_stored'|'rate_limited'|'invalid'|'store_failed',
  *     errors: array<string,string>,
  *     values: array<string,string>
  * } What to tell the visitor, what happened, per-field errors, and the cleaned values.
@@ -550,9 +585,10 @@ function jmc_handle_enquiry(
 		return $result( 'rate_limited', 'rate_limited' );
 	}
 
-	$validated = jmc_validate_enquiry( $post['jmc_enquiry'] ?? [], $services );
+	$validated   = jmc_validate_enquiry( $post['jmc_enquiry'] ?? [], $services );
+	$spam_reason = jmc_enquiry_spam_reason( $post, $validated['values']['message'], $now, $key );
 
-	if ( '' !== jmc_enquiry_spam_reason( $post, $validated['values']['message'], $now, $key ) ) {
+	if ( '' !== $spam_reason && ! array_key_exists( $spam_reason, jmc_enquiry_kept_spam_reasons() ) ) {
 		return $result( 'sent', 'spam' );
 	}
 
@@ -564,10 +600,14 @@ function jmc_handle_enquiry(
 		return $result( 'sent', 'duplicate' );
 	}
 
-	$post_id = $store( $validated['values'] );
+	$post_id = $store( $validated['values'], $spam_reason );
 
 	if ( $post_id <= 0 ) {
 		return $result( 'error', 'store_failed', [], $validated['values'] );
+	}
+
+	if ( '' !== $spam_reason ) {
+		return $result( 'sent', 'spam_stored' );
 	}
 
 	return $send( $post_id )

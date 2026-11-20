@@ -161,7 +161,12 @@ export async function openBlockSettings( page: Page, name: string ) {
 
 	const blockTab = settings.getByRole( 'tab', { name: 'Block' } );
 
-	if ( await blockTab.isVisible() ) {
+	// Clicking an already selected tab waits for it to stop re-rendering,
+	// which can outlast the test timeout in WebKit.
+	if (
+		( await blockTab.isVisible() ) &&
+		'true' !== ( await blockTab.getAttribute( 'aria-selected' ) )
+	) {
 		await blockTab.click();
 	}
 

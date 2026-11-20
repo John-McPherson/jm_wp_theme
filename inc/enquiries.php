@@ -4,9 +4,11 @@
  *
  * Each accepted enquiry is saved as a private `jmc_enquiry` post before it is
  * emailed, so a failed delivery is never lost: it is flagged in WordPress
- * admin and can be resent from there. Enquiries are deleted automatically
- * once they pass the retention period, and are included in WordPress's
- * personal data export and erasure tools.
+ * admin and can be resent from there. Enquiries flagged as spam that a
+ * genuine visitor could have sent are stored with the `spam` status and not
+ * emailed, so they can be reviewed and sent on from there too. Enquiries are
+ * deleted automatically once they pass the retention period, and are
+ * included in WordPress's personal data export and erasure tools.
  *
  * @package JMC_Theme
  */
@@ -59,13 +61,38 @@ function jmc_get_enquiry_status( int $post_id ): string {
 }
 
 /**
+ * Retrieve why an enquiry was held as spam.
+ *
+ * @param int $post_id Enquiry ID.
+ *
+ * @return string A key of `jmc_enquiry_kept_spam_reasons()`, or an empty string when it wasn't held as spam.
+ */
+function jmc_get_enquiry_spam_reason( int $post_id ): string {
+	return jmc_html_allowed_value(
+		value: get_post_meta( $post_id, JMC_ENQUIRY_SPAM_REASON_META, true ),
+		allowed: array_keys( jmc_enquiry_kept_spam_reasons() ),
+		fallback_value: ''
+	);
+}
+
+/**
  * Store a new enquiry.
  *
- * @param array<string,string> $values Cleaned, valid enquiry values.
+ * An enquiry flagged as spam is stored with the `spam` status and its reason,
+ * and is not delivered until someone sends it on from WordPress admin.
+ *
+ * @param array<string,string> $values      Cleaned, valid enquiry values.
+ * @param string               $spam_reason A key of `jmc_enquiry_kept_spam_reasons()`, or an empty string.
  *
  * @return int The enquiry ID, or 0 when it could not be stored.
  */
-function jmc_insert_enquiry( array $values ): int {
+function jmc_insert_enquiry( array $values, string $spam_reason = '' ): int {
+	$spam_reason = jmc_html_allowed_value(
+		value: $spam_reason,
+		allowed: array_keys( jmc_enquiry_kept_spam_reasons() ),
+		fallback_value: ''
+	);
+
 	$post_id = wp_insert_post(
 		[
 			'post_type'   => JMC_ENQUIRY_POST_TYPE,
@@ -76,7 +103,8 @@ function jmc_insert_enquiry( array $values ): int {
 				JMC_ENQUIRY_VALUES_META      => $values,
 				JMC_ENQUIRY_EMAIL_META       => strtolower( $values['email'] ?? '' ),
 				JMC_ENQUIRY_FINGERPRINT_META => jmc_enquiry_fingerprint( $values ),
-				JMC_ENQUIRY_STATUS_META      => 'accepted',
+				JMC_ENQUIRY_STATUS_META      => '' === $spam_reason ? 'accepted' : 'spam',
+				JMC_ENQUIRY_SPAM_REASON_META => $spam_reason,
 				JMC_ENQUIRY_ATTEMPTS_META    => 0,
 			],
 		],
@@ -85,6 +113,11 @@ function jmc_insert_enquiry( array $values ): int {
 
 	if ( is_wp_error( $post_id ) ) {
 		return 0;
+	}
+
+	// Spam isn't about to be delivered; it waits to be reviewed.
+	if ( '' !== $spam_reason ) {
+		return $post_id;
 	}
 
 	/**
@@ -177,6 +210,17 @@ function jmc_send_enquiry( int $post_id ): bool {
  * @return int Number of failed enquiries.
  */
 function jmc_count_failed_enquiries(): int {
+	return jmc_count_enquiries_by_status( 'failed' );
+}
+
+/**
+ * Count enquiries with a delivery status.
+ *
+ * @param string $status A key of `jmc_enquiry_statuses()`.
+ *
+ * @return int Number of enquiries with that status.
+ */
+function jmc_count_enquiries_by_status( string $status ): int {
 	$query = new WP_Query(
 		[
 			'post_type'              => JMC_ENQUIRY_POST_TYPE,
@@ -186,7 +230,7 @@ function jmc_count_failed_enquiries(): int {
 			'update_post_meta_cache' => false,
 			'update_post_term_cache' => false,
 			'meta_key'               => JMC_ENQUIRY_STATUS_META, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Admin-only count over a small table.
-			'meta_value'             => 'failed', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Admin-only count over a small table.
+			'meta_value'             => $status, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Admin-only count over a small table.
 		]
 	);
 
@@ -294,7 +338,7 @@ add_action(
 
 /*
  * Admin list: show the enquirer's details and delivery status, and let
- * failed enquiries be filtered and resent.
+ * failed and spam enquiries be filtered and sent.
  */
 
 add_filter(
@@ -365,7 +409,9 @@ add_filter(
 			$view['jmc_resend'] = sprintf(
 				'<a href="%s">%s</a>',
 				esc_url( jmc_enquiry_resend_url( $post->ID ) ),
-				esc_html__( 'Resend', 'jmc-theme' )
+				'spam' === jmc_get_enquiry_status( $post->ID )
+					? esc_html__( 'Send', 'jmc-theme' )
+					: esc_html__( 'Resend', 'jmc-theme' )
 			);
 		}
 
@@ -387,21 +433,26 @@ add_filter(
 add_filter(
 	'views_edit-' . JMC_ENQUIRY_POST_TYPE,
 	function ( array $views ): array {
-		$failed = jmc_count_failed_enquiries();
+		$filters = [
+			'failed' => __( 'Failed to send', 'jmc-theme' ),
+			'spam'   => __( 'Spam', 'jmc-theme' ),
+		];
 
-		if ( 0 === $failed ) {
-			return $views;
+		foreach ( $filters as $status => $label ) {
+			$count = jmc_count_enquiries_by_status( $status );
+
+			if ( 0 === $count ) {
+				continue;
+			}
+
+			$views[ 'jmc_' . $status ] = sprintf(
+				'<a href="%s"%s>%s <span class="count">(%d)</span></a>',
+				esc_url( admin_url( 'edit.php?post_type=' . JMC_ENQUIRY_POST_TYPE . '&jmc_enquiry_status=' . $status ) ),
+				jmc_enquiry_status_filter() === $status ? ' class="current" aria-current="page"' : '',
+				esc_html( $label ),
+				$count
+			);
 		}
-
-		$current = 'failed' === jmc_enquiry_status_filter();
-
-		$views['jmc_failed'] = sprintf(
-			'<a href="%s"%s>%s <span class="count">(%d)</span></a>',
-			esc_url( admin_url( 'edit.php?post_type=' . JMC_ENQUIRY_POST_TYPE . '&jmc_enquiry_status=failed' ) ),
-			$current ? ' class="current" aria-current="page"' : '',
-			esc_html__( 'Failed to send', 'jmc-theme' ),
-			$failed
-		);
 
 		return $views;
 	}
@@ -436,8 +487,8 @@ add_action(
 );
 
 /*
- * Enquiry screen: a read-only view of the enquiry with its delivery status
- * and a resend button, in place of the editor.
+ * Enquiry screen: a read-only view of the enquiry with its delivery status,
+ * why it was held as spam (if it was) and a send button, in place of the editor.
  */
 
 add_action(
@@ -494,8 +545,9 @@ add_action(
 			'jmc-enquiry-delivery',
 			__( 'Delivery', 'jmc-theme' ),
 			function () use ( $post ): void {
-				$status = jmc_get_enquiry_status( $post->ID );
-				$error  = (string) get_post_meta( $post->ID, JMC_ENQUIRY_ERROR_META, true );
+				$status      = jmc_get_enquiry_status( $post->ID );
+				$error       = (string) get_post_meta( $post->ID, JMC_ENQUIRY_ERROR_META, true );
+				$spam_reason = jmc_get_enquiry_spam_reason( $post->ID );
 
 				printf(
 					'<p>%s <strong>%s</strong></p>',
@@ -523,10 +575,27 @@ add_action(
 					);
 				}
 
+				if ( '' !== $spam_reason ) {
+					printf(
+						'<p>%s %s</p>',
+						esc_html__( 'Flagged as spam:', 'jmc-theme' ),
+						esc_html( jmc_enquiry_kept_spam_reasons()[ $spam_reason ] )
+					);
+				}
+
+				if ( 'spam' === $status ) {
+					printf(
+						'<p>%s</p>',
+						esc_html__( 'This enquiry hasn’t been emailed. If it’s genuine, send it to the business email.', 'jmc-theme' )
+					);
+				}
+
 				printf(
 					'<p><a class="button" href="%s">%s</a></p>',
 					esc_url( jmc_enquiry_resend_url( $post->ID ) ),
-					esc_html__( 'Resend to the business email', 'jmc-theme' )
+					'spam' === $status
+						? esc_html__( 'Send to the business email', 'jmc-theme' )
+						: esc_html__( 'Resend to the business email', 'jmc-theme' )
 				);
 
 				if ( current_user_can( 'delete_post', $post->ID ) ) {

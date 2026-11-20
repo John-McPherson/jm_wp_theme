@@ -9,6 +9,10 @@ All notable changes will be documented here. The project follows semantic versio
 - The Playwright suite fails a test on a browser console error, an uncaught page error, or a PHP error, warning, notice or deprecation logged while it runs, and fails the run on any PHP error logged outside a test (#38). `wp-env` now enables `WP_DEBUG_LOG` and writes the log to `artifacts/e2e/php/debug.log`; restart it with `npm run env:start`. Known noise is allow-listed with reasons in `tests/e2e/fixtures/allowed-errors.ts`. See [Testing](docs/testing.md#console-and-php-errors).
 - The theme creates the legal pages (Privacy Policy, Cookie Policy, Terms and Conditions and Accessibility Statement) as drafts with placeholder text and links them from the **Legal** menu, once per change to the page list (#104). The privacy policy reuses the page set in **Settings → Privacy**. Existing pages, deleted links and trashed pages are never overwritten, duplicated or restored. The footer's legal row now only links pages that are published. **Settings → Legal pages** lets administrators tick pages on and off: ticking creates a missing page as a draft and links it, unticking only removes the menu link and keeps the page. Replace the placeholder text with reviewed legal text before publishing; see [Legal pages](docs/blocks.md#legal-pages).
 
+### Changed
+
+- A valid enquiry whose message has more than 2 links is kept with a **Held as spam** status instead of being discarded (#203). It isn't emailed or counted as a failed delivery; find it under **Enquiries → Spam**, see why it was flagged, and **Send** it on to the business email if it's genuine. Honeypot and timing-token failures are still discarded. `jmc_enquiry_outcome` reports the new `spam_stored` outcome. See [Enquiry form](docs/blocks.md#storage-and-delivery).
+
 ## [0.2.2] – 2026-11-20
 
 Accessibility QA results: [docs/accessibility-qa/v0.2.2.md](docs/accessibility-qa/v0.2.2.md).

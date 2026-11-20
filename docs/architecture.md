@@ -34,7 +34,7 @@ flowchart TD
 - `inc/helpers/svg.php` reads a theme SVG file and filters it through an SVG allow-list for inline output (used by the site logo).
 - `inc/icons.php` registers the theme's `jmc` icon collection with the core icon registry: the Lucide icons and Simple Icons brand logos generated at build time (see [Icons](blocks.md#icons)).
 - `inc/services.php` enables page excerpts, registers the Services page setting and the `jmc_service_icon` page meta, and loads the service icon editor panel (see [Services grid](blocks.md#services-grid)).
-- `inc/enquiries.php` registers the private `jmc_enquiry` post type and handles enquiry delivery, the admin list and resend action, failure notices, retention, and personal data export and erasure. `inc/enquiry-submission.php` registers the enquiry REST routes and the no-JavaScript `admin-post.php` handler (see [Enquiry form](blocks.md#enquiry-form)). Both are loaded after the helpers they use.
+- `inc/enquiries.php` registers the private `jmc_enquiry` post type and handles enquiry delivery, the admin list (including the **Spam** view) and send/resend action, failure notices, retention, and personal data export and erasure. `inc/enquiry-submission.php` registers the enquiry REST routes and the no-JavaScript `admin-post.php` handler (see [Enquiry form](blocks.md#enquiry-form)). Both are loaded after the helpers they use.
 - `inc/helpers/` contains reusable framework-level PHP helpers.
 
 Feature logic should not accumulate in the bootstrap.
