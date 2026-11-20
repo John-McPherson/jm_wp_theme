@@ -4,6 +4,10 @@ All notable changes will be documented here. The project follows semantic versio
 
 ## Unreleased
 
+### Added
+
+- The Playwright suite fails a test on a browser console error, an uncaught page error, or a PHP error, warning, notice or deprecation logged while it runs, and fails the run on any PHP error logged outside a test (#38). `wp-env` now enables `WP_DEBUG_LOG` and writes the log to `artifacts/e2e/php/debug.log`; restart it with `npm run env:start`. Known noise is allow-listed with reasons in `tests/e2e/fixtures/allowed-errors.ts`. See [Testing](docs/testing.md#console-and-php-errors).
+
 ## [0.2.2] – 2026-11-20
 
 Accessibility QA results: [docs/accessibility-qa/v0.2.2.md](docs/accessibility-qa/v0.2.2.md).

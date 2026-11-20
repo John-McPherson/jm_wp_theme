@@ -92,7 +92,7 @@ npm start
 
 The theme provides nine dynamic, server-rendered blocks: five internal composition blocks and four editor-insertable section blocks. GitHub Actions installs locked dependencies, type-checks, lints PHP/TypeScript/SCSS, runs PHPCS, builds the theme, packages `dist/`, and verifies required package paths.
 
-The site-identity header template part and cross-browser Playwright smoke coverage are now configured. Primary navigation, header CTA, footer, complete template coverage, automated accessibility checks, visual regression baselines, and clean-install package verification remain planned work.
+The site-identity header template part, cross-browser Playwright smoke coverage and automated axe accessibility scans are now configured. Primary navigation, header CTA, footer, complete template coverage, visual regression baselines, and clean-install package verification remain planned work.
 
 ## Browser support
 

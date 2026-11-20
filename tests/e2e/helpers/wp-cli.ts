@@ -176,12 +176,18 @@ type PostFields = {
 	type: string;
 	title: string;
 	content: string;
+	parent?: number;
+	excerpt?: string;
+	template?: string;
 };
 
 export async function createPost( {
 	type,
 	title,
 	content,
+	parent,
+	excerpt,
+	template,
 }: PostFields ): Promise< number > {
 	const { stdout } = await runWpCli( [
 		'post',
@@ -190,6 +196,9 @@ export async function createPost( {
 		'--post_status=publish',
 		`--post_title=${ title }`,
 		`--post_content=${ content }`,
+		...( parent ? [ `--post_parent=${ parent }` ] : [] ),
+		...( excerpt ? [ `--post_excerpt=${ excerpt }` ] : [] ),
+		...( template ? [ `--page_template=${ template }` ] : [] ),
 		'--porcelain',
 	] );
 
@@ -204,4 +213,231 @@ export async function createPost( {
 
 export async function deletePost( postId: number ): Promise< void > {
 	await runWpCli( [ 'post', 'delete', String( postId ), '--force' ] );
+}
+
+/**
+ * The permalink of a post.
+ *
+ * @param postId Post ID.
+ */
+export async function getPermalink( postId: number ): Promise< string > {
+	const { stdout } = await runWpCli( [
+		'eval',
+		`echo get_permalink(${ Number( postId ) });`,
+	] );
+
+	return stdout;
+}
+
+/**
+ * Run PHP in WordPress with `wp eval`, passing data as JSON in `$args`.
+ *
+ * @param code PHP to run; `$args` holds the decoded `args`.
+ * @param args Data for the code, encoded as JSON.
+ */
+async function evalWithArgs( code: string, args: unknown ): Promise< string > {
+	// A single-quoted PHP string, so `$` and `\` in the JSON stay literal.
+	const json = JSON.stringify( args )
+		.replace( /\\/g, '\\\\' )
+		.replace( /'/g, "\\'" );
+
+	const { stdout } = await runWpCli( [
+		'eval',
+		`$args = json_decode( '${ json }', true ); ${ code }`,
+	] );
+
+	return stdout;
+}
+
+/** Option values keyed by name; `null` for an option that is not stored. */
+export type OptionBackup = Record< string, unknown >;
+
+/**
+ * Read options as stored, so they can be put back with `setOptions()`.
+ *
+ * @param names Option names.
+ */
+export async function getOptions( names: string[] ): Promise< OptionBackup > {
+	const stdout = await evalWithArgs(
+		[
+			'$values = [];',
+			'foreach ( $args as $name ) {',
+			'$value = get_option( $name, null );',
+			'$values[ $name ] = false === $value ? null : $value;',
+			'}',
+			'echo wp_json_encode( $values );',
+		].join( ' ' ),
+		names
+	);
+
+	return JSON.parse( stdout.split( '\n' ).at( -1 ) ?? '{}' );
+}
+
+/**
+ * Store each option, or delete it when its value is `null`.
+ *
+ * @param values Option values keyed by name.
+ */
+export async function setOptions( values: OptionBackup ): Promise< void > {
+	await evalWithArgs(
+		[
+			'foreach ( $args as $name => $value ) {',
+			'null === $value ? delete_option( $name ) : update_option( $name, $value );',
+			'}',
+		].join( ' ' ),
+		values
+	);
+}
+
+type PatternPageFields = {
+	title: string;
+	patterns: string[];
+	slug?: string;
+	parent?: number;
+};
+
+/**
+ * Publish a page built from the theme's registered block patterns, in order.
+ *
+ * @param fields          Page fields.
+ * @param fields.title    Page title.
+ * @param fields.patterns Pattern names, such as `jmc/home-page`.
+ * @param fields.slug     Page slug; WordPress makes it unique if it is taken.
+ * @param fields.parent   Parent page ID.
+ */
+export async function createPageFromPatterns( {
+	title,
+	patterns,
+	slug = '',
+	parent = 0,
+}: PatternPageFields ): Promise< number > {
+	const stdout = await evalWithArgs(
+		[
+			'$registry = WP_Block_Patterns_Registry::get_instance();',
+			'$content = "";',
+			'foreach ( $args["patterns"] as $name ) {',
+			'$pattern = $registry->get_registered( $name );',
+			'if ( ! $pattern ) { fwrite( STDERR, "Unknown pattern: $name" ); exit( 1 ); }',
+			'$content .= $pattern["content"];',
+			'}',
+			'$id = wp_insert_post( [',
+			'"post_type" => "page", "post_status" => "publish",',
+			'"post_title" => $args["title"], "post_name" => $args["slug"],',
+			'"post_parent" => $args["parent"], "post_content" => wp_slash( $content ),',
+			'], true );',
+			'if ( is_wp_error( $id ) ) { fwrite( STDERR, $id->get_error_message() ); exit( 1 ); }',
+			'echo $id;',
+		].join( ' ' ),
+		{ title, patterns, slug, parent }
+	);
+
+	const pageId = Number( stdout.split( '\n' ).at( -1 ) );
+
+	if ( ! Number.isInteger( pageId ) || pageId <= 0 ) {
+		throw new Error( `Could not determine created page ID: ${ stdout }` );
+	}
+
+	return pageId;
+}
+
+/**
+ * Save a customised copy of one of the theme's template parts, as the Site
+ * Editor does, with text in the theme file replaced. Delete the returned
+ * post to go back to the theme file.
+ *
+ * Throws if the part is already customised, so a test never overwrites or
+ * deletes someone's own edit.
+ *
+ * @param slug         Template part slug, such as `header`.
+ * @param area         Template part area, such as `header` or `footer`.
+ * @param replacements Text to replace in the theme file, keyed by the text to find.
+ */
+export async function customizeTemplatePart(
+	slug: string,
+	area: string,
+	replacements: Record< string, string >
+): Promise< number > {
+	const stdout = await evalWithArgs(
+		[
+			'$theme = get_stylesheet();',
+			'$existing = get_block_template( $theme . "//" . $args["slug"], "wp_template_part" );',
+			'if ( $existing && "custom" === $existing->source ) {',
+			'fwrite( STDERR, "Template part is already customised: " . $args["slug"] ); exit( 1 );',
+			'}',
+			'$content = file_get_contents( get_theme_file_path( "parts/" . $args["slug"] . ".html" ) );',
+			'foreach ( $args["replacements"] as $search => $replace ) {',
+			'if ( false === strpos( $content, $search ) ) { fwrite( STDERR, "Not found: $search" ); exit( 1 ); }',
+			'$content = str_replace( $search, $replace, $content );',
+			'}',
+			'$id = wp_insert_post( [',
+			'"post_type" => "wp_template_part", "post_status" => "publish",',
+			'"post_name" => $args["slug"], "post_title" => $args["slug"],',
+			'"post_content" => wp_slash( $content ),',
+			'], true );',
+			'if ( is_wp_error( $id ) ) { fwrite( STDERR, $id->get_error_message() ); exit( 1 ); }',
+			'wp_set_object_terms( $id, $theme, "wp_theme" );',
+			'wp_set_object_terms( $id, $args["area"], "wp_template_part_area" );',
+			'echo $id;',
+		].join( ' ' ),
+		{ slug, area, replacements }
+	);
+
+	const partId = Number( stdout.split( '\n' ).at( -1 ) );
+
+	if ( ! Number.isInteger( partId ) || partId <= 0 ) {
+		throw new Error(
+			`Could not determine template part ID for ${ slug }: ${ stdout }`
+		);
+	}
+
+	return partId;
+}
+
+/** A customised template part's post ID and content. */
+export type TemplatePartSnapshot = { id: number; content: string } | null;
+
+/**
+ * Read the content of the active theme's customised template part, if any.
+ *
+ * @param slug Template part slug, such as `header`.
+ * @return The saved customisation, or `null` while the theme file is used.
+ */
+export async function snapshotTemplatePart(
+	slug: string
+): Promise< TemplatePartSnapshot > {
+	const stdout = await evalWithArgs(
+		[
+			'$part = get_block_template( get_stylesheet() . "//" . $args, "wp_template_part" );',
+			'echo wp_json_encode( $part && $part->wp_id ? [ "id" => $part->wp_id, "content" => $part->content ] : null );',
+		].join( ' ' ),
+		slug
+	);
+
+	return JSON.parse(
+		stdout.split( '\n' ).at( -1 ) ?? 'null'
+	) as TemplatePartSnapshot;
+}
+
+/**
+ * Undo Site Editor changes to a template part: put a saved customisation back,
+ * or delete the customisation so the theme file is used again.
+ *
+ * @param slug     Template part slug, such as `header`.
+ * @param snapshot Value from snapshotTemplatePart().
+ */
+export async function restoreTemplatePart(
+	slug: string,
+	snapshot: TemplatePartSnapshot
+): Promise< void > {
+	await evalWithArgs(
+		[
+			'$part = get_block_template( get_stylesheet() . "//" . $args["slug"], "wp_template_part" );',
+			'if ( $args["snapshot"] ) {',
+			'wp_update_post( [ "ID" => $args["snapshot"]["id"], "post_content" => wp_slash( $args["snapshot"]["content"] ) ] );',
+			'} elseif ( $part && $part->wp_id ) {',
+			'wp_delete_post( $part->wp_id, true );',
+			'}',
+		].join( ' ' ),
+		{ slug, snapshot }
+	);
 }

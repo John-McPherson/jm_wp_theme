@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 
 import { expect, test } from './fixtures/test';
+import { expectNoInvalidBlocks } from './helpers/editor';
 import { loginToWordPress } from './helpers/login';
 import {
 	createNavigationRecord,
@@ -56,22 +57,6 @@ async function getAllowedBlocks( page: Page ): Promise< string[] > {
 	} );
 
 	return ( await handle.jsonValue() ) as string[];
-}
-
-/**
- * Fail if the editor shows block recovery UI for existing content.
- *
- * @param page Editor page.
- */
-async function expectNoInvalidBlocks( page: Page ): Promise< void > {
-	const canvas = page.frameLocator( 'iframe[name="editor-canvas"]' );
-
-	await expect(
-		canvas.getByText( /this block contains unexpected or invalid content/i )
-	).toHaveCount( 0 );
-	await expect(
-		page.getByText( /your site doesn.t include support for/i )
-	).toHaveCount( 0 );
 }
 
 /**
